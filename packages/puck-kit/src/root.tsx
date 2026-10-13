@@ -1,7 +1,9 @@
 import type { Fields, RootConfig } from "@puckeditor/core";
 import type { ReactNode } from "react";
-import { ColorValueField } from "./fields/ColorValueField";
 import { styleField } from "./fields/styleField";
+import { FontLinks } from "./fonts/FontLinks";
+import { FONT_METADATA_KEY } from "./fonts/load";
+import type { FontDefinition } from "./fonts/types";
 import { baseCss, columnsCss, editorCss } from "./styles/base";
 import { ElementStyle } from "./styles/ElementStyle";
 import { styleClass } from "./styles/compile";
@@ -17,37 +19,23 @@ export interface KitRootProps {
   [key: string]: unknown;
 }
 
-const tokenList = (label: string, valueField: Fields[string]) => ({
-  type: "array" as const,
-  label,
-  arrayFields: { name: { type: "text" as const, label: "Name" }, value: valueField },
-  defaultItemProps: { name: "", value: "" },
-  getItemSummary: (item: { name?: string; value?: string }) => item.name || item.value || "Token",
-});
-
 export const PAGE_STYLE_ID = "page";
 
 export function createKitRoot(ctx: KitContext, defaults: { tokens: Tokens }): RootConfig<{ props: KitRootProps }> {
   return {
     fields: {
       title: { type: "text", label: "Page title" },
-      tokens: {
-        type: "object",
-        label: "Design tokens",
-        objectFields: {
-          colors: tokenList("Colors", {
-            type: "custom",
-            label: "Value",
-            render: ColorValueField as never,
-          }),
-          fonts: tokenList("Fonts", { type: "text", label: "font-family" }),
-          sizes: tokenList("Sizes", { type: "text", label: "Value (e.g. 16px, 1rem)" }),
-        },
-      },
       styles: styleField({ label: "Page style", breakpoints: ctx.breakpoints }),
     } as Fields<KitRootProps>,
+    // `tokens` has no field: it's edited in the Tokens plugin (left rail) and kept in root props.
     defaultProps: { title: "", tokens: defaults.tokens, styles: {} },
-    render: ({ children, tokens, styles, puck }: KitRootProps & { children: ReactNode; puck: { isEditing: boolean } }) => {
+    render: ({
+      children,
+      tokens,
+      styles,
+      puck,
+    }: KitRootProps & { children: ReactNode; puck: { isEditing: boolean; metadata?: Record<string, unknown> } }) => {
+      const fonts = puck.metadata?.[FONT_METADATA_KEY] as FontDefinition[] | undefined;
       const globalCss = baseCss + columnsCss + tokensToCss(tokens);
       return (
         <div className={`pk-page ${styleClass(PAGE_STYLE_ID)}`}>
@@ -58,6 +46,7 @@ export function createKitRoot(ctx: KitContext, defaults: { tokens: Tokens }): Ro
               {globalCss}
             </style>
           )}
+          <FontLinks fonts={fonts} inline={puck.isEditing} />
           <ElementStyle id={PAGE_STYLE_ID} styles={styles} editing={puck.isEditing} breakpoints={ctx.breakpoints} />
           {children}
         </div>

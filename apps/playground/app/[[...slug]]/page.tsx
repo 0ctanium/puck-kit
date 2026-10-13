@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { Render } from "@puckeditor/core";
+import { fontMetadata } from "puck-kit";
 import { config } from "@/lib/config";
+import { loadFonts } from "@/lib/fonts";
 import { loadPage } from "@/lib/store";
 import { cache } from "react";
 
@@ -36,5 +38,6 @@ export default async function Page({
 }) {
   const data = await load(await params);
   if (!data) notFound();
-  return <Render config={config} data={data} />;
+  // Only the fonts this page uses are loaded.
+  return <Render config={config} data={data} metadata={fontMetadata(await loadFonts(), data)} />;
 }

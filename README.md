@@ -69,8 +69,30 @@ Persisting `data` (JSON) is up to you.
   drives the media queries.
 - `getPageCss(data)` (from `puck-kit/styles`) returns one stylesheet for a whole page, if you
   prefer serving a cached `.css` file.
-- **Design tokens** (colors, fonts, sizes) are edited on the page root (click empty canvas)
-  and emitted as CSS variables. The style panel offers them as swatches/presets.
+- **Design tokens** (colors, fonts, sizes) are edited in the **Tokens** plugin of the left rail
+  (added by `BuilderEditor`; or add `tokensPlugin()` from `puck-kit/editor` to your own `<Puck>`).
+  They're stored in `root.props.tokens`, emitted as CSS variables (`--pk-color-brand`…), and
+  offered as swatches/presets in the style panel. Each token shows how many places use it;
+  renaming rewrites every reference, and deleting a used token can detach it (references are
+  replaced by the raw value).
+- **Fonts**: give the editor a font library and it loads the fonts and offers them in font
+  pickers (font tokens and Typography). Users never type CSS stacks.
+  ```tsx
+  const fonts: FontDefinition[] = [
+    { family: "Inter", category: "sans-serif", weights: [400, 600, 700], source: { type: "google" } },
+    { family: "Brand Sans", category: "sans-serif", weights: [400, 700],
+      source: { type: "files", files: [{ url: "/fonts/brand.woff2", weight: 400 }, { url: "/fonts/brand-bold.woff2", weight: 700 }] } },
+    { family: "Proxima Nova", source: { type: "css", url: "https://use.typekit.net/xxxx.css" } },
+  ];
+  // Editor: all fonts are loaded; "Add fonts" buttons call your callback (e.g. open your font settings page).
+  <BuilderEditor config={config} data={data} fonts={fonts} onAddFonts={() => window.open("/settings/fonts")} />
+  // Public pages: only the fonts the page uses (via tokens or element styles) are loaded.
+  <Render config={config} data={data} metadata={fontMetadata(fonts, data)} />
+  ```
+  Values are stored as CSS stacks (`"Inter", sans-serif`) so pages keep working if a font is
+  removed. System fonts are always available. Google fonts must list weights that exist on Google
+  (each family is requested separately, so a wrong entry only breaks itself). The playground has a
+  demo settings page (`/settings/fonts`): Google Fonts catalog + upload your own files.
 - Container elements *are* the Puck slot (`<Content as="ul" />`), and all components use
   Puck's `inline` mode, so there are no wrapper divs: `ul > li`, `grid > item`.
 

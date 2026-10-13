@@ -280,7 +280,7 @@ export function BackgroundSection() {
             }),
           },
         ]}
-        renderPreview={(l) => <span className={s.preview} style={{ background: previewValue(l.image, panel.tokens), backgroundSize: "cover", backgroundPosition: "center" }} />}
+        renderPreview={(l) => <span className={s.preview} style={{ backgroundImage: previewValue(l.image, panel.tokens), backgroundSize: "cover", backgroundPosition: "center" }} />}
         renderLabel={(l) => {
           const kind = layerKind(l.image);
           if (kind === "image") return imageUrl(l.image).split("/").pop() || "Image";

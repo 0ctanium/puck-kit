@@ -1,3 +1,5 @@
+import { fontStack, systemFonts } from "../fonts/stack";
+
 export interface Token {
   name: string;
   value: string;
@@ -46,9 +48,9 @@ export const defaultTokens: Tokens = {
     { name: "White", value: "#ffffff" },
   ],
   fonts: [
-    { name: "Sans", value: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" },
-    { name: "Serif", value: "ui-serif, Georgia, Cambria, 'Times New Roman', serif" },
-    { name: "Mono", value: "ui-monospace, SFMono-Regular, Menlo, monospace" },
+    { name: "Sans", value: fontStack(systemFonts[0]) },
+    { name: "Serif", value: fontStack(systemFonts[1]) },
+    { name: "Mono", value: fontStack(systemFonts[2]) },
   ],
   sizes: [
     { name: "XS", value: "4px" },

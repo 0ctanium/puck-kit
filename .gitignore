@@ -4,3 +4,5 @@
 *.tsbuildinfo
 apps/playground/data/*.json
 !apps/playground/data/home.json
+!apps/playground/data/fonts.json
+apps/playground/public/uploads

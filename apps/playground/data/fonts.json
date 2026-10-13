@@ -1,0 +1,5 @@
+[
+  { "family": "Inter", "category": "sans-serif", "weights": [300, 400, 500, 600, 700, 800], "source": { "type": "google" } },
+  { "family": "Playfair Display", "category": "serif", "weights": [400, 500, 600, 700, 800, 900], "italic": true, "source": { "type": "google" } },
+  { "family": "JetBrains Mono", "category": "monospace", "weights": [400, 500, 700], "italic": true, "source": { "type": "google" } }
+]

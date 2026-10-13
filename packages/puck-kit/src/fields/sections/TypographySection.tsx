@@ -4,7 +4,6 @@ import {
   ArrowRightToLine,
   CaseLower,
   Code,
-  Pencil,
   Pilcrow,
   TextWrap,
   CaseSensitive,
@@ -19,16 +18,18 @@ import {
   Type,
   Underline,
 } from "lucide-react";
-import { tokenRef } from "../../styles/tokens";
 import type { StyleProp } from "../../styles/types";
 import { usePanel } from "../context";
 import { ColorInput } from "../ui/ColorPicker";
 import { defaultTextShadow, parseShadows, serializeTextShadows, type Shadow } from "../css/values";
 import { resolveColor } from "../ui/ColorPicker";
 import { LayerList } from "../ui/LayerList";
+import { useKitEditor } from "../../editor/context";
+import { fontLabel, fontWeights } from "../../fonts/stack";
+import { FontPicker, resolveFont } from "../ui/FontPicker";
 import { SampleIcon } from "../ui/icons";
 import { ShadowEditor } from "./ShadowEditor";
-import { PropSelect, PropToggle, PropUnit, Row, Select, TextInput } from "../ui/inputs";
+import { PropSelect, PropToggle, PropUnit, Row } from "../ui/inputs";
 import ui from "../ui/ui.module.css";
 import { Section } from "./Section";
 
@@ -53,32 +54,37 @@ const WEIGHTS = [
 function FontRow() {
   const panel = usePanel();
   const r = panel.read("fontFamily");
-  const fonts = panel.tokens.fonts?.filter((f) => f.name) ?? [];
-  const options = fonts.map((f) => ({ value: tokenRef("fonts", f.name), label: f.name, icon: <SampleIcon family={f.value} /> }));
-  const isToken = (v?: string) => !!v && options.some((o) => o.value === v);
-  const custom = r.value !== undefined && !isToken(r.value);
   return (
-    <>
-      <Row label="Font" props={["fontFamily"]}>
-        <div className={ui.grow}>
-          <Select
-            value={custom ? "__custom" : r.value}
-            inherited={r.inherited}
-            options={[...options, { value: "__custom", label: "Custom…", icon: <Pencil size={13} /> }]}
-            placeholder="Inherit"
-            readOnly={panel.readOnly}
-            onChange={(v) => panel.write("fontFamily", v === "__custom" ? (r.value ?? "inherit") : v)}
-          />
-        </div>
-      </Row>
-      {custom && (
-        <Row label="" props={[]}>
-          <div className={ui.grow}>
-            <TextInput value={r.value} placeholder="'Inter', sans-serif" onChange={(v) => panel.write("fontFamily", v)} />
-          </div>
-        </Row>
-      )}
-    </>
+    <Row label="Font" props={["fontFamily"]}>
+      <div className={ui.grow}>
+        <FontPicker
+          value={r.value}
+          inherited={r.inherited}
+          tokens={panel.tokens}
+          readOnly={panel.readOnly}
+          onChange={(v) => panel.write("fontFamily", v)}
+        />
+      </div>
+    </Row>
+  );
+}
+
+/** Weights of the effective font first; others are listed as synthesized (faux bold). */
+function WeightRow() {
+  const panel = usePanel();
+  const { fonts } = useKitEditor();
+  const { font } = resolveFont(panel.get("fontFamily"), panel.tokens, fonts);
+  const available = new Set(font ? fontWeights(font) : WEIGHTS.map((w) => Number(w.value)));
+  const options = [
+    ...WEIGHTS.filter((w) => available.has(Number(w.value))).map((w) => ({ ...w, group: font ? `${fontLabel(font)} weights` : undefined })),
+    ...WEIGHTS.filter((w) => !available.has(Number(w.value))).map((w) => ({ ...w, hint: "synthesized", group: "Not in this font" })),
+  ];
+  return (
+    <Row label="Weight" props={["fontWeight"]}>
+      <div className={ui.grow}>
+        <PropSelect prop="fontWeight" options={options} placeholder="Inherit" />
+      </div>
+    </Row>
   );
 }
 
@@ -88,11 +94,7 @@ export function TypographySection() {
   return (
     <Section id="typography" title="Typography" icon={<Type size={14} />} props={PROPS}>
       <FontRow />
-      <Row label="Weight" props={["fontWeight"]}>
-        <div className={ui.grow}>
-          <PropSelect prop="fontWeight" options={WEIGHTS} placeholder="Inherit" />
-        </div>
-      </Row>
+      <WeightRow />
       <div className={ui.grid2}>
         <Row label="Size" props={["fontSize"]} stacked scrub={{ min: 0 }}>
           <PropUnit prop="fontSize" min={0} units={["px", "rem", "em", "%", "vw"]} />

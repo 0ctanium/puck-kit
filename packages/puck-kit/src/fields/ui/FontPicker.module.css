@@ -1,0 +1,130 @@
+.body {
+  gap: 0;
+  padding: 0;
+}
+
+.triggerSample {
+  width: 18px;
+  flex: none;
+  font-size: 13px;
+  line-height: 1;
+  text-align: center;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px;
+  padding: 0 8px;
+  height: 30px;
+  border: 1px solid var(--pk-ui-border);
+  border-radius: 6px;
+  color: var(--pk-ui-muted);
+}
+
+.search:focus-within {
+  border-color: var(--pk-ui-accent);
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  font: inherit;
+  color: var(--pk-ui-text);
+}
+
+.list {
+  max-height: 320px;
+  overflow: auto;
+  padding: 0 4px 6px;
+}
+
+.empty {
+  padding: 16px 8px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--pk-ui-muted);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.active {
+  background: var(--pk-ui-hover);
+}
+
+.sample {
+  width: 22px;
+  flex: none;
+  font-size: 15px;
+  line-height: 1;
+  text-align: center;
+  color: var(--pk-ui-muted);
+}
+
+.resetIcon {
+  width: 22px;
+  flex: none;
+  color: var(--pk-ui-muted);
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.hint {
+  flex: none;
+  font-size: 10px;
+  color: var(--pk-ui-faint);
+}
+
+.check {
+  flex: none;
+  color: var(--pk-ui-accent);
+  visibility: hidden;
+}
+
+.option[aria-selected="true"] .check {
+  visibility: visible;
+}
+
+.option[aria-selected="true"] .name {
+  color: var(--pk-ui-accent);
+  font-weight: 600;
+}
+
+.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  border: 0;
+  border-top: 1px solid var(--pk-ui-border);
+  border-radius: 0 0 8px 8px;
+  background: var(--pk-ui-surface);
+  font: inherit;
+  font-weight: 600;
+  color: var(--pk-ui-accent);
+  cursor: pointer;
+}
+
+.add:hover {
+  background: var(--pk-ui-accent-soft);
+}

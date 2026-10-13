@@ -1,11 +1,10 @@
-import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { Data } from "@puckeditor/core";
 
-// Works whether `next dev` runs from this app or from the monorepo root.
-const fromRoot = path.join(process.cwd(), "apps/playground/data");
-const dir = existsSync(fromRoot) ? fromRoot : path.join(process.cwd(), "data");
+import { appPath } from "./paths";
+
+const dir = appPath("data");
 
 export function isValidSlug(slug: string) {
   return /^[a-z0-9-]+$/.test(slug);

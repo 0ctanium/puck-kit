@@ -41,8 +41,8 @@ const GAP = 8;
 const MARGIN = 8;
 
 /**
- * Floating panel portaled to <body>. Opens to the left of its anchor (the style panel lives in
- * Puck's right sidebar), falling back to below it. Closes on outside click and Escape.
+ * Floating panel portaled to <body>. Opens beside its panel — to the left for the style panel in
+ * Puck's right sidebar, to the right for left-sidebar plugins — falling back to below the anchor. Closes on outside click and Escape.
  * Nested popovers count as "inside" their parent: React events bubble through portals.
  */
 export function Popover({
@@ -92,9 +92,11 @@ export function Popover({
     const h = el.offsetHeight;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    let left = side.left - width - GAP;
+    // Panels in the left half (e.g. a left sidebar plugin) open their popovers to the right.
+    const openRight = side.left + side.width / 2 < vw / 2;
+    let left = openRight ? side.right + GAP : side.left - width - GAP;
     let top = a.top - 8;
-    if (left < MARGIN) {
+    if (left < MARGIN || left + width > vw - MARGIN) {
       left = Math.min(Math.max(MARGIN, a.right - width), vw - width - MARGIN);
       top = a.bottom + GAP;
       if (top + h > vh - MARGIN && a.top - GAP - h > MARGIN) top = a.top - GAP - h;
