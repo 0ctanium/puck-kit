@@ -1,0 +1,65 @@
+.CompactComponent {
+  display: block;
+}
+
+.CompactComponent [data-puck-drawer] {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0px, 1fr));
+}
+
+.CompactComponentItem {
+  cursor: grab;
+}
+
+.CompactComponentItem .CompactComponentItemCard {
+  background: var(--puck-drawer-item-color-bg, var(--puck-color-surface));
+  color: var(--puck-drawer-item-color-text, var(--puck-color-text));
+  padding: var(--puck-drawer-item-space, var(--puck-space-2));
+  display: flex;
+  border: var(--puck-drawer-item-border-width, var(--puck-border-width-regular))
+    var(--puck-drawer-item-color-border, var(--puck-color-border)) solid;
+  border-radius: var(--puck-drawer-item-radius, var(--puck-radius-m));
+
+  height: calc(
+    32 + var(--puck-drawer-item-space, var(--puck-space-2)) * 2 +
+      var(--puck-drawer-item-border-width, var(--puck-border-width-regular)) * 2
+  );
+
+  justify-content: center;
+  align-items: center;
+  transition:
+    color var(--puck-duration-fast) var(--puck-ease-exit),
+    background-color var(--puck-duration-fast) var(--puck-ease-exit);
+
+  margin-bottom: var(--puck-drawer-item-space, var(--puck-space-2));
+}
+
+.CompactComponentItem .CompactComponentItemLabel {
+  font-size: var(--puck-drawer-item-font-size, var(--puck-font-size-xxs));
+  color: var(--puck-drawer-item-color-text, var(--puck-color-text));
+  transition: color var(--puck-duration-fast) var(--puck-ease-exit);
+
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.CompactComponentItem:hover .CompactComponentItemLabel {
+  color: var(
+    --puck-drawer-item-color-text-hover,
+    var(--puck-color-interactive)
+  );
+  transition: none;
+}
+
+.CompactComponentItem:hover .CompactComponentItemCard {
+  color: var(
+    --puck-drawer-item-color-text-hover,
+    var(--puck-color-interactive)
+  );
+  background-color: var(
+    --puck-drawer-item-color-bg-hover,
+    var(--puck-color-interactive-soft-hover)
+  );
+  transition: none;
+}

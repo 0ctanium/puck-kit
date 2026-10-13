@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "playground",
+      "runtimeExecutable": "/Users/benjamin/.nvm/versions/node/v22.14.0/bin/node",
+      "runtimeArgs": ["apps/playground/node_modules/next/dist/bin/next", "dev", "apps/playground", "--port", "3030"],
+      "port": 3030
+    }
+  ]
+}

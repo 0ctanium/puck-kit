@@ -1,0 +1,697 @@
+{
+  "root": {
+    "props": {
+      "title": "Puck Kit demo",
+      "tokens": {
+        "colors": [
+          {
+            "name": "Primary",
+            "value": "#4f46e5"
+          },
+          {
+            "name": "Text",
+            "value": "#111827"
+          },
+          {
+            "name": "Muted",
+            "value": "#6b7280"
+          },
+          {
+            "name": "Surface",
+            "value": "#f3f4f6"
+          },
+          {
+            "name": "White",
+            "value": "#ffffff"
+          }
+        ],
+        "fonts": [
+          {
+            "name": "Sans",
+            "value": "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+          },
+          {
+            "name": "Serif",
+            "value": "ui-serif, Georgia, Cambria, 'Times New Roman', serif"
+          },
+          {
+            "name": "Mono",
+            "value": "ui-monospace, SFMono-Regular, Menlo, monospace"
+          }
+        ],
+        "sizes": [
+          {
+            "name": "XS",
+            "value": "4px"
+          },
+          {
+            "name": "SM",
+            "value": "8px"
+          },
+          {
+            "name": "MD",
+            "value": "16px"
+          },
+          {
+            "name": "LG",
+            "value": "32px"
+          },
+          {
+            "name": "XL",
+            "value": "64px"
+          }
+        ]
+      },
+      "styles": {}
+    }
+  },
+  "content": [
+    {
+      "type": "Section",
+      "props": {
+        "content": [
+          {
+            "type": "Container",
+            "props": {
+              "content": [
+                {
+                  "type": "VerticalFlex",
+                  "props": {
+                    "content": [
+                      {
+                        "type": "Heading",
+                        "props": {
+                          "id": "Heading-demo1",
+                          "tag": "h1",
+                          "text": "Build pages like in Webflow",
+                          "styles": {
+                            "base": {
+                              "fontSize": "36px",
+                              "fontWeight": "800",
+                              "lineHeight": "1.1"
+                            },
+                            "lg": {
+                              "fontSize": "56px"
+                            }
+                          },
+                          "advanced": {}
+                        }
+                      },
+                      {
+                        "type": "Paragraph",
+                        "props": {
+                          "id": "Paragraph-demo2",
+                          "tag": "p",
+                          "text": "<p>Every element has its own <strong>responsive</strong> style panel. Styles compile to plain CSS — no Tailwind, no build step.</p>",
+                          "styles": {
+                            "base": {
+                              "fontSize": "18px",
+                              "color": "var(--pk-color-muted)",
+                              "maxWidth": "640px"
+                            }
+                          },
+                          "advanced": {}
+                        }
+                      },
+                      {
+                        "type": "HorizontalFlex",
+                        "props": {
+                          "content": [
+                            {
+                              "type": "Button",
+                              "props": {
+                                "id": "Button-demo3",
+                                "tag": "a",
+                                "label": "Get started",
+                                "href": "#features",
+                                "target": "",
+                                "styles": {
+                                  "base": {
+                                    "display": "inline-block",
+                                    "paddingTop": "12px",
+                                    "paddingBottom": "12px",
+                                    "paddingLeft": "20px",
+                                    "paddingRight": "20px",
+                                    "backgroundColor": "var(--pk-color-primary)",
+                                    "color": "var(--pk-color-white)",
+                                    "borderRadius": "6px",
+                                    "borderWidth": "0",
+                                    "fontWeight": "600",
+                                    "textDecoration": "none",
+                                    "textAlign": "center",
+                                    "cursor": "pointer"
+                                  }
+                                },
+                                "advanced": {}
+                              }
+                            },
+                            {
+                              "type": "Button",
+                              "props": {
+                                "id": "Button-demo4",
+                                "tag": "a",
+                                "label": "Learn more",
+                                "href": "#",
+                                "target": "",
+                                "styles": {
+                                  "base": {
+                                    "display": "inline-block",
+                                    "paddingTop": "12px",
+                                    "paddingBottom": "12px",
+                                    "paddingLeft": "20px",
+                                    "paddingRight": "20px",
+                                    "color": "var(--pk-color-primary)",
+                                    "borderRadius": "6px",
+                                    "borderWidth": "1px",
+                                    "borderStyle": "solid",
+                                    "borderColor": "var(--pk-color-primary)",
+                                    "fontWeight": "600",
+                                    "textDecoration": "none"
+                                  }
+                                },
+                                "advanced": {}
+                              }
+                            }
+                          ],
+                          "id": "HorizontalFlex-demo5",
+                          "tag": "div",
+                          "styles": {
+                            "base": {
+                              "display": "flex",
+                              "flexDirection": "row",
+                              "alignItems": "center",
+                              "gap": "12px",
+                              "flexWrap": "wrap"
+                            }
+                          },
+                          "advanced": {}
+                        }
+                      }
+                    ],
+                    "id": "VerticalFlex-demo6",
+                    "tag": "div",
+                    "styles": {
+                      "base": {
+                        "display": "flex",
+                        "flexDirection": "column",
+                        "gap": "16px",
+                        "alignItems": "flex-start"
+                      },
+                      "lg": {
+                        "alignItems": "center",
+                        "textAlign": "center"
+                      }
+                    },
+                    "advanced": {}
+                  }
+                }
+              ],
+              "id": "Container-demo7",
+              "tag": "div",
+              "styles": {
+                "base": {
+                  "width": "100%",
+                  "marginLeft": "auto",
+                  "marginRight": "auto",
+                  "paddingLeft": "16px",
+                  "paddingRight": "16px"
+                },
+                "md": {
+                  "maxWidth": "728px"
+                },
+                "lg": {
+                  "maxWidth": "960px"
+                },
+                "xl": {
+                  "maxWidth": "1200px"
+                }
+              },
+              "advanced": {}
+            }
+          }
+        ],
+        "id": "Section-demo8",
+        "tag": "section",
+        "styles": {
+          "base": {
+            "paddingTop": "48px",
+            "paddingBottom": "48px",
+            "backgroundColor": "var(--pk-color-surface)"
+          },
+          "lg": {
+            "paddingTop": "96px",
+            "paddingBottom": "96px"
+          }
+        },
+        "advanced": {}
+      }
+    },
+    {
+      "type": "Section",
+      "props": {
+        "content": [
+          {
+            "type": "Container",
+            "props": {
+              "content": [
+                {
+                  "type": "Heading",
+                  "props": {
+                    "id": "Heading-demo9",
+                    "tag": "h2",
+                    "text": "Features",
+                    "styles": {
+                      "base": {
+                        "fontSize": "28px",
+                        "fontWeight": "700",
+                        "marginBottom": "24px"
+                      },
+                      "md": {
+                        "marginBottom": "60"
+                      }
+                    },
+                    "advanced": {}
+                  }
+                },
+                {
+                  "type": "Grid",
+                  "props": {
+                    "content": [
+                      {
+                        "type": "LinkBlock",
+                        "props": {
+                          "content": [
+                            {
+                              "type": "Heading",
+                              "props": {
+                                "id": "Heading-demo10",
+                                "tag": "h3",
+                                "text": "Slots everywhere",
+                                "styles": {
+                                  "base": {
+                                    "fontSize": "20px",
+                                    "fontWeight": "700",
+                                    "marginBottom": "8px"
+                                  }
+                                },
+                                "advanced": {}
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "id": "Text-demo11",
+                                "tag": "div",
+                                "text": "<p>Containers are Puck slots rendered as the element itself.</p>",
+                                "styles": {
+                                  "base": {
+                                    "color": "var(--pk-color-muted)"
+                                  }
+                                },
+                                "advanced": {}
+                              }
+                            }
+                          ],
+                          "id": "LinkBlock-demo12",
+                          "tag": "a",
+                          "href": "#",
+                          "target": "",
+                          "styles": {
+                            "base": {
+                              "display": "block",
+                              "color": "inherit",
+                              "textDecoration": "none",
+                              "paddingTop": "24px",
+                              "paddingBottom": "24px",
+                              "paddingLeft": "24px",
+                              "paddingRight": "24px",
+                              "borderWidth": "1px",
+                              "borderStyle": "solid",
+                              "borderColor": "#e5e7eb",
+                              "borderRadius": "12px",
+                              "transition": "box-shadow .2s ease"
+                            }
+                          },
+                          "advanced": {}
+                        }
+                      },
+                      {
+                        "type": "LinkBlock",
+                        "props": {
+                          "content": [
+                            {
+                              "type": "Heading",
+                              "props": {
+                                "id": "Heading-demo13",
+                                "tag": "h3",
+                                "text": "Mobile-first",
+                                "styles": {
+                                  "base": {
+                                    "fontSize": "20px",
+                                    "fontWeight": "700",
+                                    "marginBottom": "8px"
+                                  }
+                                },
+                                "advanced": {}
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "id": "Text-demo14",
+                                "tag": "div",
+                                "text": "<p>Base styles apply everywhere; override from tablet up.</p>",
+                                "styles": {
+                                  "base": {
+                                    "color": "var(--pk-color-muted)"
+                                  }
+                                },
+                                "advanced": {}
+                              }
+                            }
+                          ],
+                          "id": "LinkBlock-demo15",
+                          "tag": "a",
+                          "href": "#",
+                          "target": "",
+                          "styles": {
+                            "base": {
+                              "display": "block",
+                              "color": "inherit",
+                              "textDecoration": "none",
+                              "paddingTop": "24px",
+                              "paddingBottom": "24px",
+                              "paddingLeft": "24px",
+                              "paddingRight": "24px",
+                              "borderWidth": "1px",
+                              "borderStyle": "solid",
+                              "borderColor": "#e5e7eb",
+                              "borderRadius": "12px",
+                              "transition": "box-shadow .2s ease"
+                            }
+                          },
+                          "advanced": {}
+                        }
+                      },
+                      {
+                        "type": "LinkBlock",
+                        "props": {
+                          "content": [
+                            {
+                              "type": "Heading",
+                              "props": {
+                                "id": "Heading-demo16",
+                                "tag": "h3",
+                                "text": "Design tokens",
+                                "styles": {
+                                  "base": {
+                                    "fontSize": "20px",
+                                    "fontWeight": "700",
+                                    "marginBottom": "8px"
+                                  }
+                                },
+                                "advanced": {}
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "id": "Text-demo17",
+                                "tag": "div",
+                                "text": "<p>Colors, fonts and sizes as CSS variables.</p>",
+                                "styles": {
+                                  "base": {
+                                    "color": "var(--pk-color-muted)"
+                                  }
+                                },
+                                "advanced": {}
+                              }
+                            }
+                          ],
+                          "id": "LinkBlock-demo18",
+                          "tag": "a",
+                          "href": "#",
+                          "target": "",
+                          "styles": {
+                            "base": {
+                              "display": "block",
+                              "color": "inherit",
+                              "textDecoration": "none",
+                              "paddingTop": "24px",
+                              "paddingBottom": "24px",
+                              "paddingLeft": "24px",
+                              "paddingRight": "24px",
+                              "borderWidth": "1px",
+                              "borderStyle": "solid",
+                              "borderColor": "#e5e7eb",
+                              "borderRadius": "12px",
+                              "transition": "box-shadow .2s ease"
+                            }
+                          },
+                          "advanced": {}
+                        }
+                      }
+                    ],
+                    "id": "Grid-demo19",
+                    "tag": "div",
+                    "styles": {
+                      "base": {
+                        "display": "grid",
+                        "gridTemplateColumns": "minmax(0,1fr)",
+                        "gap": "16px"
+                      },
+                      "md": {
+                        "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+                      },
+                      "lg": {
+                        "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+                      }
+                    },
+                    "advanced": {}
+                  }
+                }
+              ],
+              "id": "Container-demo20",
+              "tag": "div",
+              "styles": {
+                "base": {
+                  "width": "100%",
+                  "marginLeft": "auto",
+                  "marginRight": "auto",
+                  "paddingLeft": "16px",
+                  "paddingRight": "16px"
+                },
+                "md": {
+                  "maxWidth": "728px"
+                },
+                "lg": {
+                  "maxWidth": "960px"
+                },
+                "xl": {
+                  "maxWidth": "1200px"
+                }
+              },
+              "advanced": {}
+            }
+          }
+        ],
+        "id": "Section-demo21",
+        "tag": "section",
+        "advanced": {
+          "htmlId": "features"
+        },
+        "styles": {
+          "base": {
+            "paddingTop": "64px",
+            "paddingBottom": "64px"
+          }
+        }
+      }
+    },
+    {
+      "type": "Section",
+      "props": {
+        "content": [
+          {
+            "type": "Container",
+            "props": {
+              "content": [
+                {
+                  "type": "Columns",
+                  "props": {
+                    "id": "Columns-demo31",
+                    "columns": [
+                      {
+                        "content": [
+                          {
+                            "type": "Image",
+                            "props": {
+                              "id": "Image-demo22",
+                              "src": "https://picsum.photos/seed/puck/800/500",
+                              "alt": "Example",
+                              "styles": {
+                                "base": {
+                                  "width": "100%",
+                                  "height": "auto",
+                                  "borderRadius": "8px"
+                                }
+                              },
+                              "advanced": {}
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "content": [
+                          {
+                            "type": "Quote",
+                            "props": {
+                              "id": "Quote-demo23",
+                              "tag": "blockquote",
+                              "text": "<p>Columns give each column its own drop zone; they stack on mobile.</p>",
+                              "styles": {
+                                "base": {
+                                  "paddingLeft": "16px",
+                                  "fontStyle": "italic",
+                                  "fontSize": "20px",
+                                  "marginBottom": "16px"
+                                }
+                              },
+                              "advanced": {}
+                            }
+                          },
+                          {
+                            "type": "List",
+                            "props": {
+                              "content": [
+                                {
+                                  "type": "ListItem",
+                                  "props": {
+                                    "content": [
+                                      {
+                                        "type": "Text",
+                                        "props": {
+                                          "id": "Text-demo24",
+                                          "tag": "div",
+                                          "text": "<p>Section, Container, Flex, Grid, Columns</p>",
+                                          "styles": {},
+                                          "advanced": {}
+                                        }
+                                      }
+                                    ],
+                                    "id": "ListItem-demo25",
+                                    "tag": "li",
+                                    "styles": {},
+                                    "advanced": {}
+                                  }
+                                },
+                                {
+                                  "type": "ListItem",
+                                  "props": {
+                                    "content": [
+                                      {
+                                        "type": "Text",
+                                        "props": {
+                                          "id": "Text-demo26",
+                                          "tag": "div",
+                                          "text": "<p>Box, List, Link Block, Button</p>",
+                                          "styles": {},
+                                          "advanced": {}
+                                        }
+                                      }
+                                    ],
+                                    "id": "ListItem-demo27",
+                                    "tag": "li",
+                                    "styles": {},
+                                    "advanced": {}
+                                  }
+                                },
+                                {
+                                  "type": "ListItem",
+                                  "props": {
+                                    "content": [
+                                      {
+                                        "type": "Text",
+                                        "props": {
+                                          "id": "Text-demo28",
+                                          "tag": "div",
+                                          "text": "<p>Heading, Paragraph, Text, Quote</p>",
+                                          "styles": {},
+                                          "advanced": {}
+                                        }
+                                      }
+                                    ],
+                                    "id": "ListItem-demo29",
+                                    "tag": "li",
+                                    "styles": {},
+                                    "advanced": {}
+                                  }
+                                }
+                              ],
+                              "id": "List-demo30",
+                              "tag": "ul",
+                              "styles": {
+                                "base": {
+                                  "paddingLeft": "24px"
+                                }
+                              },
+                              "advanced": {}
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "styles": {
+                      "base": {
+                        "display": "grid",
+                        "gridTemplateColumns": "minmax(0,1fr)",
+                        "gap": "32px",
+                        "alignItems": "center"
+                      },
+                      "md": {
+                        "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+                      }
+                    },
+                    "advanced": {}
+                  }
+                }
+              ],
+              "id": "Container-demo32",
+              "tag": "div",
+              "styles": {
+                "base": {
+                  "width": "100%",
+                  "marginLeft": "auto",
+                  "marginRight": "auto",
+                  "paddingLeft": "16px",
+                  "paddingRight": "16px"
+                },
+                "md": {
+                  "maxWidth": "728px"
+                },
+                "lg": {
+                  "maxWidth": "960px"
+                },
+                "xl": {
+                  "maxWidth": "1200px"
+                }
+              },
+              "advanced": {}
+            }
+          }
+        ],
+        "id": "Section-demo33",
+        "tag": "section",
+        "styles": {
+          "base": {
+            "paddingTop": "64px",
+            "paddingBottom": "64px",
+            "backgroundColor": "var(--pk-color-surface)"
+          }
+        },
+        "advanced": {}
+      }
+    }
+  ],
+  "zones": {}
+}

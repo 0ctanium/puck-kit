@@ -1,0 +1,6 @@
+**/node_modules
+**/dist
+.next
+*.tsbuildinfo
+apps/playground/data/*.json
+!apps/playground/data/home.json

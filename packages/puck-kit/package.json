@@ -1,0 +1,59 @@
+{
+  "name": "puck-kit",
+  "version": "0.1.0",
+  "description": "Webflow-style building blocks and style engine for Puck",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./editor": "./src/editor.tsx",
+    "./styles": "./src/styles.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs"
+      },
+      "./editor": {
+        "types": "./dist/editor.d.mts",
+        "import": "./dist/editor.mjs"
+      },
+      "./styles": {
+        "types": "./dist/styles.d.mts",
+        "import": "./dist/styles.mjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "tsdown"
+  },
+  "peerDependencies": {
+    "@puckeditor/core": "~0.23.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@puckeditor/core": "~0.23.0",
+    "@tsdown/css": "^0.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tsdown": "^0.23.1",
+    "typescript": "^5.9.3",
+    "typescript-plugin-css-modules": "^5.2.0",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "lucide-react": "^1.55.0"
+  }
+}
