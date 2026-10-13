@@ -28,7 +28,7 @@ export function createButton(ctx: KitContext): ComponentConfig<ButtonProps> {
     fields: {
       tag: tagField(["a", "button"]),
       label: { type: "text", label: "Label", contentEditable: true },
-      href: { type: "text", label: "Link URL" },
+      href: { type: "url", label: "Link URL" },
       target: {
         type: "radio",
         label: "Open in",
@@ -39,7 +39,7 @@ export function createButton(ctx: KitContext): ComponentConfig<ButtonProps> {
       },
       styles: styleField({ breakpoints: ctx.breakpoints }),
       advanced: advancedField,
-    } as Fields<ButtonProps>,
+    } as unknown as Fields<ButtonProps>,
     metadata: {
       icon: "square-mouse-pointer",
     },
@@ -117,5 +117,68 @@ export function createButton(ctx: KitContext): ComponentConfig<ButtonProps> {
         </>
       );
     },
+  };
+}
+
+export interface TextLinkProps {
+  text: ReactNode;
+  href: string;
+  target: "" | "_blank";
+  styles: Styles;
+  advanced: Advanced;
+}
+
+/** An inline `<a>` with link styling, for links inside text-like layouts. */
+export function createTextLink(ctx: KitContext): ComponentConfig<TextLinkProps> {
+  return {
+    label: "Text Link",
+    inline: true,
+    fields: {
+      text: { type: "text", label: "Text", contentEditable: true },
+      href: { type: "url", label: "Link URL" },
+      target: {
+        type: "radio",
+        label: "Open in",
+        options: [
+          { label: "Same tab", value: "" },
+          { label: "New tab", value: "_blank" },
+        ],
+      },
+      styles: styleField({ breakpoints: ctx.breakpoints }),
+      advanced: advancedField,
+    } as unknown as Fields<TextLinkProps>,
+    metadata: {
+      icon: "link-2",
+    },
+    defaultProps: {
+      text: "Text link",
+      href: "#",
+      target: "",
+      styles: {
+        base: {
+          color: "var(--pk-color-primary)",
+          textDecoration: "underline",
+          cursor: "pointer",
+          transition: "opacity 150ms ease",
+        },
+        "base:hover": { opacity: "0.75" },
+      },
+      advanced: {},
+    },
+    render: ({ id, puck, text, href, target, styles, advanced }) => (
+      <>
+        <Style id={id} styles={styles} editing={puck.isEditing} ctx={ctx} />
+        <a
+          ref={puck.dragRef}
+          className={elementClass(id, advanced)}
+          href={puck.isEditing ? undefined : href || undefined}
+          target={target || undefined}
+          rel={target === "_blank" ? "noopener noreferrer" : undefined}
+          {...htmlAttrs(advanced)}
+        >
+          {text}
+        </a>
+      </>
+    ),
   };
 }

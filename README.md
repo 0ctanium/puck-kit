@@ -12,16 +12,21 @@ docs/               guides
 
 ## Components
 
-| Structure | Basic | Typography |
-|---|---|---|
-| Section `<section>` | Box `<div>` (+ semantic tags) | Heading `<h1>`–`<h6>` (inline text) |
-| Container (max-width per breakpoint, centered) | List `<ul>`/`<ol>` (only List Items) | Paragraph (rich text, `<p>` blocks) |
-| Vertical Flex / Horizontal Flex | List Item `<li>` | Text `<div>` (rich text) |
-| Grid (2×2) | Link Block `<a>` (anything inside) | Quote `<blockquote>` (rich text) |
-| Columns (one drop zone per column) | Button `<a>`/`<button>` | |
+| Structure | Basic | Typography | Media |
+|---|---|---|---|
+| Section `<section>` | Box `<div>` (+ semantic tags) | Heading `<h1>`–`<h6>` (inline text) | Image `<img>` (`image` field) |
+| Container (max-width per breakpoint, centered) | List `<ul>`/`<ol>` (only List Items) | Paragraph (rich text, `<p>` blocks) | YouTube `<iframe>` |
+| Vertical Flex / Horizontal Flex | List Item `<li>` | Text `<div>` (rich text) | Vimeo `<iframe>` |
+| Grid (2×2) | Link Block `<a>` (anything inside) | Text Link `<a>` (inline text) | |
+| Columns (one drop zone per column) | Button `<a>`/`<button>` | Quote `<blockquote>` (rich text) | |
 
 Section, Container, Flex and Grid are the same Box element with different **default styles**:
 everything stays editable.
+
+YouTube and Vimeo take any video link (watch, `youtu.be`, shorts, embed, unlisted Vimeo links…)
+and offer autoplay (muted), loop, controls, start time and privacy mode (`youtube-nocookie.com` /
+Vimeo "do not track", on by default). They're 16:9 and full width by default (Size section). In
+the editor, the players don't autoplay or catch clicks, so the element stays selectable.
 
 ## Usage
 
@@ -32,11 +37,11 @@ pnpm add @puckeditor/core@~0.23 puck-kit
 ```ts
 // lib/config.ts — shared by editor and public pages (no "use client")
 import { createBuilderConfig } from "puck-kit";
-import { Image } from "./Image"; // your own components, see docs/custom-components.md
+import { Gallery } from "./Gallery"; // your own components, see docs/custom-components.md
 
 export const config = createBuilderConfig({
-  components: { Image },
-  categories: { media: { title: "Media", components: ["Image"] } },
+  components: { Gallery },
+  categories: { extras: { title: "Extras", components: ["Gallery"] } },
   // breakpoints, tokens, exclude: ["Quote"] ...
 });
 ```
@@ -86,6 +91,8 @@ Persisting `data` (JSON) is up to you.
   | `range` | number | Slider + number (`min`, `max`, `step`, `unit`) |
   | `checkbox` | boolean | Switch (`text` next to it) |
   | `select` | any option value | Puck's select, restyled (options may have an `icon` via `iconOptions()`) |
+  | `url` | string (`https://…`, `/page`, `#id`, `mailto:`) | Text input. Used by Button, Text Link, Link Block |
+  | `image` | string (image URL) | URL input + preview. Used by Image |
 
   ```tsx
   import { backgroundStyle, type KitFields } from "puck-kit";
@@ -102,6 +109,20 @@ Persisting `data` (JSON) is up to you.
   ```
   Font values in props are detected by `fontMetadata(fonts, data)`, so those fonts load on public
   pages too. See `apps/playground/lib/Banner.tsx` (the "Promo Banner" block).
+- **Plug in your link picker / media library**: `url` and `image` are deliberately plain so
+  you can replace them. Your renderer then applies to every field of that type (the kit's and
+  yours), and the stored value stays a string:
+  ```tsx
+  import { defineFieldType, type ImageField } from "puck-kit/editor";
+  const MediaPicker = defineFieldType<ImageField, string>(({ value, onChange, Label, label, field }) => (
+    <Label label={label || field.label || "Image"}>
+      <MyMediaLibrary selected={value} onSelect={(asset) => onChange(asset.url)} />
+    </Label>
+  ));
+  <BuilderEditor config={config} overrides={{ fieldTypes: { image: MediaPicker, url: MyPagePicker } }} />
+  ```
+  (or from a plugin's `overrides.fieldTypes`). The playground swaps `image` for a small stock
+  image library: `apps/playground/lib/MediaLibraryField.tsx`.
 - **States** (`:hover`, Pressed, focus, first/last child, odd/even…): pick a state in the panel's
   "State" bar, then style as usual. Stored in the same `styles` object as `<breakpoint>:<state>`
   keys (`base:hover`, `md:active`), compiled to `.pk-<id>:hover{…}` inside the breakpoint's media
@@ -178,5 +199,6 @@ Requires Node ≥ 20.9 (Next.js 16).
   produces real `<p>` elements (a `<p>` can't contain them).
 - In the editor, links don't navigate and Link Block attributes (href, id, aria) are only
   rendered on the public page.
-- Out of scope for now: images/media (see the custom component guide), forms, reusable
-  named classes, interactions/animations, CMS bindings.
+- Kit components use the kit's field types (`url`, `image`, `checkbox`), registered by the
+  Tokens plugin: with your own `<Puck>`, add `tokensPlugin()` (or `kitFieldTypes` to `overrides.fieldTypes`).
+- Out of scope for now: forms, reusable named classes, interactions/animations, CMS bindings.

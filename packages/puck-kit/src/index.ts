@@ -7,6 +7,8 @@ export {
 } from "./breakpoints";
 export { createContainer, type ContainerOptions } from "./components/container";
 export { createTextElement, type TextElementOptions } from "./components/text";
+export { createImage, createYouTube, createVimeo, type ImageProps, type VideoProps } from "./components/media";
+export { youtubeId, youtubeEmbedUrl, vimeoId, vimeoEmbedUrl, type VideoOptions } from "./components/video";
 export * from "./styles";
 export { fontStack, fontLabel, fontWeights, findFont, firstFamily, systemFonts } from "./fonts/stack";
 export { fontMetadata, getFontAssets, googleFontsUrl, fontFaceCss, usedFonts, FONT_METADATA_KEY, type FontAssets } from "./fonts/load";
@@ -23,4 +25,6 @@ export {
   type FontField,
   type RangeField,
   type CheckboxField,
+  type UrlField,
+  type ImageField,
 } from "./fieldTypes/definitions";

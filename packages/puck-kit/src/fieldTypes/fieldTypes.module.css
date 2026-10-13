@@ -84,6 +84,33 @@
   transform: translateX(14px);
 }
 
+/* Image field */
+
+.imagePreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96px;
+  overflow: hidden;
+  border: 1px solid var(--pk-ui-border);
+  border-radius: var(--pk-ui-radius);
+  background: repeating-conic-gradient(var(--pk-ui-hover) 0 25%, var(--pk-ui-bg) 0 50%) 50% / 12px 12px;
+}
+
+.imagePreview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.imageError {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--pk-ui-muted);
+}
+
 /* Object field as a section. Puck renders: <label wrapper> > [label row, card > fieldset].
    Styled by structure (not Puck's hashed class names). */
 

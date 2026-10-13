@@ -22,11 +22,9 @@ export function CompactComponentItem({
   return (
     <div className={styles.CompactComponentItem}>
       <div className={styles.CompactComponentItemCard}>
-        <DynamicIcon name={icon} size={32} />
+        <DynamicIcon name={icon} size={32} strokeWidth={1} />
       </div>
-      <div className={styles.CompactComponentItemLabel}>
-        {config.label}
-      </div>
+      <div className={styles.CompactComponentItemLabel}>{config.label}</div>
     </div>
   );
 }

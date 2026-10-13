@@ -86,5 +86,6 @@ export { StylePanel, useActiveBreakpoint } from "./fields/StylePanel";
 export { tokensPlugin, TokensPanel } from "./editor/TokensPlugin";
 export { KitEditorProvider, useKitEditor, type KitEditorOptions } from "./editor/context";
 export { FontPicker } from "./fields/ui/FontPicker";
-export { kitFieldTypes, type FieldTypeProps } from "./fieldTypes/renderers";
+export { kitFieldTypes, defineFieldType, type FieldTypeProps } from "./fieldTypes/renderers";
+export type { UrlField, ImageField } from "./fieldTypes/definitions";
 export { ColorValueField } from "./fields/ColorValueField";

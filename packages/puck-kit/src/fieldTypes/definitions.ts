@@ -47,6 +47,26 @@ export interface CheckboxField extends BaseField {
   text?: string;
 }
 
+/**
+ * A link target (`https://…`, `/about`, `#section`, `mailto:…`). Value: string.
+ * The default UI is a text input; replace it with your own (page picker, link dialog…) through
+ * `overrides.fieldTypes.url`, and every kit link (Button, Text Link, Link Block) uses it.
+ */
+export interface UrlField extends BaseField {
+  type: "url";
+  placeholder?: string;
+}
+
+/**
+ * An image source. Value: URL string (the `src`).
+ * The default UI is a URL input with a preview; replace it with your upload / media library
+ * through `overrides.fieldTypes.image`, and the kit's Image component uses it.
+ */
+export interface ImageField extends BaseField {
+  type: "image";
+  placeholder?: string;
+}
+
 /** The kit's extra field types, for `ComponentConfig<{ props; fields: KitFields }>`. */
 export type KitFields = {
   color: ColorField;
@@ -54,6 +74,8 @@ export type KitFields = {
   font: FontField;
   range: RangeField;
   checkbox: CheckboxField;
+  url: UrlField;
+  image: ImageField;
 };
 
 export type KitField = KitFields[keyof KitFields];

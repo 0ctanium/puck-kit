@@ -1,7 +1,8 @@
 import type { ComponentConfig } from "@puckeditor/core";
-import { createButton } from "./button";
+import { createButton, createTextLink } from "./button";
 import { createColumns } from "./columns";
 import { createContainer } from "./container";
+import { createImage, createVimeo, createYouTube } from "./media";
 import type { KitContext } from "./shared";
 import { createTextElement } from "./text";
 
@@ -43,7 +44,11 @@ export const kitCategories = {
   },
   typography: {
     title: "Typography",
-    components: ["Heading", "Paragraph", "Text", "Quote"],
+    components: ["Heading", "Paragraph", "Text", "TextLink", "Quote"],
+  },
+  media: {
+    title: "Media",
+    components: ["Image", "YouTube", "Vimeo"],
   },
 };
 
@@ -175,9 +180,9 @@ export function createKitComponents(
       {
         label: "Link Block",
         tags: ["a"],
-        disallow: ["LinkBlock", "Button"],
+        disallow: ["LinkBlock", "Button", "TextLink"],
         fields: {
-          href: { type: "text", label: "Link URL" },
+          href: { type: "url", label: "Link URL" },
           target: {
             type: "radio",
             label: "Open in",
@@ -267,5 +272,11 @@ export function createKitComponents(
       },
       ctx,
     ),
+    TextLink: createTextLink(ctx),
+
+    // Media
+    Image: createImage(ctx),
+    YouTube: createYouTube(ctx),
+    Vimeo: createVimeo(ctx),
   };
 }

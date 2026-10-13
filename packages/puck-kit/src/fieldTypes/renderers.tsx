@@ -1,8 +1,8 @@
 "use client";
 
-import { createUsePuck } from "@puckeditor/core";
-import { ChevronDown, Image as ImageIcon, Palette, SlidersHorizontal, ToggleLeft, Type } from "lucide-react";
-import { useEffect, useState, type ComponentType, type ReactNode } from "react";
+import { createUsePuck, type Overrides } from "@puckeditor/core";
+import { ChevronDown, Image as ImageIcon, ImageOff, Link, Palette, SlidersHorizontal, ToggleLeft, Type } from "lucide-react";
+import { isValidElement, useEffect, useState, type ComponentType, type ReactNode } from "react";
 import { cx } from "../components/shared";
 import { BackgroundLayers } from "../fields/BackgroundLayers";
 import { parseBackgroundLayers, serializeBackgroundLayers } from "../fields/css/values";
@@ -12,7 +12,16 @@ import { FontPicker } from "../fields/ui/FontPicker";
 import ui from "../fields/ui/ui.module.css";
 import { formatNumber } from "../fields/css/split";
 import type { Tokens } from "../styles/tokens";
-import type { BackgroundField, BackgroundValue, CheckboxField, ColorField, FontField, RangeField } from "./definitions";
+import type {
+  BackgroundField,
+  BackgroundValue,
+  CheckboxField,
+  ColorField,
+  FontField,
+  ImageField,
+  RangeField,
+  UrlField,
+} from "./definitions";
 import css from "./fieldTypes.module.css";
 
 const usePuck = createUsePuck();
@@ -29,6 +38,16 @@ export interface FieldTypeProps<F, V> {
   labelIcon?: ReactNode;
   Label: ComponentType<{ label: string; icon?: ReactNode; readOnly?: boolean; children: ReactNode }>;
   children?: ReactNode;
+}
+
+type FieldTypeRenderer = NonNullable<Partial<Overrides>["fieldTypes"]>[string];
+
+/**
+ * Types a renderer for `overrides.fieldTypes` (Puck's types omit some props it passes, like
+ * `Label`). E.g. `overrides={{ fieldTypes: { image: defineFieldType<ImageField, string>(MyPicker) } }}`.
+ */
+export function defineFieldType<F, V>(renderer: ComponentType<FieldTypeProps<F, V | undefined>>): FieldTypeRenderer {
+  return renderer as unknown as FieldTypeRenderer;
 }
 
 function useTokens(): Tokens {
@@ -183,6 +202,80 @@ export function CheckboxFieldType(props: FieldTypeProps<CheckboxField, boolean |
   );
 }
 
+/* ---------------------------------------------------------------- url & image (meant to be replaced) */
+
+/**
+ * The renderer from `overrides.fieldTypes` (or an earlier plugin), if any. Puck renders plugin
+ * field types around it and passes its output as `children`; without one, `children` is a
+ * placeholder element with no type (Puck has no built-in renderer for these types).
+ */
+function overridden(children: ReactNode): ReactNode {
+  if (children == null || (isValidElement(children) && children.type == null)) return null;
+  return children;
+}
+
+export function UrlFieldType(props: FieldTypeProps<UrlField, string | undefined>) {
+  const custom = overridden(props.children);
+  if (custom) return <>{custom}</>;
+  return (
+    <Shell props={props} icon={<Link size={16} />}>
+      <input
+        id={props.id}
+        className={ui.input}
+        type="text"
+        inputMode="url"
+        spellCheck={false}
+        autoComplete="off"
+        value={props.value ?? ""}
+        placeholder={props.field.placeholder ?? "https://… or /page"}
+        readOnly={props.readOnly}
+        onChange={(e) => props.onChange(e.target.value)}
+        aria-label={props.label || props.field.label || props.name}
+      />
+    </Shell>
+  );
+}
+
+function ImagePreview({ src }: { src: string }) {
+  const [failed, setFailed] = useState<string | null>(null);
+  return (
+    <div className={css.imagePreview}>
+      {failed === src ? (
+        <span className={css.imageError}>
+          <ImageOff size={16} /> Can't load this image
+        </span>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt="" onError={() => setFailed(src)} />
+      )}
+    </div>
+  );
+}
+
+export function ImageFieldType(props: FieldTypeProps<ImageField, string | undefined>) {
+  const custom = overridden(props.children);
+  if (custom) return <>{custom}</>;
+  const src = props.value?.trim();
+  return (
+    <Shell props={props} icon={<ImageIcon size={16} />}>
+      {src && <ImagePreview src={src} />}
+      <input
+        id={props.id}
+        className={ui.input}
+        type="text"
+        inputMode="url"
+        spellCheck={false}
+        autoComplete="off"
+        value={props.value ?? ""}
+        placeholder={props.field.placeholder ?? "Image URL"}
+        readOnly={props.readOnly}
+        onChange={(e) => props.onChange(e.target.value)}
+        aria-label={props.label || props.field.label || props.name}
+      />
+    </Shell>
+  );
+}
+
 /* ---------------------------------------------------------------- select (replaces Puck's) */
 
 interface SelectOption {
@@ -224,7 +317,8 @@ export function ObjectFieldType(props: FieldTypeProps<unknown, unknown>) {
 
 /**
  * Renderers for `overrides.fieldTypes`: the kit's field types (color, background, font,
- * range, checkbox), a nicer `select` and a section-style `object`. Registered by the Tokens plugin.
+ * range, checkbox, url, image), a nicer `select` and a section-style `object`. Registered by the
+ * Tokens plugin. `url` and `image` step aside when you provide your own renderer for them.
  */
 export const kitFieldTypes = {
   color: ColorFieldType,
@@ -232,6 +326,8 @@ export const kitFieldTypes = {
   font: FontFieldType,
   range: RangeFieldType,
   checkbox: CheckboxFieldType,
+  url: UrlFieldType,
+  image: ImageFieldType,
   select: SelectFieldType,
   object: ObjectFieldType,
 };

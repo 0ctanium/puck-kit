@@ -1,10 +1,12 @@
 import type {
   ComponentConfig,
   ComponentMetadata,
+  DefaultComponentProps,
   Fields,
   SlotComponent,
 } from "@puckeditor/core";
 import type { ElementType } from "react";
+import type { KitField } from "../fieldTypes/definitions";
 import { styleField } from "../fields/styleField";
 import type { Styles } from "../styles/types";
 import {
@@ -32,8 +34,8 @@ export interface ContainerOptions {
   defaultStyles?: Styles;
   allow?: string[];
   disallow?: string[];
-  /** Extra content fields shown before the style panel. */
-  fields?: Fields;
+  /** Extra content fields shown before the style panel (Puck's or the kit's field types). */
+  fields?: Fields<DefaultComponentProps, KitField>;
   defaultProps?: Record<string, unknown>;
   /** Extra HTML attributes from props (e.g. href). Only rendered on the public page. */
   attrs?: (

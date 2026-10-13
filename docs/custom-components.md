@@ -1,7 +1,8 @@
-# Building your own components (e.g. Image)
+# Building your own components (e.g. a Figure)
 
-The kit has no Image component on purpose: every app has its own upload / media system.
-Any component can plug into the same style system with three helpers from `puck-kit`:
+The kit ships an Image component whose source is an `image` field: to plug in your upload /
+media system, override `fieldTypes.image` (see the README) rather than writing a new component.
+For anything else, any component can plug into the same style system with these helpers from `puck-kit`:
 
 | Helper | Purpose |
 |---|---|
@@ -10,7 +11,7 @@ Any component can plug into the same style system with three helpers from `puck-
 | `elementClass(id, advanced)` | Class names to put on your root element (`pk-<id>` + extra classes) |
 | `advancedField` / `htmlAttrs(advanced)` | Optional: HTML id, extra classes, aria-label |
 
-## Example: Image
+## Example: Figure (image + caption)
 
 ```tsx
 import type { ComponentConfig } from "@puckeditor/core";
@@ -19,35 +20,37 @@ import {
   type Advanced, type Styles,
 } from "puck-kit";
 
-export interface ImageProps {
-  image: { url: string; alt?: string } | null;
+import type { KitFields } from "puck-kit";
+
+export interface FigureProps {
+  src: string;
+  caption: string;
   styles: Styles;
   advanced: Advanced;
 }
 
-export const Image: ComponentConfig<ImageProps> = {
-  label: "Image",
+export const Figure: ComponentConfig<{ props: FigureProps; fields: KitFields }> = {
+  label: "Figure",
   inline: true, // no wrapper div in the editor: your root element receives puck.dragRef
   fields: {
-    image: myMediaField, // ← your upload / media-library field (custom or external field)
+    src: { type: "image", label: "Image" }, // ← whatever image picker the app plugged in
+    caption: { type: "text", label: "Caption" },
     styles: styleField(),
     advanced: advancedField,
   },
   defaultProps: {
-    image: null,
-    styles: { base: { width: "100%", height: "auto" } }, // your defaults
+    src: "",
+    caption: "",
+    styles: { base: { marginLeft: "0", marginRight: "0" } }, // your defaults
     advanced: {},
   },
-  render: ({ id, puck, image, styles, advanced }) => (
+  render: ({ id, puck, src, caption, styles, advanced }) => (
     <>
       <ElementStyle id={id} styles={styles} editing={puck.isEditing} />
-      <img
-        ref={puck.dragRef}
-        src={image?.url}
-        alt={image?.alt ?? ""}
-        className={elementClass(id, advanced)}
-        {...htmlAttrs(advanced)}
-      />
+      <figure ref={puck.dragRef} className={elementClass(id, advanced)} {...htmlAttrs(advanced)}>
+        <img src={src} alt={caption} style={{ display: "block", width: "100%" }} />
+        {caption && <figcaption>{caption}</figcaption>}
+      </figure>
     </>
   ),
 };
@@ -57,12 +60,12 @@ Register it:
 
 ```ts
 createBuilderConfig({
-  components: { Image },
-  categories: { media: { title: "Media", components: ["Image"] } },
+  components: { Figure },
+  categories: { extras: { title: "Extras", components: ["Figure"] } },
 });
 ```
 
-A working version (with a plain URL field) lives in `apps/playground/lib/Image.tsx`.
+A working example with the kit's field types lives in `apps/playground/lib/Banner.tsx`.
 
 ## Rules of thumb
 

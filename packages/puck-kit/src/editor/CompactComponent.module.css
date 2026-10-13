@@ -35,7 +35,7 @@
 }
 
 .CompactComponentItem .CompactComponentItemLabel {
-  font-size: var(--puck-drawer-item-font-size, var(--puck-font-size-xxs));
+  font-size: var(--puck-drawer-item-font-size, var(--puck-font-size-xxxs));
   color: var(--puck-drawer-item-color-text, var(--puck-color-text));
   transition: color var(--puck-duration-fast) var(--puck-ease-exit);
 

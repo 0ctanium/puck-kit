@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import type { FontDefinition } from "puck-kit";
 import { BuilderEditor } from "puck-kit/editor";
 import { config } from "@/lib/config";
+import { MediaLibraryField } from "@/lib/MediaLibraryField";
+
+// Replaces the default URL input of every `image` field (the kit's Image component included).
+const overrides = { fieldTypes: { image: MediaLibraryField } };
 
 export function Editor({ slug, data, fonts: initialFonts }: { slug: string; data: Data | null; fonts: FontDefinition[] }) {
   // Fonts are managed on /settings/fonts (opened in a new tab so unpublished edits are kept);
@@ -26,6 +30,7 @@ export function Editor({ slug, data, fonts: initialFonts }: { slug: string; data
       onAddFonts={() => window.open(`/settings/fonts?return=/edit/${slug}`, "_blank")}
       data={data ?? undefined}
       headerPath={`/${slug}`}
+      overrides={overrides}
       onPublish={async (next) => {
         const res = await fetch(`/api/pages/${slug}`, {
           method: "POST",
