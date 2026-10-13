@@ -1,0 +1,99 @@
+.root {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Breakpoint bar: sticky at the top of the fields panel. */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 0 8px;
+  background: var(--pk-ui-bg);
+}
+
+.breakpoints {
+  display: flex;
+  gap: 1px;
+  padding: 1px;
+  border: 1px solid var(--pk-ui-border);
+  border-radius: 6px;
+  background: var(--pk-ui-surface);
+}
+
+.breakpoint {
+  position: relative;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--pk-ui-muted);
+  cursor: pointer;
+}
+
+.breakpoint:hover {
+  color: var(--pk-ui-text);
+  background: var(--pk-ui-hover);
+}
+
+.breakpoint[aria-pressed="true"] {
+  background: var(--pk-ui-bg);
+  color: var(--pk-ui-accent);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.dot {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--pk-ui-accent);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--pk-ui-muted);
+}
+
+.hint strong {
+  color: var(--pk-ui-text);
+}
+
+.legend {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.legend i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 3px;
+  border-radius: 2px;
+}
+
+.legendSet {
+  background: var(--pk-ui-accent);
+}
+
+.legendInherited {
+  background: var(--pk-ui-inherit);
+}
+
+.sections > :last-child {
+  border-bottom: 1px solid var(--pk-ui-border);
+}

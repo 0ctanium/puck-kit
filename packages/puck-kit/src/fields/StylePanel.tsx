@@ -1,51 +1,87 @@
 "use client";
 
 import { createUsePuck } from "@puckeditor/core";
-import { useCallback, useMemo } from "react";
-import {
-  breakpointForWidth,
-  defaultBreakpoints,
-  sortBreakpoints,
-  type Breakpoint,
-} from "../breakpoints";
+import { Laptop, Monitor, Smartphone, Tablet } from "lucide-react";
+import { useCallback, useMemo, type ComponentType } from "react";
+import { breakpointForWidth, defaultBreakpoints, sortBreakpoints, type Breakpoint } from "../breakpoints";
+import { cx } from "../components/shared";
 import { resolveValue } from "../styles/compile";
 import type { Tokens } from "../styles/tokens";
 import type { StyleDecl, StyleProp, Styles } from "../styles/types";
-import { SizeTokenList, StyleControl, TextInput } from "./controls";
-import css from "./panel.module.css";
-import { SECTIONS, type PropSpec, type Section } from "./schema";
-import { XIcon } from "lucide-react";
+import { PanelProvider, type PanelApi, type PropRead } from "./context";
+import { BackgroundSection } from "./sections/BackgroundSection";
+import { BorderSection } from "./sections/BorderSection";
+import { FlexChildSection, GridChildSection } from "./sections/ChildSections";
+import { EffectsSection } from "./sections/EffectsSection";
+import { LayoutSection } from "./sections/LayoutSection";
+import { PositionSection } from "./sections/PositionSection";
+import { SizeSection } from "./sections/SizeSection";
+import { SpacingSection } from "./sections/SpacingSection";
+import { TypographySection } from "./sections/TypographySection";
+import css from "./StylePanel.module.css";
+import ui from "./ui/ui.module.css";
 
 const usePuck = createUsePuck();
+
+/** Section ids accepted by `styleField({ sections })`, in display order. */
+export const STYLE_SECTIONS: { id: string; Component: ComponentType; when?: (panel: PanelApi) => boolean }[] = [
+  { id: "layout", Component: LayoutSection },
+  { id: "flexChild", Component: FlexChildSection, when: (p) => /flex/.test(p.parent?.display ?? "") },
+  { id: "gridChild", Component: GridChildSection, when: (p) => /grid/.test(p.parent?.display ?? "") },
+  { id: "spacing", Component: SpacingSection },
+  { id: "size", Component: SizeSection },
+  { id: "position", Component: PositionSection },
+  { id: "typography", Component: TypographySection },
+  { id: "background", Component: BackgroundSection },
+  { id: "border", Component: BorderSection },
+  { id: "effects", Component: EffectsSection },
+];
+
+const ICONS: Record<string, ComponentType<{ size?: number }>> = {
+  Smartphone,
+  Tablet,
+  Laptop,
+  Monitor,
+};
 
 export interface StylePanelProps {
   value: Styles | null | undefined;
   onChange: (value: Styles) => void;
   readOnly?: boolean;
   breakpoints?: Breakpoint[];
-  /** Restrict which sections are shown (ids from SECTIONS). */
+  /** Restrict which sections are shown (ids from STYLE_SECTIONS). */
   sections?: string[];
 }
 
-function setProp(
-  styles: Styles,
-  bp: string,
-  prop: StyleProp,
-  value: string | undefined,
-): Styles {
+function applyValues(styles: Styles, bp: string, values: Partial<Record<StyleProp, string | undefined>>): Styles {
   const decl: StyleDecl = { ...(styles[bp] ?? {}) };
-  if (value === undefined || value === "") delete decl[prop];
-  else decl[prop] = value;
+  for (const [prop, value] of Object.entries(values) as [StyleProp, string | undefined][]) {
+    if (value === undefined || value === "") delete decl[prop];
+    else decl[prop] = value;
+  }
   const next: Styles = { ...styles };
   if (Object.keys(decl).length) next[bp] = decl;
   else delete next[bp];
   return next;
 }
 
+/**
+ * Styles of the selected element's parent, when the element sits in the parent's main `content`
+ * slot (the slot rendered *as* the parent element). Children of other slots (e.g. a Columns
+ * column) live in a plain wrapper, so the parent's display doesn't apply to them.
+ */
+function useParentStyles(): Styles | null {
+  return usePuck((s) => {
+    const id = s.selectedItem?.props?.id as string | undefined;
+    if (!id) return null;
+    const zone = s.getSelectorForId(id)?.zone;
+    if (!zone || zone.slice(zone.indexOf(":") + 1) !== "content") return null;
+    return (s.getParentById(id)?.props?.styles as Styles | undefined) ?? null;
+  });
+}
+
 /** Breakpoint switcher synced with Puck's viewport. Usable on its own (e.g. in a plugin or header). */
-export function useActiveBreakpoint(
-  breakpoints: Breakpoint[] = defaultBreakpoints,
-) {
+export function useActiveBreakpoint(breakpoints: Breakpoint[] = defaultBreakpoints) {
   const viewports = usePuck((s) => s.appState.ui.viewports);
   const dispatch = usePuck((s) => s.dispatch);
   const active = breakpointForWidth(breakpoints, viewports.current.width);
@@ -53,208 +89,104 @@ export function useActiveBreakpoint(
     (bp: Breakpoint) =>
       dispatch({
         type: "setUi",
-        ui: {
-          viewports: {
-            ...viewports,
-            current: { width: bp.viewport, height: "auto" },
-          },
-        },
+        ui: { viewports: { ...viewports, current: { width: bp.viewport, height: "auto" } } },
       }),
     [dispatch, viewports],
   );
   return [active, setActive] as const;
 }
 
-export function StylePanel({
-  value,
-  onChange,
-  readOnly,
-  breakpoints = defaultBreakpoints,
-  sections,
-}: StylePanelProps) {
+export function StylePanel({ value, onChange, readOnly = false, breakpoints = defaultBreakpoints, sections }: StylePanelProps) {
   const styles: Styles = value ?? {};
   const bps = useMemo(() => sortBreakpoints(breakpoints), [breakpoints]);
   const [active, setActive] = useActiveBreakpoint(bps);
-  const tokens = (usePuck((s) => s.appState.data.root?.props?.tokens) ??
-    {}) as Tokens;
-
-  const read = (prop: StyleProp) => {
-    const own = styles[active.key]?.[prop];
-    const resolved = resolveValue(styles, prop, active.key, bps);
-    return {
-      value: own,
-      inherited: own === undefined ? resolved.value : undefined,
-      from: resolved.from,
-    };
-  };
-  const get = (prop: StyleProp) =>
-    resolveValue(styles, prop, active.key, bps).value;
-  const write = (prop: StyleProp, v: string | undefined) =>
-    onChange(setProp(styles, active.key, prop, v));
-
-  const stateOf = (prop: StyleProp) => {
-    const r = read(prop);
-    return r.value !== undefined
-      ? "set"
-      : r.inherited !== undefined
-        ? "inherited"
-        : "empty";
-  };
-
-  const renderRow = (spec: PropSpec) => {
-    if (spec.when && !spec.when(get)) return null;
-    const r = read(spec.prop);
-    const state = stateOf(spec.prop);
-    const fromLabel = bps.find((b) => b.key === r.from)?.label;
-    return (
-      <div className={css.row} key={spec.prop}>
-        <span
-          className={css.label}
-          data-state={state}
-          title={
-            state === "inherited" ? `Inherited from ${fromLabel}` : spec.prop
+  const tokens = (usePuck((s) => s.appState.data.root?.props?.tokens) ?? {}) as Tokens;
+  const parentStyles = useParentStyles();
+  const parent = useMemo(
+    () =>
+      parentStyles
+        ? {
+            display: resolveValue(parentStyles, "display", active.key, bps).value,
+            flexDirection: resolveValue(parentStyles, "flexDirection", active.key, bps).value,
           }
-        >
-          {spec.label}
-        </span>
-        <div className={css.control}>
-          <StyleControl
-            control={spec.control}
-            value={r.value}
-            inherited={r.inherited}
-            onChange={(v) => write(spec.prop, v)}
-            tokens={tokens}
-            readOnly={readOnly}
-          />
-        </div>
-        {r.value !== undefined && !readOnly ? (
-          <button
-            type="button"
-            className={css.clear}
-            title="Reset"
-            onClick={() => write(spec.prop, undefined)}
-          >
-            <XIcon />
-          </button>
-        ) : (
-          <span className={css.noClear} />
-        )}
-      </div>
-    );
-  };
-
-  const side = (
-    prop: StyleProp,
-    position: "top" | "right" | "bottom" | "left",
-  ) => {
-    const r = read(prop);
-    return (
-      <TextInput
-        className={`${css.side} ${css[position]}`}
-        aria-label={prop}
-        title={prop}
-        data-state={stateOf(prop)}
-        value={r.value}
-        placeholder={r.inherited ?? "0"}
-        onChange={(v) => write(prop, v)}
-        readOnly={readOnly}
-        list={tokens.sizes?.length ? "pkf-size-tokens" : undefined}
-      />
-    );
-  };
-
-  const renderSpacing = () => (
-    <div className={css.box}>
-      <span className={css.boxTag}>Margin</span>
-      {side("marginTop", "top")}
-      {side("marginRight", "right")}
-      {side("marginBottom", "bottom")}
-      {side("marginLeft", "left")}
-      <div className={css.boxInner}>
-        <span className={css.boxTag}>Padding</span>
-        {side("paddingTop", "top")}
-        {side("paddingRight", "right")}
-        {side("paddingBottom", "bottom")}
-        {side("paddingLeft", "left")}
-        <div className={css.boxCore} />
-      </div>
-    </div>
+        : null,
+    [parentStyles, active.key, bps],
   );
 
-  const countSet = (section: Section) => {
-    const decl = styles[active.key] ?? {};
-    const props: StyleProp[] =
-      section.special === "spacing"
-        ? [
-            "marginTop",
-            "marginRight",
-            "marginBottom",
-            "marginLeft",
-            "paddingTop",
-            "paddingRight",
-            "paddingBottom",
-            "paddingLeft",
-          ]
-        : (section.props ?? []).map((p) => p.prop);
-    return props.filter((p) => decl[p] !== undefined).length;
+  const api: PanelApi = {
+    styles,
+    breakpoints: bps,
+    active,
+    tokens,
+    readOnly,
+    parent,
+    read: (prop): PropRead => {
+      const own = styles[active.key]?.[prop];
+      const resolved = resolveValue(styles, prop, active.key, bps);
+      const inherited = own === undefined ? resolved.value : undefined;
+      return {
+        value: own,
+        inherited,
+        from: bps.find((b) => b.key === resolved.from)?.label,
+        state: own !== undefined ? "set" : inherited !== undefined ? "inherited" : "empty",
+      };
+    },
+    get: (prop) => resolveValue(styles, prop, active.key, bps).value,
+    write: (prop, v) => onChange(applyValues(styles, active.key, { [prop]: v })),
+    writeMany: (values) => onChange(applyValues(styles, active.key, values)),
   };
 
-  const visibleSections = sections
-    ? SECTIONS.filter((s) => sections.includes(s.id))
-    : SECTIONS;
+  // "child" (older option name) means both child sections.
+  const wanted = sections?.flatMap((id) => (id === "child" ? ["flexChild", "gridChild"] : [id]));
+  const visible = STYLE_SECTIONS.filter((s) => (!wanted || wanted.includes(s.id)) && (!s.when || s.when(api)));
 
   return (
-    <div className={css.root}>
-      <SizeTokenList tokens={tokens} />
-      <div className={css.breakpoints} role="group" aria-label="Breakpoint">
-        {bps.map((bp) => (
-          <button
-            key={bp.key}
-            type="button"
-            className={css.breakpoint}
-            aria-pressed={bp.key === active.key}
-            title={
-              bp.minWidth
-                ? `${bp.label} — ${bp.minWidth}px and up`
-                : `${bp.label} — all sizes`
-            }
-            onClick={() => setActive(bp)}
-          >
-            {bp.label}
-            {styles[bp.key] && Object.keys(styles[bp.key]!).length > 0 && (
-              <span className={css.breakpointDot} />
-            )}
-          </button>
-        ))}
+    <PanelProvider value={api}>
+      <div className={cx(ui.theme, css.root)} data-pk-panel="">
+        <div className={css.bar}>
+          <div className={css.breakpoints} role="group" aria-label="Breakpoint">
+            {bps.map((bp) => {
+              const Icon = ICONS[bp.icon ?? "Monitor"] ?? Monitor;
+              const count = Object.keys(styles[bp.key] ?? {}).length;
+              return (
+                <button
+                  key={bp.key}
+                  type="button"
+                  className={css.breakpoint}
+                  aria-pressed={bp.key === active.key}
+                  aria-label={bp.label}
+                  title={`${bp.label} — ${bp.minWidth ? `${bp.minWidth}px and up` : "all sizes (base)"}${count ? ` · ${count} styles` : ""}`}
+                  onClick={() => setActive(bp)}
+                >
+                  <Icon size={15} />
+                  {count > 0 && <span className={css.dot} />}
+                </button>
+              );
+            })}
+          </div>
+          <div className={css.hint}>
+            <span>
+              <strong>{active.label}</strong> {active.minWidth ? `≥ ${active.minWidth}px` : "· base"}
+            </span>
+            <span className={css.legend}>
+              <span>
+                <i className={css.legendSet} />
+                set
+              </span>
+              <span>
+                <i className={css.legendInherited} />
+                inherited
+              </span>
+            </span>
+          </div>
+        </div>
+        <div className={css.sections}>
+          {visible.map(({ id, Component }) => (
+            <Component key={id} />
+          ))}
+        </div>
       </div>
-      <div className={css.hint}>
-        {active.minWidth === 0
-          ? "Editing base styles (all screen sizes)."
-          : `Editing ${active.label} — applies from ${active.minWidth}px up.`}{" "}
-        <span className={css.hintSet}>Blue</span> = set here,{" "}
-        <span className={css.hintInherited}>orange</span> = inherited.
-      </div>
-      {visibleSections.map((section) => {
-        const count = countSet(section);
-        return (
-          <details
-            key={section.id}
-            className={css.section}
-            open={section.open || count > 0}
-          >
-            <summary>
-              {section.title}
-              {count > 0 && <span className={css.count}>{count}</span>}
-            </summary>
-            <div className={css.body}>
-              {section.special === "spacing"
-                ? renderSpacing()
-                : section.props?.map(renderRow)}
-            </div>
-          </details>
-        );
-      })}
-    </div>
+    </PanelProvider>
   );
 }
 

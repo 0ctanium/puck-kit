@@ -5,6 +5,7 @@ export type StyleDecl = Partial<Record<StyleProp, string>>;
 export type Styles = Record<string, StyleDecl | undefined>;
 
 export const STYLE_PROPS = [
+  // Order matters: CSS is emitted in this order, so shorthands come before their longhands.
   // Layout
   "display", "flexDirection", "flexWrap", "justifyContent", "alignItems", "alignContent", "gap", "rowGap", "columnGap",
   "gridTemplateColumns", "gridTemplateRows", "gridAutoFlow", "justifyItems",
@@ -14,18 +15,23 @@ export const STYLE_PROPS = [
   "marginTop", "marginRight", "marginBottom", "marginLeft",
   "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
   // Size
-  "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "aspectRatio", "overflow",
+  "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "aspectRatio", "overflow", "objectFit",
   // Position
   "position", "top", "right", "bottom", "left", "zIndex",
   // Typography
   "fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing", "color", "textAlign",
-  "textTransform", "textDecoration", "fontStyle", "whiteSpace",
+  "textTransform", "textDecoration", "fontStyle", "whiteSpace", "textShadow",
   // Background
-  "backgroundColor", "backgroundImage", "backgroundSize", "backgroundPosition", "backgroundRepeat",
+  "backgroundColor", "backgroundImage", "backgroundSize", "backgroundPosition", "backgroundRepeat", "backgroundAttachment",
   // Border
-  "borderWidth", "borderStyle", "borderColor", "borderRadius",
+  "borderWidth", "borderStyle", "borderColor",
+  "borderTopWidth", "borderTopStyle", "borderTopColor",
+  "borderRightWidth", "borderRightStyle", "borderRightColor",
+  "borderBottomWidth", "borderBottomStyle", "borderBottomColor",
+  "borderLeftWidth", "borderLeftStyle", "borderLeftColor",
+  "borderRadius", "borderTopLeftRadius", "borderTopRightRadius", "borderBottomRightRadius", "borderBottomLeftRadius",
   // Effects
-  "opacity", "boxShadow", "transform", "transition", "cursor",
+  "opacity", "boxShadow", "transform", "transformOrigin", "transition", "filter", "backdropFilter", "mixBlendMode", "cursor",
 ] as const;
 
 export type StyleProp = (typeof STYLE_PROPS)[number];

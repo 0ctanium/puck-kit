@@ -6,7 +6,11 @@ import { StyleFieldRender } from "./StylePanel";
 export interface StyleFieldOptions {
   label?: string;
   breakpoints?: Breakpoint[];
-  /** Limit the panel to some sections: layout, child, spacing, size, position, typography, background, border, effects. */
+  /**
+   * Limit the panel to some sections: layout, flexChild, gridChild (or `child` for both), spacing,
+   * size, position, typography, background, border, effects. Child sections only show when the
+   * parent is a flex / grid container.
+   */
   sections?: string[];
 }
 

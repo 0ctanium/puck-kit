@@ -76,9 +76,31 @@ Persisting `data` (JSON) is up to you.
 
 ### Style panel
 
-Sections: Layout, Flex/grid child, Spacing (box model), Size, Position, Typography,
-Background, Border, Effects. The breakpoint bar is synced with Puck's viewport switcher.
-Blue label = set at this breakpoint, orange = inherited from a smaller one, `×` resets.
+Webflow-like, with popovers for anything complex. The breakpoint bar is synced with Puck's
+viewport switcher. A blue label means "set on this breakpoint" (click it to reset), orange means
+"inherited from a smaller breakpoint". Drag a label (or a spacing value) left/right to scrub it;
+arrow keys nudge numbers (Shift ×10, Alt ×0.1).
+
+| Section (`id`) | Editing |
+|---|---|
+| Layout (`layout`) | Display; flex direction/reverse, align & justify icons that follow the direction, wrap, gap (linked or row/column); visual grid editor (preview, column/row steppers, track sizes in fr/px/auto, auto-flow) |
+| Flex child (`flexChild`) | Only when the parent is flex: sizing presets (shrink / grow / none / custom), align self (icons follow the parent direction), order |
+| Grid child (`gridChild`) | Only when the parent is grid: column/row span steppers, full-width/height toggle, horizontal & vertical self-alignment, order |
+| Spacing (`spacing`) | Box model: drag values, click for presets, tokens, "both sides" / "all sides" |
+| Size (`size`) | Width/height/min/max with units & keywords, overflow, aspect ratio, object fit |
+| Position (`position`) | Position, inset box, presets (full, top, center…), z-index |
+| Typography (`typography`) | Font (tokens, previewed in their face), weight, size, line height, color, align, style, case, spacing, text shadows |
+| Backgrounds (`background`) | Layers: images (size, 3×3 position, tiling) and linear/radial gradients (angle dial, draggable stops); color |
+| Borders (`border`) | Radius (all or per corner); side picker (all/top/right/bottom/left) with style, width, color |
+| Effects (`effects`) | Opacity, blending, box shadows, 2D transforms (move/scale/rotate/skew), transitions, filters, backdrop filters, cursor |
+
+Dropdowns are custom (keyboard: ↑ ↓ Enter Esc, type to jump) with icons where they help:
+position, cursor, aspect-ratio shapes, object-fit diagrams, easing curves, filters, font samples.
+`sections: ["child"]` still selects both child sections.
+
+Colors use an HSV picker with alpha, hex/rgba input, eyedropper (where supported) and token
+swatches. The panel UI lives in `packages/puck-kit/src/fields/` (`ui/` primitives, `sections/`,
+`css/` value parsers) and is styled with CSS Modules.
 
 ## Development
 

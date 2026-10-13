@@ -1,4 +1,4 @@
-export type BreakpointIcon = "Smartphone" | "Tablet" | "Monitor";
+export type BreakpointIcon = "Smartphone" | "Tablet" | "Laptop" | "Monitor";
 
 export interface Breakpoint {
   /** Key used in the `styles` prop, e.g. `base`, `md`. The smallest breakpoint must have `minWidth: 0`. */
@@ -14,7 +14,7 @@ export interface Breakpoint {
 export const defaultBreakpoints: Breakpoint[] = [
   { key: "base", label: "Mobile", minWidth: 0, viewport: 375, icon: "Smartphone" },
   { key: "md", label: "Tablet", minWidth: 768, viewport: 768, icon: "Tablet" },
-  { key: "lg", label: "Desktop", minWidth: 1024, viewport: 1024, icon: "Monitor" },
+  { key: "lg", label: "Desktop", minWidth: 1024, viewport: 1024, icon: "Laptop" },
   { key: "xl", label: "Wide", minWidth: 1280, viewport: 1440, icon: "Monitor" },
 ];
 
@@ -39,6 +39,7 @@ export function toViewports(breakpoints: Breakpoint[]) {
     width: bp.viewport,
     height: "auto" as const,
     label: bp.label,
-    icon: bp.icon ?? "Monitor",
+    // Puck only knows these three icons.
+    icon: bp.icon === "Laptop" || !bp.icon ? ("Monitor" as const) : bp.icon,
   }));
 }

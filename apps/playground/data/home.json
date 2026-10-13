@@ -62,7 +62,11 @@
           }
         ]
       },
-      "styles": {}
+      "styles": {
+        "base": {
+          "flexDirection": "column"
+        }
+      }
     }
   },
   "content": [
@@ -408,6 +412,9 @@
                                     "fontSize": "20px",
                                     "fontWeight": "700",
                                     "marginBottom": "8px"
+                                  },
+                                  "lg": {
+                                    "color": "var(--pk-color-primary)"
                                   }
                                 },
                                 "advanced": {}

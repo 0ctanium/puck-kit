@@ -28,7 +28,7 @@ describe("compileStyles", () => {
 
   it("adds px to bare numbers except unitless properties", () => {
     expect(compileStyles(".x", { base: { width: "120", lineHeight: "1.4", zIndex: "2", marginTop: "0" } })).toBe(
-      ".x{width:120px;line-height:1.4;z-index:2;margin-top:0}",
+      ".x{margin-top:0;width:120px;z-index:2;line-height:1.4}",
     );
   });
 
@@ -42,6 +42,12 @@ describe("compileStyles", () => {
     );
   });
 });
+
+it("emits shorthands before longhands whatever the insertion order", () => {
+    expect(compileStyles(".x", { base: { borderTopWidth: "2px", borderWidth: "1px" } })).toBe(
+      ".x{border-width:1px;border-top-width:2px}",
+    );
+  });
 
 describe("resolveValue", () => {
   const styles = { base: { color: "red" }, lg: { color: "blue" } };

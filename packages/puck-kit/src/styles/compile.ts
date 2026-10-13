@@ -1,8 +1,6 @@
 import { defaultBreakpoints, sortBreakpoints, type Breakpoint } from "../breakpoints";
 import { STYLE_PROPS, UNITLESS_PROPS, type StyleDecl, type StyleProp, type Styles } from "./types";
 
-const KNOWN = new Set<string>(STYLE_PROPS);
-
 /** Class name an element gets for its styles. Puck ids are stable, so this is SSR-safe. */
 export function styleClass(id: string): string {
   return `pk-${id.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
@@ -24,9 +22,11 @@ export function sanitizeValue(prop: StyleProp, raw: string): string {
 export function declToCss(decl: StyleDecl | undefined): string {
   if (!decl) return "";
   const parts: string[] = [];
-  for (const [prop, raw] of Object.entries(decl)) {
-    if (!KNOWN.has(prop) || raw == null || String(raw).trim() === "") continue;
-    const value = sanitizeValue(prop as StyleProp, String(raw));
+  // Emit in STYLE_PROPS order (not insertion order) so shorthands never override longhands.
+  for (const prop of STYLE_PROPS) {
+    const raw = decl[prop];
+    if (raw == null || String(raw).trim() === "") continue;
+    const value = sanitizeValue(prop, String(raw));
     if (value) parts.push(`${kebab(prop)}:${value}`);
   }
   return parts.join(";");
