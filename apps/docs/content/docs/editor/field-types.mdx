@@ -1,0 +1,134 @@
+---
+title: Field types
+description: The kit’s extra Puck field types — color, background, font, range, checkbox, url, image — for your own components.
+icon: TextCursorInput
+---
+
+The plugin registers extra field types through `overrides.fieldTypes` (like Shopify’s input settings). Use them
+in any component; type the config with `KitFields`:
+
+```tsx
+import type { ComponentConfig } from '@puckeditor/core';
+import type { KitFields } from 'puck-kit';
+
+export const Banner: ComponentConfig<{ props: BannerProps; fields: KitFields }> = {
+  fields: {
+    accent: { type: 'color', label: 'Accent' },
+    // …
+  },
+};
+```
+
+<Screenshot src="fields-banner.png" alt="A component using every kit field type" caption="The playground's Promo Banner uses most of them." variant="panel" maxWidth={380} />
+
+| `type` | Value | UI |
+| --- | --- | --- |
+| `color` | CSS color or token (`var(--pk-color-…)`) | Swatch + color picker with token swatches |
+| `background` | `BackgroundValue` → `backgroundStyle(value)` | Color + image/gradient layers |
+| `font` | font-family stack or font token | Font picker (library + tokens, “Add fonts”) |
+| `range` | number | Slider + number |
+| `checkbox` | boolean | Switch |
+| `select` | any option value | Puck’s select, restyled (options may have icons) |
+| `url` | string | Text input — replace it with your link picker |
+| `image` | string (URL) | URL input + preview — replace it with your media library |
+
+## color
+
+```ts
+accent: { type: 'color', label: 'Accent', tokens: true, clearable: true },
+```
+
+<TypeTable type={{
+  tokens: { type: 'boolean', description: 'Offer the page’s color tokens.', default: 'true' },
+  clearable: { type: 'boolean', description: 'Allow clearing the value.', default: 'true' },
+}} />
+
+Value: a CSS color string (`#4f46e5`, `rgba(…)`) or a token reference (`var(--pk-color-primary)`).
+
+## background
+
+```tsx
+import { backgroundStyle, type BackgroundValue } from 'puck-kit';
+
+background: { type: 'background', label: 'Background' },
+// render:
+<section style={backgroundStyle(background)} />
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/fieldTypes/definitions.ts" name="BackgroundValue" />
+
+## font
+
+```ts
+font: { type: 'font', label: 'Title font', tokens: true },
+```
+
+Value: a font stack (`"Inter", sans-serif`) or a font token (`var(--pk-font-serif)`). Fonts picked here are
+detected by `fontMetadata(fonts, data)` and loaded on public pages.
+
+## range
+
+```ts
+padding: { type: 'range', label: 'Padding', min: 0, max: 128, step: 4, unit: 'px' },
+```
+
+<TypeTable type={{
+  min: { type: 'number', description: 'Minimum.', required: true },
+  max: { type: 'number', description: 'Maximum.', required: true },
+  step: { type: 'number', description: 'Step.' },
+  unit: { type: 'string', description: 'Shown after the number, e.g. "px", "%", "ms".' },
+}} />
+
+## checkbox
+
+```ts
+showButton: { type: 'checkbox', label: 'Button', text: 'Show a button' },
+```
+
+`text` is shown next to the switch (defaults to “On”/“Off”). Value: `boolean`.
+
+## select (with icons)
+
+The kit restyles Puck’s `select`. Options may carry an `icon`; Puck’s option type doesn’t have one, hence the
+`iconOptions` helper:
+
+```tsx
+import { iconOptions } from 'puck-kit';
+import { AlignCenter, AlignLeft, AlignRight } from 'lucide-react';
+
+align: {
+  type: 'select',
+  label: 'Alignment',
+  options: iconOptions([
+    { label: 'Left', value: 'left', icon: <AlignLeft size={14} /> },
+    { label: 'Center', value: 'center', icon: <AlignCenter size={14} /> },
+    { label: 'Right', value: 'right', icon: <AlignRight size={14} /> },
+  ]),
+},
+```
+
+## url
+
+```ts
+href: { type: 'url', label: 'Link', placeholder: 'https://…' },
+```
+
+A link target (`https://…`, `/about`, `#section`, `mailto:…`). Used by Button, Text Link and Link Block.
+[Replace it](/docs/editor/overriding-fields) with your page picker.
+
+## image
+
+```ts
+src: { type: 'image', label: 'Image' },
+```
+
+An image URL with a preview. Used by Image. [Replace it](/docs/guides/media-library) with your uploads / DAM.
+
+## object
+
+Puck’s `object` fields are restyled as collapsible groups, like the Advanced section.
+
+<Callout type="warn" title="Requires the plugin">
+  These types only render inside an editor that has the `puckKit` plugin (or `kitFieldTypes` in
+  `overrides.fieldTypes`).
+</Callout>

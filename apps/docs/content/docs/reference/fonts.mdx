@@ -1,0 +1,53 @@
+---
+title: Fonts
+description: Font definitions, stacks, loading helpers and FontLinks.
+icon: Type
+---
+
+## Types
+
+<auto-type-table path="../../../../../packages/puck-kit/src/fonts/types.ts" name="FontDefinition" />
+
+```ts
+type FontSource =
+  | { type: 'google' }
+  | { type: 'css'; url: string }
+  | { type: 'files'; files: FontFile[] }
+  | { type: 'system' };
+
+type FontCategory = 'sans-serif' | 'serif' | 'monospace' | 'display' | 'handwriting';
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/fonts/types.ts" name="FontFile" />
+
+## Stacks
+
+| Function | Returns |
+| --- | --- |
+| `fontStack(font)` | CSS value: `font.stack`, or `"Family", <fallback>` (fallback from `fallback` or the category; generic names aren’t quoted) |
+| `fontLabel(font)` | `font.label ?? font.family` |
+| `fontWeights(font)` | Sorted weights, default `[400, 700]` |
+| `firstFamily(stack)` | The first family of a stack, unquoted and lowercased |
+| `findFont(stack, library)` | The library font a stack refers to |
+| `systemFonts` | 8 system stacks (always offered in pickers) |
+
+## Loading
+
+<TypeTable
+  type={{
+    'fontMetadata(library, data?)': { type: 'Record<string, FontDefinition[]>', description: 'Puck metadata for `<Render metadata>`: the fonts the page uses (or the whole library without `data`). Key: `FONT_METADATA_KEY` (`"pkFonts"`).' },
+    'usedFonts(data, library)': { type: 'FontDefinition[]', description: 'Library fonts referenced by font tokens, `fontFamily` styles, or stack-shaped string props.' },
+    'getFontAssets(fonts)': { type: 'FontAssets', description: '`{ stylesheets, fontFaceCss, google }` — one Google css2 URL per family, `css` sources, `@font-face` rules for files.' },
+    'googleFontsUrl(fonts)': { type: 'string | undefined', description: 'A css2 URL for the Google fonts of the list (`&display=swap`).' },
+    'fontFaceCss(fonts)': { type: 'string', description: '`@font-face` rules for `files` sources.' },
+  }}
+/>
+
+## FontLinks
+
+```tsx
+<FontLinks fonts={fonts} />        // hoisted <link precedence> + @font-face, preconnect to Google
+<FontLinks fonts={fonts} inline /> // in place (for an iframe)
+```
+
+The root renders it from `metadata.pkFonts`; use it directly in custom layouts. Server-safe.

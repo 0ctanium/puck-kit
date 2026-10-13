@@ -1,0 +1,29 @@
+---
+title: Video helpers
+description: Parse YouTube and Vimeo links and build embed URLs.
+icon: Video
+---
+
+Pure functions used by the YouTube and Vimeo components — handy for your own video blocks.
+
+```ts twoslash
+// @noErrors
+import { youtubeId, youtubeEmbedUrl, vimeoId, vimeoEmbedUrl } from 'puck-kit';
+
+youtubeId('https://youtu.be/aqz-KE-bpKQ?t=30'); // 'aqz-KE-bpKQ'
+youtubeEmbedUrl('aqz-KE-bpKQ', { autoplay: true, muted: true });
+// 'https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ?rel=0&autoplay=1&mute=1'
+
+vimeoId('https://vimeo.com/123456/abcdef'); // { id: '123456', hash: 'abcdef' }
+vimeoEmbedUrl({ id: '123456', hash: 'abcdef' }, { loop: true });
+// 'https://player.vimeo.com/video/123456?h=abcdef&loop=1&dnt=1'
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/components/video.ts" name="VideoOptions" />
+
+| Function | Accepts / returns |
+| --- | --- |
+| `youtubeId(input)` | watch, `youtu.be`, `embed`, `shorts`, `live` links or a bare 11-char id → id or `null` |
+| `youtubeEmbedUrl(id, opts & { privacy? })` | Embed URL; `privacy` (default on) uses `youtube-nocookie.com`; `loop` adds `playlist=<id>` (required by YouTube) |
+| `vimeoId(input)` | `vimeo.com/123`, `/123/hash`, channels, `player.vimeo.com/video/123?h=…` or a numeric id → `{ id, hash? }` or `null` |
+| `vimeoEmbedUrl(video, opts & { dnt? })` | Player URL; `dnt` (default on) adds `dnt=1`; `start` becomes `#t=<s>s` |

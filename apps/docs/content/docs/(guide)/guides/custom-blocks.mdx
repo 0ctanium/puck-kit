@@ -1,0 +1,124 @@
+---
+title: Custom blocks with kit fields
+description: Build designed, ready-made blocks whose fields use the kit’s color, background, font, range and checkbox inputs.
+icon: Boxes
+---
+
+Sometimes you *do* want a pre-designed block with a few options — a promo banner, a pricing table. The kit’s
+[field types](/docs/editor/field-types) make those options feel native: color pickers with token swatches,
+background layers, font pickers, sliders and switches. Values are plain CSS strings and numbers, so rendering
+is just inline styles.
+
+<Tabs items={['Rendered', 'Settings panel']}>
+<Tab value="Rendered">
+<Screenshot src="component-banner.png" alt="The Promo Banner block rendered" />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-banner.png" alt="The Promo Banner settings: text, background, color, font, select with icons, ranges, switch" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## The Promo Banner
+
+This is the playground’s `apps/playground/lib/Banner.tsx`:
+
+```tsx title="lib/Banner.tsx"
+import type { ComponentConfig } from '@puckeditor/core';
+import { AlignCenter, AlignLeft, AlignRight } from 'lucide-react';
+import { backgroundStyle, iconOptions, type BackgroundValue, type KitFields } from 'puck-kit';
+
+export interface BannerProps {
+  title: string;
+  text: string;
+  background: BackgroundValue;
+  textColor: string;
+  font: string;
+  align: 'left' | 'center' | 'right';
+  padding: number;
+  radius: number;
+  showButton: boolean;
+  buttonLabel: string;
+  buttonColor: string;
+}
+
+export const Banner: ComponentConfig<{ props: BannerProps; fields: KitFields }> = {
+  label: 'Promo Banner',
+  inline: true,
+  fields: {
+    title: { type: 'text', label: 'Title' },
+    text: { type: 'textarea', label: 'Text' },
+    background: { type: 'background', label: 'Background' }, // [!code highlight]
+    textColor: { type: 'color', label: 'Text color' }, // [!code highlight]
+    font: { type: 'font', label: 'Title font' }, // [!code highlight]
+    align: {
+      type: 'select',
+      label: 'Alignment',
+      options: iconOptions([ // [!code highlight]
+        { label: 'Left', value: 'left', icon: <AlignLeft size={14} /> },
+        { label: 'Center', value: 'center', icon: <AlignCenter size={14} /> },
+        { label: 'Right', value: 'right', icon: <AlignRight size={14} /> },
+      ]),
+    },
+    padding: { type: 'range', label: 'Padding', min: 0, max: 128, step: 4, unit: 'px' }, // [!code highlight]
+    radius: { type: 'range', label: 'Corner radius', min: 0, max: 48, unit: 'px' },
+    showButton: { type: 'checkbox', label: 'Button', text: 'Show a button' }, // [!code highlight]
+    buttonLabel: { type: 'text', label: 'Button label' },
+    buttonColor: { type: 'color', label: 'Button color' },
+  },
+  // Hide the button settings when the button is off.
+  resolveFields: (data, { fields }) => {
+    if (data.props.showButton) return fields;
+    const { buttonLabel: _l, buttonColor: _c, ...rest } = fields;
+    return rest as typeof fields;
+  },
+  defaultProps: {
+    title: 'Ship faster with design tokens',
+    text: 'Every color, font and size here comes from the page’s tokens.',
+    background: {
+      color: 'var(--pk-color-primary)',
+      image: 'linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 60%)',
+    },
+    textColor: 'var(--pk-color-white)',
+    font: 'var(--pk-font-serif)',
+    align: 'center',
+    padding: 56,
+    radius: 16,
+    showButton: true,
+    buttonLabel: 'Get started',
+    buttonColor: 'var(--pk-color-text)',
+  },
+  render: ({ puck, title, text, background, textColor, font, align, padding, radius, showButton, buttonLabel, buttonColor }) => (
+    <section
+      ref={puck.dragRef}
+      style={{
+        ...backgroundStyle(background), // [!code highlight]
+        color: textColor || undefined,
+        textAlign: align,
+        padding,
+        borderRadius: radius,
+      }}
+    >
+      <h2 style={{ fontFamily: font || undefined }}>{title}</h2>
+      <p>{text}</p>
+      {showButton && <a href="#" style={{ background: buttonColor }}>{buttonLabel}</a>}
+    </section>
+  ),
+};
+```
+
+## Key points
+
+- Type the config with `ComponentConfig<{ props: …; fields: KitFields }>` so TypeScript accepts the kit’s field
+  types next to Puck’s.
+- **Tokens just work**: a `color` field stores `var(--pk-color-primary)` when a token swatch is picked, a `font`
+  field `var(--pk-font-serif)`. They resolve on the page because the root emits the tokens as CSS variables.
+- `backgroundStyle(value)` converts a `BackgroundValue` to React inline styles.
+- Font values in props are detected by `fontMetadata(fonts, data)`, so a font picked in a block is loaded on
+  public pages too.
+- The kit’s field types need the `puckKit` plugin in the editor (it registers them in `overrides.fieldTypes`).
+
+<Callout type="info" title="Blocks + elements">
+  Inline styles keep this block simple, but it doesn’t get a style panel. Add `styles: styleField()` and an
+  `<ElementStyle>` (see [Building your own components](/docs/guides/custom-components)) to get both: designed
+  options *and* free styling.
+</Callout>

@@ -1,0 +1,147 @@
+---
+title: Vite (React SPA)
+description: A single-page app with an editor route and a render route — no server required.
+icon: Zap
+---
+
+With Vite, both the editor and the pages run in the browser. React DOM hoists the kit’s `<style>` tags into
+`<head>` on the client as well, so the output is the same as with server rendering — just rendered later.
+
+<Callout type="info" title="Tested setup">
+  This guide is checked against `vite` + `@vitejs/plugin-react` with React 19 and `@puckeditor/core` 0.23.
+</Callout>
+
+<Steps>
+<Step>
+
+### Create the app and install
+
+```bash
+npm create vite@latest my-site -- --template react-ts
+cd my-site
+```
+
+```package-install
+@puckeditor/core@~0.23 puck-kit
+```
+
+</Step>
+<Step>
+
+### Config and storage
+
+```ts title="src/config.ts"
+import { createBuilderConfig } from 'puck-kit';
+
+export const config = createBuilderConfig();
+```
+
+```ts title="src/store.ts"
+import type { Data } from '@puckeditor/core';
+
+// Demo storage: replace with calls to your API.
+const key = (slug: string) => `page:${slug}`;
+
+export function loadPage(slug: string): Data | null {
+  const raw = localStorage.getItem(key(slug));
+  return raw ? (JSON.parse(raw) as Data) : null;
+}
+
+export function savePage(slug: string, data: Data) {
+  localStorage.setItem(key(slug), JSON.stringify(data));
+}
+```
+
+</Step>
+<Step>
+
+### Editor and page components
+
+<Tabs items={['Editor.tsx', 'Page.tsx']}>
+<Tab value="Editor.tsx">
+
+```tsx title="src/Editor.tsx"
+import { Puck } from '@puckeditor/core';
+import '@puckeditor/core/puck.css';
+import { usePuckKit } from 'puck-kit/editor';
+import { config } from './config';
+import { loadPage, savePage } from './store';
+
+export function Editor({ slug }: { slug: string }) {
+  const kit = usePuckKit(config);
+  return (
+    <Puck
+      config={config}
+      data={loadPage(slug) ?? { content: [], root: { props: {} } }}
+      {...kit}
+      onPublish={(data) => {
+        savePage(slug, data);
+        window.open(`/${slug}`, '_blank');
+      }}
+    />
+  );
+}
+```
+
+</Tab>
+<Tab value="Page.tsx">
+
+```tsx title="src/Page.tsx"
+import { Render } from '@puckeditor/core';
+import { config } from './config';
+import { loadPage } from './store';
+
+export function Page({ slug }: { slug: string }) {
+  const data = loadPage(slug);
+  if (!data) return <p>Not found — <a href={`/edit/${slug}`}>create it</a>.</p>;
+  return <Render config={config} data={data} />;
+}
+```
+
+</Tab>
+</Tabs>
+
+</Step>
+<Step>
+
+### Route between them
+
+Use your router of choice; with no router at all:
+
+```tsx title="src/main.tsx"
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Editor } from './Editor';
+import { Page } from './Page';
+
+const [, first, second] = location.pathname.split('/');
+const app = first === 'edit' ? <Editor slug={second || 'home'} /> : <Page slug={first || 'home'} />;
+
+createRoot(document.getElementById('root')!).render(<StrictMode>{app}</StrictMode>);
+```
+
+Remove the template’s `App.tsx`, `App.css` and `index.css`: their global styles (centered `#root`, dark colors)
+would leak into your pages. Keep a minimal reset instead, e.g. `body { margin: 0 }` in `index.html`, so the
+editor fills the window.
+
+</Step>
+<Step>
+
+### Run
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173/edit/home`, build a page, publish, then open `/home`.
+
+</Step>
+</Steps>
+
+## Going further
+
+- **SEO**: an SPA renders pages in the browser. For indexable public pages, render them on a server —
+  [React Router](/docs/frameworks/react-router), [TanStack Start](/docs/frameworks/tanstack-start),
+  [Next.js](/docs/frameworks/nextjs) — or pre-render them at build time.
+- **Static CSS**: `getPageCss(data)` returns the whole stylesheet of a page if you want to write it to a file
+  during a build step. → [CSS output](/docs/styling/css-output)

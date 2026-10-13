@@ -1,0 +1,67 @@
+---
+title: Editor UI
+description: The compact drawer, the breakpoint switcher, the Settings / Style tabs and the canvas.
+icon: PanelsTopLeft
+---
+
+<Screenshot src="editor-overview.png" alt="The full editor" variant="browser" />
+
+## Compact drawer
+
+The **Blocks** tab of the left rail shows components as icon tiles, grouped by category (Structure, Basic,
+Typography, Media, then yours). The icon comes from the component’s `metadata.icon` — a
+[Lucide](https://lucide.dev/icons) icon name:
+
+```ts
+const Pricing: ComponentConfig = {
+  label: 'Pricing',
+  metadata: { icon: 'badge-dollar-sign' }, // [!code highlight]
+  // …
+};
+```
+
+<Screenshot src="editor-drawer.png" alt="The compact component drawer" variant="panel" maxWidth={380} />
+
+## Breakpoint switcher
+
+The plugin puts a breakpoint switcher in Puck’s header (before your own `headerActions`). It shows the active
+breakpoint, its canvas width, and one button per breakpoint. The bar underneath highlights the breakpoints the
+active one also styles (on Desktop: Desktop, Tablet and Mobile, since they inherit from it).
+
+<Screenshot src="editor-header.png" alt="The editor header with the switcher" />
+
+Puck’s own viewport controls above the canvas are hidden and the canvas has no gutter. Set the CSS variable
+`--pk-canvas-gutter` to add one. Zoom follows Puck’s auto-zoom.
+
+<Screenshot src="editor-mobile.png" alt="The editor on the Mobile breakpoint" variant="browser" caption="The canvas on Mobile (375px): media queries follow the switcher." />
+
+## Settings and Style tabs
+
+The right panel splits fields into two tabs by `field.metadata.category`:
+
+- **Style** — fields with `metadata: { category: 'Style' }`: the style panel (`styleField`), the Tag select
+  (`tagField`) and Advanced (`advancedField`);
+- **Settings** — everything else (your content fields).
+
+Give your own fields `metadata.category: 'Style'` to put them in the Style tab.
+
+<div className="grid gap-4 sm:grid-cols-2">
+<Screenshot src="fields-link-block.png" alt="Settings tab of a Link Block" caption="Settings" variant="panel" className="my-0" />
+<Screenshot src="style-panel.png" alt="Style tab of a Button" caption="Style" variant="panel" className="my-0" />
+</div>
+
+## Tokens panel
+
+The **Tokens** tab of the left rail edits the page’s design tokens. → [Design tokens](/docs/styling/tokens)
+
+<Screenshot src="editor-tokens.png" alt="Tokens panel" variant="panel" maxWidth={360} />
+
+## Keyboard & mouse
+
+| Action | How |
+| --- | --- |
+| Scrub a number | Drag its label (or a spacing value) left/right |
+| Nudge a number | ↑ / ↓ (Shift ×10, Alt ×0.1) |
+| Reset a property on this breakpoint | Click its blue label |
+| Navigate a dropdown | ↑ ↓ Enter Esc, type to jump |
+| Close a popover | Esc or click outside |

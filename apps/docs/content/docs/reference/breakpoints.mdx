@@ -1,0 +1,61 @@
+---
+title: Breakpoints
+description: The Breakpoint type, the two presets and the helper functions.
+icon: MonitorSmartphone
+---
+
+## Breakpoint
+
+<auto-type-table path="../../../../../packages/puck-kit/src/breakpoints.ts" name="Breakpoint" />
+
+`icon` is one of `"Smartphone" | "Tablet" | "Laptop" | "Monitor"`.
+
+## Presets
+
+<Tabs items={['defaultBreakpoints', 'mobileFirstBreakpoints']}>
+<Tab value="defaultBreakpoints">
+
+```ts
+[
+  { key: 'wide', label: 'Wide', minWidth: 1280, viewport: 1440, icon: 'Monitor' },
+  { key: 'base', label: 'Desktop', viewport: 1024, icon: 'Laptop' },
+  { key: 'tablet', label: 'Tablet', maxWidth: 1023, viewport: 768, icon: 'Tablet' },
+  { key: 'mobile', label: 'Mobile', maxWidth: 767, viewport: 375, icon: 'Smartphone' },
+]
+```
+
+</Tab>
+<Tab value="mobileFirstBreakpoints">
+
+```ts
+[
+  { key: 'base', label: 'Mobile', viewport: 375, icon: 'Smartphone' },
+  { key: 'md', label: 'Tablet', minWidth: 768, viewport: 768, icon: 'Tablet' },
+  { key: 'lg', label: 'Desktop', minWidth: 1024, viewport: 1024, icon: 'Laptop' },
+  { key: 'xl', label: 'Wide', minWidth: 1280, viewport: 1440, icon: 'Monitor' },
+]
+```
+
+</Tab>
+</Tabs>
+
+## Functions
+
+<TypeTable
+  type={{
+    'baseBreakpoint(bps)': { type: '(bps: Breakpoint[]) => Breakpoint', description: 'The base breakpoint (no min/max width).' },
+    'cascadeOf(bps, key)': { type: '(bps: Breakpoint[], key: string) => Breakpoint[]', description: 'Breakpoints `key` inherits from, base first and itself last — the order its styles cascade in.' },
+    'mediaQuery(bp)': { type: '(bp: Breakpoint) => string | null', description: '`(min-width:1280px)`, `(max-width:767px)`, or `null` for the base.' },
+    'breakpointForWidth(bps, width)': { type: '(bps: Breakpoint[], width: number | "100%") => Breakpoint', description: 'The breakpoint active at a viewport width (the narrowest matching max-width, else the widest matching min-width, else the base).' },
+    'toViewports(bps)': { type: '(bps: Breakpoint[]) => Viewport[]', description: 'Puck viewports, widest first. `Laptop` becomes `Monitor` (Puck knows three icons).' },
+    'getBreakpoints(config)': { type: '(config: Config) => Breakpoint[]', description: 'The breakpoints of a config (see createBuilderConfig).' },
+  }}
+/>
+
+```ts twoslash
+// @noErrors
+import { cascadeOf, defaultBreakpoints, mediaQuery } from 'puck-kit';
+
+cascadeOf(defaultBreakpoints, 'mobile').map((b) => b.key); // ['base', 'tablet', 'mobile']
+mediaQuery(defaultBreakpoints[3]); // '(max-width:767px)'
+```

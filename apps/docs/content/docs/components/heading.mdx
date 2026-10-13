@@ -1,0 +1,105 @@
+---
+title: Heading
+description: "A single-line, inline-editable <h1>–<h6>."
+icon: Heading
+---
+
+<ComponentHeader name="Heading" icon="heading" category="Typography" tags={["h2", "h1", "h3", "h4", "h5", "h6"]} slot={false} />
+
+**Heading** is a title, `<h2>` by default (`<h1>`–`<h6>` in the Tag select). Its text is **plain and inline-editable** — type directly on the canvas. Size, weight and line height are styles, independent from the tag, so you can keep a correct outline (one `<h1>` per page) whatever the look.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-heading.png" alt="Heading rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "VerticalFlex", "props": {"styles": {"base": {"display": "flex", "flexDirection": "column", "gap": "4px"}}, "content": [{"type": "Heading", "props": {"tag": "h1", "text": "Heading 1", "styles": {"base": {"fontSize": "44px", "fontWeight": "800", "lineHeight": "1.1"}}}}, {"type": "Heading", "props": {"text": "Heading 2"}}, {"type": "Heading", "props": {"tag": "h3", "text": "Heading 3", "styles": {"base": {"fontSize": "22px", "fontWeight": "600"}}}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-heading.png" alt="Heading settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    tag: {"type": "\"h2\" | \"h1\" | \"h3\" | \"h4\" | \"h5\" | \"h6\"", "description": "Rendered element. Shown as a **Tag** select in the Style tab.", "default": "\"h2\""},
+    text: {"type": "ReactNode", "description": "The heading text (single line, `contentEditable`).", "default": "\"Heading\""},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Heading starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "fontSize": "32px",
+    "fontWeight": "700",
+    "lineHeight": "1.2"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+```
+
+</Tab>
+</Tabs>
+
+<Screenshot src="style-inherited.png" alt="On Tablet, the Desktop values are inherited (orange labels) until you override them." caption="On Tablet, the Desktop values are inherited (orange labels) until you override them." variant="panel" maxWidth={420} />
+
+## Tips
+
+- Make big headings smaller on Mobile: select the Mobile breakpoint and change only the font size, everything else is inherited.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Heading as stored by Puck">
+
+```json
+{
+  "type": "Heading",
+  "props": {
+    "id": "Heading-a1b2c3",
+    "tag": "h2",
+    "text": "Heading",
+    "styles": {
+      "base": {
+        "fontSize": "32px",
+        "fontWeight": "700",
+        "lineHeight": "1.2"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Paragraph" href="/docs/components/paragraph" description="Rich text paragraphs (bold, italic, links, lists) without headings." />
+  <Card title="Text" href="/docs/components/text" description="A rich text block with every rich text feature: headings, lists, quotes, code." />
+</Cards>

@@ -1,0 +1,148 @@
+---
+title: Container
+description: "A centered column with a max width per breakpoint — keeps content readable on large screens."
+icon: PanelLeftRightDashed
+---
+
+<ComponentHeader name="Container" icon="panel-left-right-dashed" category="Structure" tags={["div", "section", "article", "aside", "header", "footer", "nav", "main"]} slot={true} />
+
+A **Container** centers its content with automatic side margins and limits its width **per breakpoint**. Its defaults are computed from your breakpoints, so they adapt to any setup (desktop-first, mobile-first or custom).
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-container.png" alt="Container rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "Container", "props": {"styles": {"base": {"width": "100%", "marginLeft": "auto", "marginRight": "auto", "maxWidth": "480px", "paddingTop": "16px", "paddingBottom": "16px", "borderWidth": "2px", "borderStyle": "dashed", "borderColor": "var(--pk-color-primary)", "borderRadius": "8px"}}, "content": [{"type": "Paragraph", "props": {"text": "<p>Centered, with a 480px max width.</p>", "styles": {"base": {"textAlign": "center"}}}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-container.png" alt="Container settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    tag: {"type": "\"div\" | \"section\" | \"article\" | \"aside\" | \"header\" | \"footer\" | \"nav\" | \"main\"", "description": "Rendered element. Shown as a **Tag** select in the Style tab.", "default": "\"div\""},
+    content: {"type": "Slot", "description": "Children (a Puck slot, rendered *as* this element: no wrapper div).", "default": "[]"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Container starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "width": "100%",
+    "marginLeft": "auto",
+    "marginRight": "auto",
+    "paddingLeft": "16px",
+    "paddingRight": "16px",
+    "maxWidth": "960px"
+  },
+  "wide": {
+    "maxWidth": "1200px"
+  },
+  "tablet": {
+    "maxWidth": "728px"
+  },
+  "mobile": {
+    "maxWidth": "none"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  max-width: 960px;
+}
+@media (min-width:1280px) {
+  .pk-id {
+    max-width: 1200px;
+  }
+}
+@media (max-width:1023px) {
+  .pk-id {
+    max-width: 728px;
+  }
+}
+@media (max-width:767px) {
+  .pk-id {
+    max-width: none;
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+With the default breakpoints. The max width is picked from each breakpoint’s editor viewport: **1200px** from 1440px, **960px** from 1024px, **728px** from 768px, and `none` below (only the values that differ from the inherited one are stored).
+
+## Tips
+
+- Containers are usually the only child of a Section: `Section > Container > content`.
+- Change the max widths per breakpoint in **Size → Max W**.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Container as stored by Puck">
+
+```json
+{
+  "type": "Container",
+  "props": {
+    "id": "Container-a1b2c3",
+    "tag": "div",
+    "content": [],
+    "styles": {
+      "base": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "paddingLeft": "16px",
+        "paddingRight": "16px",
+        "maxWidth": "960px"
+      },
+      "wide": {
+        "maxWidth": "1200px"
+      },
+      "tablet": {
+        "maxWidth": "728px"
+      },
+      "mobile": {
+        "maxWidth": "none"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Section" href="/docs/components/section" description="A full-width page band with vertical padding — the outermost building block of a page." />
+  <Card title="Columns" href="/docs/components/columns" description="A grid with one drop zone per column (1–12), side by side on large screens and stacked on phones." />
+</Cards>

@@ -7,7 +7,7 @@ CSS at render time — **no Tailwind, no build step, no client JS needed on publ
 ```
 packages/puck-kit   the library (published package)
 apps/playground     Next.js app: /edit/<slug> (editor) and /<slug> (server-rendered page)
-docs/               guides
+apps/docs           documentation site (Fumadocs): pnpm docs
 ```
 
 ## Components
@@ -37,7 +37,7 @@ pnpm add @puckeditor/core@~0.23 puck-kit
 ```ts
 // lib/config.ts — shared by editor and public pages (no "use client")
 import { createBuilderConfig } from "puck-kit";
-import { Gallery } from "./Gallery"; // your own components, see docs/custom-components.md
+import { Gallery } from "./Gallery"; // your own components, see apps/docs → Guides → Building your own components
 
 export const config = createBuilderConfig({
   components: { Gallery },
@@ -87,132 +87,16 @@ import { fontMetadata } from "puck-kit";
 
 Persisting `data` (JSON) is up to you.
 
-## How styling works
+## Documentation
 
-- Every element has a `styles` prop: `{ base?: {...}, tablet?: {...}, mobile?: {...}, wide?: {...} }`
-  holding plain CSS properties (camelCase). Values may reference tokens:
-  `var(--pk-color-primary)`.
-- **Desktop-first** (like Webflow): `base` is Desktop and applies everywhere; `tablet` (≤1023px)
-  and then `mobile` (≤767px) override it going down, `wide` (≥1280px) going up. The editor opens
-  on Desktop. Breakpoints are configurable with `createBuilderConfig({ breakpoints })`: a base
-  (no width), `maxWidth` ones for smaller screens, `minWidth` ones for larger screens. For a
-  mobile-first setup, pass `mobileFirstBreakpoints` (`base` = Mobile, `md`/`lg`/`xl` going up).
-  Kit defaults that depend on the screen (Container widths, Columns stacking on phones) adapt
-  to any setup.
-- Each element gets a deterministic class from its Puck id (`.pk-<id>`), so server and client
-  output match. CSS is emitted with React 19 `<style href precedence>`: hoisted to `<head>`
-  and deduplicated. In the editor it's inline in Puck's iframe, so the viewport switcher
-  drives the media queries.
-- `getPageCss(data)` (from `puck-kit/styles`) returns one stylesheet for a whole page, if you
-  prefer serving a cached `.css` file.
-- **Design tokens** (colors, fonts, sizes) are edited in the **Tokens** panel of the left rail
-  (part of the `puckKit` plugin).
-  They're stored in `root.props.tokens`, emitted as CSS variables (`--pk-color-brand`…), and
-  offered as swatches/presets in the style panel. Each token shows how many places use it;
-  renaming rewrites every reference, and deleting a used token can detach it (references are
-  replaced by the raw value).
-- **Field types for your components** (registered by the Tokens plugin through
-  `overrides.fieldTypes`, like Shopify's input settings):
+The full documentation lives in [`apps/docs`](apps/docs) (Fumadocs): guides, framework setup (Next.js, Vite,
+React Router, TanStack Start, Astro), one page per component with screenshots and live previews, the style
+system (breakpoints, states, tokens, fonts, CSS output) and the API reference.
 
-  | `type` | Value | UI |
-  |---|---|---|
-  | `color` | CSS color or token (`var(--pk-color-…)`) | Swatch + color picker with token swatches |
-  | `background` | `BackgroundValue` → `backgroundStyle(value)` | Color + image/gradient layers |
-  | `font` | font-family stack or font token | Font picker (library + tokens, "Add fonts") |
-  | `range` | number | Slider + number (`min`, `max`, `step`, `unit`) |
-  | `checkbox` | boolean | Switch (`text` next to it) |
-  | `select` | any option value | Puck's select, restyled (options may have an `icon` via `iconOptions()`) |
-  | `url` | string (`https://…`, `/page`, `#id`, `mailto:`) | Text input. Used by Button, Text Link, Link Block |
-  | `image` | string (image URL) | URL input + preview. Used by Image |
-
-  ```tsx
-  import { backgroundStyle, type KitFields } from "puck-kit";
-  const Banner: ComponentConfig<{ props: BannerProps; fields: KitFields }> = {
-    fields: {
-      background: { type: "background", label: "Background" },
-      accent: { type: "color", label: "Accent" },
-      font: { type: "font", label: "Title font" },
-      padding: { type: "range", label: "Padding", min: 0, max: 128, unit: "px" },
-      showButton: { type: "checkbox", label: "Button", text: "Show a button" },
-    },
-    render: ({ background, accent, font, padding }) => <section style={{ ...backgroundStyle(background), color: accent, padding }}>…</section>,
-  };
-  ```
-  Font values in props are detected by `fontMetadata(fonts, data)`, so those fonts load on public
-  pages too. See `apps/playground/lib/Banner.tsx` (the "Promo Banner" block).
-- **Plug in your link picker / media library**: `url` and `image` are deliberately plain so
-  you can replace them. Your renderer then applies to every field of that type (the kit's and
-  yours), and the stored value stays a string:
-  ```tsx
-  import { defineFieldType, type ImageField } from "puck-kit/editor";
-  const MediaPicker = defineFieldType<ImageField, string>(({ value, onChange, Label, label, field }) => (
-    <Label label={label || field.label || "Image"}>
-      <MyMediaLibrary selected={value} onSelect={(asset) => onChange(asset.url)} />
-    </Label>
-  ));
-  <Puck config={config} {...kit} overrides={{ fieldTypes: { image: MediaPicker, url: MyPagePicker } }} />
-  ```
-  (or from a plugin's `overrides.fieldTypes`). The playground swaps `image` for a small stock
-  image library: `apps/playground/lib/MediaLibraryField.tsx`.
-- **States** (`:hover`, Pressed, focus, first/last child, odd/even…): pick a state in the panel's
-  "State" bar, then style as usual. Stored in the same `styles` object as `<breakpoint>:<state>`
-  keys (`base:hover`, `tablet:active`), compiled to `.pk-<id>:hover{…}` inside the breakpoint's media
-  query. A state set on Desktop keeps applying on Tablet and Mobile unless overridden there. The
-  canvas previews the edited state while it's selected. Page styles have no states
-  (`styleField({ states: false })`); pass your own list with `styleField({ states })`.
-  States live inside `styles` on purpose: a future class/selector system can reuse the exact same
-  shape (`compileStyles(".card", classStyles)`).
-- **Fonts**: give the editor a font library and it loads the fonts and offers them in font
-  pickers (font tokens and Typography). Users never type CSS stacks.
-  ```tsx
-  const fonts: FontDefinition[] = [
-    { family: "Inter", category: "sans-serif", weights: [400, 600, 700], source: { type: "google" } },
-    { family: "Brand Sans", category: "sans-serif", weights: [400, 700],
-      source: { type: "files", files: [{ url: "/fonts/brand.woff2", weight: 400 }, { url: "/fonts/brand-bold.woff2", weight: 700 }] } },
-    { family: "Proxima Nova", source: { type: "css", url: "https://use.typekit.net/xxxx.css" } },
-  ];
-  // Editor: all fonts are loaded; "Add fonts" buttons call your callback (e.g. open your font settings page).
-  const kit = usePuckKit(config, { fonts, onAddFonts: () => window.open("/settings/fonts") });
-  // Public pages: only the fonts the page uses (via tokens or element styles) are loaded.
-  <Render config={config} data={data} metadata={fontMetadata(fonts, data)} />
-  ```
-  Values are stored as CSS stacks (`"Inter", sans-serif`) so pages keep working if a font is
-  removed. System fonts are always available. Google fonts must list weights that exist on Google
-  (each family is requested separately, so a wrong entry only breaks itself). The playground has a
-  demo settings page (`/settings/fonts`): Google Fonts catalog + upload your own files.
-- Container elements *are* the Puck slot (`<Content as="ul" />`), and all components use
-  Puck's `inline` mode, so there are no wrapper divs: `ul > li`, `grid > item`.
-
-### Style panel
-
-Webflow-like, with popovers for anything complex. The breakpoint bar is synced with the
-breakpoint switcher that the plugin puts in Puck's header (`ViewportBar`, rendered before
-your `overrides.headerActions`). Puck's own controls above the canvas are hidden and the canvas
-has no gutter (set `--pk-canvas-gutter` to add one); zoom follows Puck's auto-zoom. A blue label means "set on this breakpoint" (click it to reset), orange means
-"inherited" (from Desktop, or from Tablet on Mobile). The bar under the breakpoints shows which
-ones the active breakpoint also styles. Drag a label (or a spacing value) left/right to scrub it;
-arrow keys nudge numbers (Shift ×10, Alt ×0.1).
-
-| Section (`id`) | Editing |
-|---|---|
-| Layout (`layout`) | Display; flex direction/reverse, align & justify icons that follow the direction, wrap, gap (linked or row/column); visual grid editor (preview, column/row steppers, track sizes in fr/px/auto, auto-flow) |
-| Flex child (`flexChild`) | Only when the parent is flex: sizing presets (shrink / grow / none / custom), align self (icons follow the parent direction), order |
-| Grid child (`gridChild`) | Only when the parent is grid: column/row span steppers, full-width/height toggle, horizontal & vertical self-alignment, order |
-| Spacing (`spacing`) | Box model: drag values, click for presets, tokens, "both sides" / "all sides" |
-| Size (`size`) | Width/height/min/max with units & keywords, overflow, aspect ratio, object fit |
-| Position (`position`) | Position, inset box, presets (full, top, center…), z-index |
-| Typography (`typography`) | Font (tokens, previewed in their face), weight, size, line height, color, align, style, case, spacing, text shadows |
-| Backgrounds (`background`) | Layers: images (size, 3×3 position, tiling) and linear/radial gradients (angle dial, draggable stops); color |
-| Borders (`border`) | Radius (all or per corner); side picker (all/top/right/bottom/left) with style, width, color |
-| Effects (`effects`) | Opacity, blending, box shadows, 2D transforms (move/scale/rotate/skew), transitions, filters, backdrop filters, cursor |
-
-Dropdowns are custom (keyboard: ↑ ↓ Enter Esc, type to jump) with icons where they help:
-position, cursor, aspect-ratio shapes, object-fit diagrams, easing curves, filters, font samples.
-`sections: ["child"]` still selects both child sections.
-
-Colors use an HSV picker with alpha, hex/rgba input, eyedropper (where supported) and token
-swatches. The panel UI lives in `packages/puck-kit/src/fields/` (`ui/` primitives, `sections/`,
-`css/` value parsers) and is styled with CSS Modules.
+```bash
+pnpm docs              # http://localhost:3031
+pnpm docs:screenshots  # re-capture screenshots (needs `pnpm dev` running)
+```
 
 ## Development
 

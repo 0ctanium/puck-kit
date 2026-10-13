@@ -1,0 +1,58 @@
+---
+title: Custom component helpers
+description: styleField, ElementStyle, elementClass, htmlAttrs, advancedField and tagField.
+icon: Puzzle
+---
+
+The helpers to give your own components the kit’s styling. Guide:
+[Building your own components](/docs/guides/custom-components).
+
+## styleField
+
+```ts
+function styleField(options?: StyleFieldOptions): CustomField<Styles>;
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/fields/styleField.ts" name="StyleFieldOptions" />
+
+The field has `metadata.category: "Style"`, so it shows in the Style tab.
+
+## ElementStyle
+
+```tsx
+<ElementStyle id={id} styles={styles} editing={puck.isEditing} breakpoints={breakpoints} />
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/styles/ElementStyle.tsx" name="ElementStyleProps" />
+
+Server-safe (no hooks). Public pages: a hoisted `<style href precedence="puck-kit">`. Editor: an inline `<style>`
+with boosted specificity and state preview.
+
+## elementClass
+
+```ts
+function elementClass(id: string, advanced?: Advanced, extra?: string): string;
+// elementClass('Figure-1', { className: 'shadow featured' }, 'pk-slot') → "pk-Figure-1 pk-slot shadow featured"
+```
+
+## htmlAttrs
+
+```ts
+function htmlAttrs(advanced?: Advanced, extra?: Record<string, string | undefined>): Record<string, string>;
+// htmlAttrs({ htmlId: 'pricing', ariaLabel: 'Pricing' }) → { id: 'pricing', 'aria-label': 'Pricing' }
+```
+
+Empty values are dropped.
+
+## advancedField
+
+```ts
+const advancedField: Field<Advanced>; // object field "Advanced" in the Style tab
+interface Advanced { htmlId?: string; className?: string; ariaLabel?: string }
+```
+
+## tagField
+
+```ts
+function tagField(tags: string[]): Field<string>; // select "Tag" in the Style tab, options "<div>", "<section>"…
+```

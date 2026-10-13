@@ -1,0 +1,101 @@
+---
+title: Quote
+description: "A <blockquote> with rich text, italic and indented by default."
+icon: MessageSquareQuote
+---
+
+<ComponentHeader name="Quote" icon="message-square-quote" category="Typography" tags={["blockquote"]} slot={false} />
+
+**Quote** renders a `<blockquote>` holding rich text (headings and nested quotes disabled). It starts italic, 20px, with 16px of left padding — add a left border for the classic look.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-quote.png" alt="Quote rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "Quote", "props": {"text": "<p>Simplicity is the ultimate sophistication.</p>", "styles": {"base": {"paddingLeft": "16px", "fontStyle": "italic", "fontSize": "20px", "borderLeftWidth": "4px", "borderLeftStyle": "solid", "borderLeftColor": "var(--pk-color-primary)"}}}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-quote.png" alt="Quote settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    text: {"type": "string (HTML)", "description": "Rich text (no headings, no nested blockquote).", "default": "\"<p>A memorable quote.</p>\""},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Quote starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "paddingLeft": "16px",
+    "fontStyle": "italic",
+    "fontSize": "20px"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  padding-left: 16px;
+  font-style: italic;
+  font-size: 20px;
+}
+```
+
+</Tab>
+</Tabs>
+
+## Tips
+
+- Pair it with a Text Link or a small Text below for the attribution.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Quote as stored by Puck">
+
+```json
+{
+  "type": "Quote",
+  "props": {
+    "id": "Quote-a1b2c3",
+    "text": "<p>A memorable quote.</p>",
+    "styles": {
+      "base": {
+        "paddingLeft": "16px",
+        "fontStyle": "italic",
+        "fontSize": "20px"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Text" href="/docs/components/text" description="A rich text block with every rich text feature: headings, lists, quotes, code." />
+  <Card title="Paragraph" href="/docs/components/paragraph" description="Rich text paragraphs (bold, italic, links, lists) without headings." />
+</Cards>

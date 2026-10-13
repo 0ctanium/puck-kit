@@ -1,0 +1,87 @@
+---
+title: The puckKit plugin
+description: Everything the kit adds to Puck’s editor is one plugin. Use it through usePuckKit or on its own.
+icon: Plug
+---
+
+import { Palette, TextCursorInput, MonitorSmartphone, PanelRight, LayoutGrid, Type } from 'lucide-react';
+
+Everything puck-kit adds to the editor is **one Puck plugin**, `puckKit()`. It brings:
+
+<Cards>
+  <Card icon={<Palette />} title="Tokens panel" href="/docs/styling/tokens">A left-rail tab to edit colors, fonts and sizes.</Card>
+  <Card icon={<TextCursorInput />} title="Field types" href="/docs/editor/field-types">color, background, font, range, checkbox, url, image, + a nicer select and object.</Card>
+  <Card icon={<MonitorSmartphone />} title="Breakpoint switcher" href="/docs/editor/editor-ui#breakpoint-switcher">In the header, synced with the style panel.</Card>
+  <Card icon={<PanelRight />} title="Settings / Style tabs" href="/docs/editor/editor-ui#settings-and-style-tabs">The fields panel, split by field category.</Card>
+  <Card icon={<LayoutGrid />} title="Compact drawer" href="/docs/editor/editor-ui#compact-drawer">Icon tiles grouped by category.</Card>
+  <Card icon={<Type />} title="Fonts" href="/docs/styling/fonts">Loaded in the canvas, offered in font pickers.</Card>
+</Cards>
+
+## `usePuckKit` (recommended)
+
+```tsx
+'use client';
+import { Puck } from '@puckeditor/core';
+import { usePuckKit } from 'puck-kit/editor';
+
+export function Editor({ data }) {
+  const kit = usePuckKit(config, { fonts, onAddFonts }); // [!code highlight]
+  return <Puck config={config} data={data} {...kit} />;
+}
+```
+
+It returns the plugin plus the two `<Puck>` props a plugin can’t set:
+
+<TypeTable
+  type={{
+    plugins: { type: 'Plugin[]', description: '`[puckKit plugin]` — stable across renders.' },
+    viewports: { type: 'Viewport[]', description: 'Puck viewports matching your breakpoints (`toViewports(breakpoints)`), widest first.' },
+    ui: { type: 'Partial<UiState>', description: 'Opens the editor on the **base** breakpoint (Puck would otherwise pick the viewport closest to the window width).' },
+  }}
+/>
+
+Options can change over time (e.g. the font library after the user adds a font): the plugin reads them from a
+small store, so its overrides never change identity and Puck doesn’t remount.
+
+## Composing with your own props
+
+Your own props compose as usual:
+
+```tsx
+<Puck
+  config={config}
+  data={data}
+  {...kit}
+  plugins={[...kit.plugins, myPlugin]} // keep the kit's plugin
+  overrides={{
+    headerActions: ({ children }) => <>{children}<SaveStatus /></>, // renders after the switcher
+    fieldTypes: { image: MediaPicker, url: PagePicker }, // replace the kit's inputs
+  }}
+/>
+```
+
+<Callout type="warn" title="What the plugin owns">
+  The plugin overrides `fields`, `drawer` and `drawerItem`. A `drawerItem` override of yours is replaced by the
+  compact item. Your `headerActions` render after the breakpoint switcher, and your `fieldTypes.url` /
+  `fieldTypes.image` replace the kit’s default inputs.
+</Callout>
+
+## The plugin alone
+
+Prefer to manage viewports yourself? Create the plugin once — at module level or in `useMemo`:
+
+```tsx
+import { puckKit } from 'puck-kit/editor';
+
+const plugin = puckKit({ fonts });
+
+<Puck config={config} data={data} plugins={[plugin]} />;
+```
+
+Puck then uses its default viewports. You can pass `viewports={toViewports(getBreakpoints(config))}` yourself.
+
+## Options
+
+<auto-type-table path="../../../../../packages/puck-kit/src/editor/plugin.tsx" name="PuckKitOptions" />
+
+<Screenshot src="editor-overview.png" alt="The editor with the plugin" variant="browser" caption="Left rail: Blocks, Outline, Tokens. Header: breakpoint switcher. Right: Settings / Style tabs." />

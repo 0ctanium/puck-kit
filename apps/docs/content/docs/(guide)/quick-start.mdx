@@ -1,0 +1,122 @@
+---
+title: Quick start
+description: From an empty app to an editor and a server-rendered public page in four steps.
+icon: Rocket
+---
+
+This guide uses **Next.js (App Router)**, the framework of the repository’s playground. The same four pieces
+exist in every framework — see [Framework setup](/docs/frameworks/vite) for Vite and others.
+
+<InlineTOC items={toc} />
+
+<Steps>
+<Step>
+
+### Install
+
+```package-install
+@puckeditor/core@~0.23 puck-kit
+```
+
+</Step>
+<Step>
+
+### Create the shared config
+
+The config is used by **both** the editor and the public pages, so it must not import editor code. Don’t add
+`"use client"` to this file.
+
+```ts title="lib/config.ts"
+import { createBuilderConfig } from 'puck-kit';
+
+export const config = createBuilderConfig();
+```
+
+That’s all the 19 native components, their categories, and a root that emits the global CSS and tokens.
+
+</Step>
+<Step>
+
+### Add the editor
+
+`usePuckKit(config)` returns the plugin plus the two `<Puck>` props a plugin can’t set (`viewports` matching
+your breakpoints, and `ui` to open on Desktop). Spread it on Puck’s own component.
+
+```tsx title="app/edit/[slug]/Editor.tsx"
+'use client';
+
+import { Puck, type Data } from '@puckeditor/core';
+import '@puckeditor/core/puck.css';
+import { usePuckKit } from 'puck-kit/editor';
+import { config } from '@/lib/config';
+
+export function Editor({ slug, data }: { slug: string; data: Data | null }) {
+  const kit = usePuckKit(config); // { plugins, viewports, ui }
+
+  return (
+    <Puck
+      config={config}
+      data={data ?? { content: [], root: { props: {} } }}
+      {...kit}
+      onPublish={async (next) => {
+        await fetch(`/api/pages/${slug}`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(next),
+        });
+      }}
+    />
+  );
+}
+```
+
+```tsx title="app/edit/[slug]/page.tsx"
+import { Editor } from './Editor';
+import { loadPage } from '@/lib/store';
+
+export default async function EditPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  return <Editor slug={slug} data={await loadPage(slug)} />;
+}
+```
+
+</Step>
+<Step>
+
+### Render the public page
+
+Use Puck’s own `<Render>`. It works in a **server component**: the kit’s components don’t use hooks, and
+their CSS is hoisted to `<head>` by React.
+
+```tsx title="app/[slug]/page.tsx"
+import { Render } from '@puckeditor/core';
+import { notFound } from 'next/navigation';
+import { config } from '@/lib/config';
+import { loadPage } from '@/lib/store';
+
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const data = await loadPage(slug);
+  if (!data) notFound();
+  return <Render config={config} data={data} />;
+}
+```
+
+Persisting `data` is up to you. A file-based store for development is in
+[Persistence](/docs/guides/persistence).
+
+</Step>
+</Steps>
+
+Open `/edit/home`, drop a Section, a Container and a Heading, style them, publish, and open `/home`.
+
+<Screenshot src="editor-overview.png" alt="The editor after the quick start" variant="browser" />
+
+## Next steps
+
+<Cards>
+  <Card title="Add fonts" href="/docs/styling/fonts" description="Give editors a font library and load only what pages use." />
+  <Card title="Customize breakpoints" href="/docs/styling/breakpoints" description="Desktop-first by default, mobile-first or custom." />
+  <Card title="Your own components" href="/docs/guides/custom-components" description="Same style panel, your markup." />
+  <Card title="Plug in your media library" href="/docs/guides/media-library" description="Replace the image and link inputs." />
+</Cards>

@@ -1,0 +1,114 @@
+---
+title: Components overview
+description: The 19 native elements of puck-kit, grouped like in the editor’s drawer.
+icon: LayoutGrid
+---
+
+import { Square, SquareDashedText, PanelLeftRightDashed, LayoutGrid, Columns2, Link, SquareMousePointer, Heading, SquareText, Image, SquarePlay, Video, LayoutList, StretchHorizontal, Link2, MessageSquareQuote, TextAlignJustifyStart, Grid2x2 } from 'lucide-react';
+
+puck-kit ships **generic elements**, not pre-designed blocks. Each one maps to a real HTML element, has a
+[style panel](/docs/styling/style-panel), and (for containers) a drop zone that *is* the element — so
+`ul > li` and `grid > item` stay true in the output, with no wrapper divs.
+
+<Screenshot src="editor-drawer.png" alt="The compact component drawer of the editor" caption="The compact drawer, grouped by category." variant="panel" maxWidth={380} />
+
+## Structure
+
+Layout primitives. Section, Container, the two Flex presets and Grid are **the same Box element** with
+different default styles — everything remains editable.
+
+<Cards>
+  <Card icon={<SquareDashedText />} title="Section" href="/docs/components/section">Full-width band with vertical padding.</Card>
+  <Card icon={<PanelLeftRightDashed />} title="Container" href="/docs/components/container">Centered, max width per breakpoint.</Card>
+  <Card icon={<LayoutList />} title="Vertical Flex" href="/docs/components/vertical-flex">Flex column with a gap.</Card>
+  <Card icon={<StretchHorizontal />} title="Horizontal Flex" href="/docs/components/horizontal-flex">Flex row, centered, with a gap.</Card>
+  <Card icon={<Grid2x2 />} title="Grid" href="/docs/components/grid">CSS grid with a visual track editor.</Card>
+  <Card icon={<Columns2 />} title="Columns" href="/docs/components/columns">One drop zone per column, stacked on phones.</Card>
+</Cards>
+
+## Basic
+
+<Cards>
+  <Card icon={<Square />} title="Box" href="/docs/components/box">The generic element, with semantic tags.</Card>
+  <Card icon={<LayoutList />} title="List" href="/docs/components/list">`<ul>` / `<ol>` accepting only List Items.</Card>
+  <Card icon={<StretchHorizontal />} title="List Item" href="/docs/components/list-item">`<li>` with a drop zone.</Card>
+  <Card icon={<Link />} title="Link Block" href="/docs/components/link-block">A link that can contain anything.</Card>
+  <Card icon={<SquareMousePointer />} title="Button" href="/docs/components/button">Link or button with interaction states.</Card>
+</Cards>
+
+## Typography
+
+<Cards>
+  <Card icon={<Heading />} title="Heading" href="/docs/components/heading">`<h1>`–`<h6>`, inline editable.</Card>
+  <Card icon={<SquareText />} title="Paragraph" href="/docs/components/paragraph">Rich text paragraphs, no headings.</Card>
+  <Card icon={<TextAlignJustifyStart />} title="Text" href="/docs/components/text">Full rich text block.</Card>
+  <Card icon={<Link2 />} title="Text Link" href="/docs/components/text-link">Inline-styled link.</Card>
+  <Card icon={<MessageSquareQuote />} title="Quote" href="/docs/components/quote">`<blockquote>` with rich text.</Card>
+</Cards>
+
+## Media
+
+<Cards>
+  <Card icon={<Image />} title="Image" href="/docs/components/image">`<img>` with a pluggable media picker.</Card>
+  <Card icon={<SquarePlay />} title="YouTube" href="/docs/components/youtube">Embed from any YouTube link.</Card>
+  <Card icon={<Video />} title="Vimeo" href="/docs/components/vimeo">Embed from any Vimeo link.</Card>
+</Cards>
+
+## At a glance
+
+| Component | Key in config | Renders | Drop zone | Settings fields |
+| --- | --- | --- | --- | --- |
+| Section | `Section` | `<section>` (+ 6 tags) | ✓ | — |
+| Container | `Container` | `<div>` (+ 7 tags) | ✓ | — |
+| V Flex | `VerticalFlex` | `<div>` (+ 7 tags) | ✓ | — |
+| H Flex | `HorizontalFlex` | `<div>` (+ 7 tags) | ✓ | — |
+| Grid | `Grid` | `<div>` (+ 7 tags) | ✓ | — |
+| Columns | `Columns` | `<div>` > `div.pk-col` | one per column | `columns` |
+| Box | `Box` | `<div>` (+ 7 tags) | ✓ | — |
+| List | `List` | `<ul>` / `<ol>` | List Items only | — |
+| List Item | `ListItem` | `<li>` | ✓ | — |
+| Link Block | `LinkBlock` | `<a>` | no links inside | `href`, `target` |
+| Button | `Button` | `<a>` / `<button>` | — | `label`, `href`, `target` |
+| Heading | `Heading` | `<h1>`–`<h6>` | — | `text` |
+| Paragraph | `Paragraph` | `<div class="pk-rich">` | — | `text` (rich) |
+| Text | `Text` | `<div class="pk-rich">` | — | `text` (rich) |
+| Text Link | `TextLink` | `<a>` | — | `text`, `href`, `target` |
+| Quote | `Quote` | `<blockquote>` | — | `text` (rich) |
+| Image | `Image` | `<img>` | — | `src`, `alt`, `loading` |
+| YouTube | `YouTube` | `<iframe>` | — | `url`, player options |
+| Vimeo | `Vimeo` | `<iframe>` | — | `url`, player options |
+
+## What every component has
+
+<Accordions type="multiple">
+<Accordion title="A styles prop and the style panel" id="styles">
+
+Every component has a `styles` prop edited in the **Style** tab: per-breakpoint, per-state CSS properties.
+The element gets the class `pk-<id>` and its CSS is compiled at render time. See [How styles work](/docs/styling).
+
+</Accordion>
+<Accordion title="An Advanced section (id, classes, aria-label)" id="advanced">
+
+The `advanced` prop (`{ htmlId?, className?, ariaLabel? }`) sets an HTML `id` (for anchors like `#pricing`),
+extra classes (for your own CSS or scripts) and an `aria-label`.
+
+</Accordion>
+<Accordion title="Inline mode: no wrapper divs" id="inline">
+
+All components use Puck’s `inline: true`: the element itself receives Puck’s drag handle, so the editor
+doesn’t add wrapper elements and layouts behave exactly like on the public page.
+
+</Accordion>
+<Accordion title="A tag select, when more than one tag makes sense" id="tag">
+
+Components with several possible tags show a **Tag** select at the top of the Style tab (e.g. Box: `div`,
+`section`, `article`, `aside`, `header`, `footer`, `nav`, `main`).
+
+</Accordion>
+</Accordions>
+
+<Callout title="Want something else?">
+  Remove kit components with `exclude`, add your own with `components`, or build new ones on the same style
+  system — see [Customizing the set](/docs/components/customizing) and
+  [Building your own components](/docs/guides/custom-components).
+</Callout>

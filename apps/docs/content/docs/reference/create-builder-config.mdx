@@ -1,0 +1,58 @@
+---
+title: createBuilderConfig
+description: Create the Puck config with the kit's components, categories and root.
+icon: Settings2
+---
+
+```ts
+import { createBuilderConfig } from 'puck-kit';
+
+function createBuilderConfig(options?: BuilderConfigOptions): BuilderConfig;
+```
+
+Returns a regular Puck `Config` (plus the breakpoints, stored under a non-enumerable symbol) with:
+
+- `components` — the 19 kit components, minus `exclude`, plus your `components` (same name replaces);
+- `categories` — `structure`, `basic`, `typography`, `media` (pruned of excluded components), plus yours;
+- `root` — page title and page styles fields, tokens default props, and the render that emits the base CSS,
+  tokens, page styles and fonts.
+
+Throws if the breakpoints are invalid (see [Breakpoints](/docs/styling/breakpoints#custom-breakpoints)).
+
+## Options
+
+<auto-type-table path="../../../../../packages/puck-kit/src/config.ts" name="BuilderConfigOptions" />
+
+## Example
+
+```ts title="lib/config.ts"
+import { createBuilderConfig, defaultTokens } from 'puck-kit';
+import { Banner } from './Banner';
+
+export const config = createBuilderConfig({
+  components: { Banner },
+  categories: { blocks: { title: 'Blocks', components: ['Banner'] } },
+  exclude: ['Vimeo'],
+  tokens: { ...defaultTokens, colors: [{ name: 'Primary', value: '#e11d48' }] },
+});
+```
+
+## getBreakpoints
+
+```ts
+function getBreakpoints(config: Config): Breakpoint[];
+```
+
+The breakpoints a config was created with. Falls back to the page style field's metadata if the config object
+was copied (the symbol isn't enumerable), then to `defaultBreakpoints` — so it works with any Puck config.
+
+## The root
+
+| Prop (`root.props`) | Field | Notes |
+| --- | --- | --- |
+| `title` | Page title (Settings) | Use it for `<title>` |
+| `styles` | Page style (Style tab, no states) | Applied to the `.pk-page` wrapper |
+| `tokens` | — (Tokens panel) | Defaults to `options.tokens ?? defaultTokens` |
+
+The root renders `<div class="pk-page">`, the global CSS (`baseCss` + Columns helper + `tokensToCss(tokens)`),
+the fonts from `metadata.pkFonts` and the page styles.

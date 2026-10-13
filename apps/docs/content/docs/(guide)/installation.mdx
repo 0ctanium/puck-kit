@@ -1,0 +1,63 @@
+---
+title: Installation
+description: Install puck-kit next to Puck, and check the requirements.
+icon: Download
+---
+
+## Requirements
+
+<TypeTable
+  type={{
+    'react / react-dom': { type: '^19.0.0', description: 'React 19 is required: the kit relies on stylesheet hoisting (`<style href precedence>`).' },
+    '@puckeditor/core': { type: '~0.23.0', description: 'The Puck editor. puck-kit is a plugin + component set for this version.' },
+    'Bundler': { type: 'ESM + CSS imports', description: 'Next.js, Vite, React Router, TanStack Start, Astro… The editor modules import their own CSS.' },
+    'Node.js': { type: '>= 20.9', description: 'For Next.js 16 and modern Vite; any version your framework supports.' },
+  }}
+/>
+
+## Install the packages
+
+```package-install
+@puckeditor/core@~0.23 puck-kit
+```
+
+`puck-kit` has a single runtime dependency (`lucide-react`, for the editor icons). React, React DOM and Puck are
+peer dependencies: your app provides them.
+
+## What gets installed
+
+<Files>
+  <Folder name="puck-kit" defaultOpen>
+    <Folder name="dist" defaultOpen>
+      <File name="index.mjs — config, components, styles, fonts (server-safe)" />
+      <File name="editor.mjs — the Puck plugin and editor UI (&quot;use client&quot;)" />
+      <File name="styles.mjs — the style toolkit (server-safe)" />
+      <Folder name="… one file per module, CSS files for the editor UI" />
+    </Folder>
+  </Folder>
+</Files>
+
+The build is **unbundled** (one output file per source module) so the `"use client"` directives stay on the
+editor modules: server components can import `puck-kit` without pulling editor code or hooks.
+
+| Import | Use it in |
+| --- | --- |
+| `import { … } from 'puck-kit'` | Shared config, public pages, server components, your components |
+| `import { … } from 'puck-kit/editor'` | The editor page only (client) |
+| `import { … } from 'puck-kit/styles'` | Anywhere — a subset of `puck-kit` (styling helpers) |
+
+## Puck’s stylesheet
+
+The editor needs Puck’s own CSS. Import it once on the editor page (the kit’s editor CSS is imported
+automatically by `puck-kit/editor`):
+
+```ts
+import '@puckeditor/core/puck.css';
+```
+
+Public pages don’t need any stylesheet: the kit emits the CSS of each element while rendering.
+
+<Cards>
+  <Card title="Quick start" href="/docs/quick-start" description="Build your first editor and public page." />
+  <Card title="Framework setup" href="/docs/frameworks/nextjs" description="Next.js, Vite, React Router, TanStack Start, Astro." />
+</Cards>

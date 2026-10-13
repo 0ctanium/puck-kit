@@ -1,0 +1,101 @@
+---
+title: Section
+description: "A full-width page band with vertical padding — the outermost building block of a page."
+icon: SquareDashedText
+---
+
+<ComponentHeader name="Section" icon="square-dashed-text" category="Structure" tags={["section", "div", "header", "footer", "main", "article", "aside"]} slot={true} />
+
+Use a **Section** for each horizontal band of a page (hero, features, testimonials, footer…). It is a plain element with a drop zone and **64px of padding above and below**. Put a [Container](/docs/components/container) inside to center the content.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-section.png" alt="Section rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "Section", "props": {"styles": {"base": {"paddingTop": "64px", "paddingBottom": "64px", "backgroundColor": "var(--pk-color-surface)"}}, "content": [{"type": "Heading", "props": {"text": "A section", "styles": {"base": {"fontSize": "28px", "fontWeight": "700", "textAlign": "center"}}}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-section.png" alt="Section settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    tag: {"type": "\"section\" | \"div\" | \"header\" | \"footer\" | \"main\" | \"article\" | \"aside\"", "description": "Rendered element. Shown as a **Tag** select in the Style tab.", "default": "\"section\""},
+    content: {"type": "Slot", "description": "Children (a Puck slot, rendered *as* this element: no wrapper div).", "default": "[]"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Section starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "paddingTop": "64px",
+    "paddingBottom": "64px"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+```
+
+</Tab>
+</Tabs>
+
+## Tips
+
+- Give the section a background (color, gradient or image) in **Backgrounds**; it spans the full width while the Container keeps the text readable.
+- Pick `<header>`, `<main>` or `<footer>` as tag for the landmark sections of a page.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Section as stored by Puck">
+
+```json
+{
+  "type": "Section",
+  "props": {
+    "id": "Section-a1b2c3",
+    "tag": "section",
+    "content": [],
+    "styles": {
+      "base": {
+        "paddingTop": "64px",
+        "paddingBottom": "64px"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Container" href="/docs/components/container" description="A centered column with a max width per breakpoint — keeps content readable on large screens." />
+  <Card title="Vertical Flex" href="/docs/components/vertical-flex" description="A flex column with a 16px gap — stack elements vertically." />
+</Cards>

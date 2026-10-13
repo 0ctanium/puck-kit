@@ -1,0 +1,65 @@
+---
+title: API Reference
+description: Every export of puck-kit, by entry point.
+icon: FileCode
+---
+
+import { Settings2, Plug, Paintbrush, Type, MonitorSmartphone, Boxes, Puzzle, Palette, TextCursorInput, Video, Wrench } from 'lucide-react';
+
+## `puck-kit`
+
+Server-safe. Import it anywhere: shared config, server components, your components.
+
+<Cards>
+  <Card icon={<Settings2 />} title="createBuilderConfig" href="/docs/reference/create-builder-config">The config: kit components, categories, root.</Card>
+  <Card icon={<MonitorSmartphone />} title="Breakpoints" href="/docs/reference/breakpoints">`Breakpoint`, presets and helpers.</Card>
+  <Card icon={<Boxes />} title="Component factories" href="/docs/reference/component-factories">`createContainer`, `createTextElement`, `createImage`…</Card>
+  <Card icon={<Paintbrush />} title="Styles" href="/docs/reference/styles">`Styles`, `compileStyles`, `getPageCss`, states.</Card>
+  <Card icon={<Puzzle />} title="Custom component helpers" href="/docs/reference/custom-component-helpers">`styleField`, `ElementStyle`, `elementClass`…</Card>
+  <Card icon={<Palette />} title="Tokens" href="/docs/reference/tokens">`Tokens`, `tokenVar`, `tokensToCss`…</Card>
+  <Card icon={<Type />} title="Fonts" href="/docs/reference/fonts">`FontDefinition`, `fontMetadata`, `FontLinks`…</Card>
+  <Card icon={<TextCursorInput />} title="Field types" href="/docs/reference/field-types">`KitFields`, `backgroundStyle`, `iconOptions`.</Card>
+  <Card icon={<Video />} title="Video helpers" href="/docs/reference/video">YouTube and Vimeo URL parsing.</Card>
+</Cards>
+
+## `puck-kit/editor`
+
+`"use client"`. Only on the editor page.
+
+<Cards>
+  <Card icon={<Plug />} title="puckKit / usePuckKit" href="/docs/reference/puck-kit-plugin">The plugin and its hook.</Card>
+  <Card icon={<Wrench />} title="Editor building blocks" href="/docs/reference/editor-exports">`StylePanel`, `TokensPanel`, `ViewportBar`, `defineFieldType`…</Card>
+</Cards>
+
+## `puck-kit/styles`
+
+The style toolkit — a subset of `puck-kit`, convenient when you only need styling: `styleField`,
+`ElementStyle`, `compileStyles`, `declToCss`, `resolveValue`, `styleClass`, `defaultStates`, `styleKey`,
+`getPageCss`, `baseCss`, `editorCss`, `tokensToCss`, `tokenRef`, `tokenVar`, `defaultTokens`, `STYLE_PROPS`,
+`advancedField`, `elementClass`, `htmlAttrs`, `tagField` and their types.
+
+## All exports
+
+<Accordions type="multiple">
+<Accordion title="puck-kit">
+
+| Export | Kind | Page |
+| --- | --- | --- |
+| `createBuilderConfig`, `getBreakpoints`, `BuilderConfig`, `BuilderConfigOptions` | config | [→](/docs/reference/create-builder-config) |
+| `defaultBreakpoints`, `mobileFirstBreakpoints`, `breakpointForWidth`, `baseBreakpoint`, `cascadeOf`, `mediaQuery`, `toViewports`, `Breakpoint` | breakpoints | [→](/docs/reference/breakpoints) |
+| `createContainer`, `createTextElement`, `createImage`, `createYouTube`, `createVimeo`, `ContainerOptions`, `TextElementOptions`, `ImageProps`, `VideoProps` | factories | [→](/docs/reference/component-factories) |
+| `youtubeId`, `youtubeEmbedUrl`, `vimeoId`, `vimeoEmbedUrl`, `VideoOptions` | video | [→](/docs/reference/video) |
+| everything from `puck-kit/styles` | styles | [→](/docs/reference/styles) |
+| `fontStack`, `fontLabel`, `fontWeights`, `findFont`, `firstFamily`, `systemFonts`, `fontMetadata`, `getFontAssets`, `googleFontsUrl`, `fontFaceCss`, `usedFonts`, `FONT_METADATA_KEY`, `FontLinks`, `FontDefinition`, `FontSource`, `FontFile`, `FontCategory`, `FontAssets` | fonts | [→](/docs/reference/fonts) |
+| `backgroundStyle`, `iconOptions`, `KitFields`, `KitField`, `ColorField`, `BackgroundField`, `FontField`, `RangeField`, `CheckboxField`, `UrlField`, `ImageField`, `BackgroundValue` | field types | [→](/docs/reference/field-types) |
+
+</Accordion>
+<Accordion title="puck-kit/editor">
+
+| Export | Page |
+| --- | --- |
+| `puckKit`, `usePuckKit`, `PuckKitOptions` | [→](/docs/reference/puck-kit-plugin) |
+| `ViewportBar`, `StylePanel`, `useActiveBreakpoint`, `TokensPanel`, `useKitEditor`, `KitEditorOptions`, `FontPicker`, `ColorValueField`, `kitFieldTypes`, `defineFieldType`, `FieldTypeProps`, `UrlField`, `ImageField` | [→](/docs/reference/editor-exports) |
+
+</Accordion>
+</Accordions>

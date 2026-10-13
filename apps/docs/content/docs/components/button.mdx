@@ -1,0 +1,182 @@
+---
+title: Button
+description: "A call to action: a link (<a>) or a <button>, with hover, focus and pressed styles out of the box."
+icon: SquareMousePointer
+---
+
+<ComponentHeader name="Button" icon="square-mouse-pointer" category="Basic" tags={["a", "button"]} slot={false} />
+
+**Button** renders an `<a>` (default) or a `<button type="button">`. The label is edited **inline on the canvas**. It ships with interaction [states](/docs/styling/states): it lifts on hover, shows a focus ring for keyboard users and presses down when clicked.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-button.png" alt="Button rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "HorizontalFlex", "props": {"content": [{"type": "Button", "props": {"label": "Get started"}}, {"type": "Button", "props": {"label": "Outline", "styles": {"base": {"display": "inline-block", "paddingTop": "11px", "paddingBottom": "11px", "paddingLeft": "19px", "paddingRight": "19px", "color": "var(--pk-color-primary)", "borderWidth": "1px", "borderStyle": "solid", "borderColor": "var(--pk-color-primary)", "borderRadius": "6px", "fontWeight": "600", "textDecoration": "none"}, "base:hover": {"backgroundColor": "#eef2ff"}}}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-button.png" alt="Button settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    tag: {"type": "\"a\" | \"button\"", "description": "Rendered element. Shown as a **Tag** select in the Style tab.", "default": "\"a\""},
+    label: {"type": "ReactNode", "description": "Button text, editable inline (`contentEditable`).", "default": "\"Button\""},
+    href: {"type": "string", "description": "Link target (`url` field type). Hidden when the tag is `button`.", "default": "\"#\""},
+    target: {"type": "\"\" | \"_blank\"", "description": "Same tab / new tab. Hidden when the tag is `button`.", "default": "\"\""},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Button starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "display": "inline-block",
+    "paddingTop": "12px",
+    "paddingBottom": "12px",
+    "paddingLeft": "20px",
+    "paddingRight": "20px",
+    "backgroundColor": "var(--pk-color-primary)",
+    "color": "var(--pk-color-white)",
+    "borderRadius": "6px",
+    "borderWidth": "0",
+    "fontWeight": "600",
+    "textDecoration": "none",
+    "textAlign": "center",
+    "cursor": "pointer",
+    "transition": "transform 150ms ease, box-shadow 200ms ease, filter 200ms ease"
+  },
+  "base:hover": {
+    "transform": "translate(0px, -1px)",
+    "boxShadow": "0px 4px 12px 0px rgba(17, 24, 39, 0.15)",
+    "filter": "brightness(110%)"
+  },
+  "base:focus-visible": {
+    "boxShadow": "0px 0px 0px 3px rgba(79, 70, 229, 0.35)"
+  },
+  "base:active": {
+    "transform": "scale(0.98, 0.98)",
+    "boxShadow": "none",
+    "filter": "brightness(95%)"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  display: inline-block;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: var(--pk-color-primary);
+  color: var(--pk-color-white);
+  border-radius: 6px;
+  border-width: 0;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 200ms ease, filter 200ms ease;
+}
+.pk-id:hover {
+  transform: translate(0px, -1px);
+  box-shadow: 0px 4px 12px 0px rgba(17, 24, 39, 0.15);
+  filter: brightness(110%);
+}
+.pk-id:focus-visible {
+  box-shadow: 0px 0px 0px 3px rgba(79, 70, 229, 0.35);
+}
+.pk-id:active {
+  transform: scale(0.98, 0.98);
+  box-shadow: none;
+  filter: brightness(95%);
+}
+```
+
+</Tab>
+</Tabs>
+
+<Screenshot src="style-states.png" alt="The state bar: Hover, Keyboard focus and Pressed already have styles." caption="The state bar: Hover, Keyboard focus and Pressed already have styles." variant="panel" maxWidth={420} />
+
+## Tips
+
+- The colors are tokens (`Primary`, `White`): change the Primary token and every default button follows.
+- Use the `button` tag for actions handled by your own scripts; use `a` for navigation.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Button as stored by Puck">
+
+```json
+{
+  "type": "Button",
+  "props": {
+    "id": "Button-a1b2c3",
+    "tag": "a",
+    "label": "Button",
+    "href": "#",
+    "target": "",
+    "styles": {
+      "base": {
+        "display": "inline-block",
+        "paddingTop": "12px",
+        "paddingBottom": "12px",
+        "paddingLeft": "20px",
+        "paddingRight": "20px",
+        "backgroundColor": "var(--pk-color-primary)",
+        "color": "var(--pk-color-white)",
+        "borderRadius": "6px",
+        "borderWidth": "0",
+        "fontWeight": "600",
+        "textDecoration": "none",
+        "textAlign": "center",
+        "cursor": "pointer",
+        "transition": "transform 150ms ease, box-shadow 200ms ease, filter 200ms ease"
+      },
+      "base:hover": {
+        "transform": "translate(0px, -1px)",
+        "boxShadow": "0px 4px 12px 0px rgba(17, 24, 39, 0.15)",
+        "filter": "brightness(110%)"
+      },
+      "base:focus-visible": {
+        "boxShadow": "0px 0px 0px 3px rgba(79, 70, 229, 0.35)"
+      },
+      "base:active": {
+        "transform": "scale(0.98, 0.98)",
+        "boxShadow": "none",
+        "filter": "brightness(95%)"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Link Block" href="/docs/components/link-block" description="An <a> that can contain anything — make a whole card clickable." />
+  <Card title="Text Link" href="/docs/components/text-link" description="An inline, underlined link with an inline-editable label." />
+</Cards>

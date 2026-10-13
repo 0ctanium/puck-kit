@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+@import 'fumadocs-twoslash/twoslash.css';
+
+
+/* Brand: the kit's default "Primary" token (#4f46e5, indigo). */
+:root {
+  --color-fd-primary: oklch(0.51 0.23 277);
+  --color-fd-primary-foreground: oklch(0.99 0 0);
+  --color-fd-ring: oklch(0.51 0.23 277);
+  --color-brand-soft: oklch(0.96 0.03 277);
+}
+
+.dark {
+  --color-fd-primary: oklch(0.72 0.15 277);
+  --color-fd-primary-foreground: oklch(0.2 0.05 277);
+  --color-fd-ring: oklch(0.72 0.15 277);
+  --color-brand-soft: oklch(0.3 0.08 277 / 0.35);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+/* Small colored badges used in tables (e.g. "Structure", "slot"). */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  padding: 0.05rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--color-brand-soft);
+  color: var(--color-fd-primary);
+  white-space: nowrap;
+}

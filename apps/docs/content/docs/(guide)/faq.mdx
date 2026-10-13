@@ -1,0 +1,60 @@
+---
+title: FAQ & limits
+description: Frequently asked questions, known limits and what’s out of scope for now.
+icon: CircleQuestionMark
+---
+
+<Accordions type="single">
+<Accordion title="Do I need Tailwind?" id="tailwind">
+
+No. The kit compiles each element’s styles to plain CSS at render time. Your site can use Tailwind elsewhere;
+the two don’t interact (kit classes are `pk-<id>`).
+
+</Accordion>
+<Accordion title="Does it ship JavaScript to my visitors?" id="js">
+
+Not from the kit. Components are server-safe, without hooks; on a server-rendered page, the output is HTML and
+`<style>` tags. Puck’s `<Render>` itself is the only runtime involved, and in a React Server Component it doesn’t
+ship to the client either.
+
+</Accordion>
+<Accordion title="Can I use my existing Puck components?" id="existing">
+
+Yes — add them with `createBuilderConfig({ components })`. They work as before; to give them the style panel,
+see [Building your own components](/docs/guides/custom-components).
+
+</Accordion>
+<Accordion title="Can I use the plugin without the kit’s components?" id="plugin-only">
+
+Yes: `puckKit()` works with any Puck config (Tokens panel, field types, fonts, drawer, tabs). Breakpoints come
+from `getBreakpoints(config)`, which falls back to `defaultBreakpoints` for configs not created by
+`createBuilderConfig`.
+
+</Accordion>
+<Accordion title="Can editors write custom CSS or classes?" id="custom-css">
+
+Not CSS directly. They can add **extra classes** (Advanced) that your site’s CSS targets. Reusable named
+classes (a “class system” like Webflow’s) are planned: the `styles` shape is designed for it
+(`compileStyles('.card', classStyles)`).
+
+</Accordion>
+<Accordion title="Why is Paragraph a <div>?" id="paragraph-div">
+
+Rich text already outputs `<p>` elements, which can’t be nested in another `<p>`. Paragraph renders
+`<div class="pk-rich">` around them.
+
+</Accordion>
+<Accordion title="Why don’t links work in the editor?" id="links">
+
+To keep elements selectable, links don’t navigate in the editor, and Link Block attributes (`href`, `id`,
+`aria-label`) are only rendered on the public page.
+
+</Accordion>
+</Accordions>
+
+## Out of scope for now
+
+- Forms and form fields
+- Reusable named classes / global styles per element type
+- Interactions and animations (beyond CSS transitions and states)
+- CMS bindings / collection lists

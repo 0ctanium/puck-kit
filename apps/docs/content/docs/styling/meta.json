@@ -1,0 +1,7 @@
+{
+  "title": "Styling",
+  "description": "How styles, breakpoints and tokens work",
+  "icon": "Paintbrush",
+  "root": true,
+  "pages": ["index", "breakpoints", "states", "tokens", "fonts", "style-panel", "css-output"]
+}

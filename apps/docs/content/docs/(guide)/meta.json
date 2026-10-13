@@ -1,0 +1,22 @@
+{
+  "title": "Guide",
+  "description": "Learn and set up puck-kit",
+  "icon": "BookOpen",
+  "root": true,
+  "pages": [
+    "---Introduction---",
+    "index",
+    "how-it-works",
+    "---Getting started---",
+    "installation",
+    "quick-start",
+    "concepts",
+    "---Framework setup---",
+    "...frameworks",
+    "---Guides---",
+    "...guides",
+    "---Help---",
+    "troubleshooting",
+    "faq"
+  ]
+}

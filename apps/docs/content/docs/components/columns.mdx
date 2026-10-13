@@ -1,0 +1,122 @@
+---
+title: Columns
+description: "A grid with one drop zone per column (1–12), side by side on large screens and stacked on phones."
+icon: Columns2
+---
+
+<ComponentHeader name="Columns" icon="columns-2" category="Structure" tags={["div"]} slot={true} />
+
+**Columns** renders a grid whose **columns are separate drop zones**. Add or remove columns in the Settings tab (1 to 12); the column template follows the count automatically, and the columns stack on phone-sized breakpoints.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-columns.png" alt="Columns rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "Columns", "props": {"columns": [{"content": [{"type": "Paragraph", "props": {"text": "<p><strong>Column 1.</strong> Each column is its own drop zone.</p>"}}]}, {"content": [{"type": "Paragraph", "props": {"text": "<p><strong>Column 2.</strong> They stack on phones.</p>"}}]}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-columns.png" alt="Columns settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    columns: {"type": "{ content: Slot }[]", "description": "One item per column (Settings tab, `min: 1`, `max: 12`). Each item’s `content` is a drop zone rendered as `<div class=\"pk-col\">`.", "default": "2 columns"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Columns starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "display": "grid",
+    "gap": "24px",
+    "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+  },
+  "mobile": {
+    "gridTemplateColumns": "minmax(0,1fr)"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+}
+@media (max-width:767px) {
+  .pk-id {
+    grid-template-columns: minmax(0,1fr);
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+The stacked template goes on every breakpoint whose editor viewport is narrower than 768px (`mobile` by default).
+
+## Tips
+
+- While the template is an equal `repeat(N,minmax(0,1fr))`, adding or removing a column updates it (`resolveData`). Once you customize it (e.g. `2fr 1fr`), the kit leaves it alone.
+- Column wrappers get `min-width: 0` so wide content (code, images) can’t blow up the layout.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Columns as stored by Puck">
+
+```json
+{
+  "type": "Columns",
+  "props": {
+    "id": "Columns-a1b2c3",
+    "columns": [
+      {
+        "content": []
+      },
+      {
+        "content": []
+      }
+    ],
+    "styles": {
+      "base": {
+        "display": "grid",
+        "gap": "24px",
+        "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+      },
+      "mobile": {
+        "gridTemplateColumns": "minmax(0,1fr)"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Grid" href="/docs/components/grid" description="A CSS grid, 2 columns × 2 rows by default, with a visual track editor." />
+  <Card title="Container" href="/docs/components/container" description="A centered column with a max width per breakpoint — keeps content readable on large screens." />
+</Cards>

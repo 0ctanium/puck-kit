@@ -1,0 +1,125 @@
+---
+title: The style panel
+description: A tour of the Style tab — breakpoint bar, states, and the ten sections with their controls.
+icon: SlidersHorizontal
+---
+
+The Style tab is Webflow-like: compact rows, visual controls, and popovers for anything complex.
+
+<Screenshot src="style-breakpoints.png" alt="Breakpoint bar, state selector and legend at the top of the style panel" caption="Top of the panel: breakpoint bar, State, and the set / inherited legend." variant="panel" maxWidth={400} />
+
+## Reading the panel
+
+- The **breakpoint bar** is synced with the switcher in the editor header. A dot marks breakpoints that have
+  styles; the bar underneath shows which breakpoints the active one also styles.
+- **Blue label** = set on this breakpoint (click it to reset). **Orange label** = inherited (from Desktop, or
+  from Tablet on Mobile).
+- **Scrub**: drag a label (or a spacing value) left/right to change a number. **Arrow keys** nudge numbers
+  (Shift ×10, Alt ×0.1).
+- Section headers show a **count** of properties set.
+- Dropdowns are keyboard-friendly (↑ ↓ Enter Esc, type to jump) and show icons where they help: position,
+  cursor, aspect-ratio shapes, object-fit diagrams, easing curves, filters, font samples.
+
+## Sections
+
+<Tabs items={['Layout', 'Children', 'Spacing', 'Size', 'Position', 'Typography', 'Backgrounds', 'Borders', 'Effects']}>
+<Tab value="Layout">
+
+**`layout`** — Display (block, flex, grid, none, + more); for flex: direction/reverse, align & justify icons
+that follow the direction, wrap, gap (linked or row/column); for grid: a visual grid editor (preview,
+column/row steppers, track sizes in `fr`/`px`/`auto`, auto-flow).
+
+<div className="grid gap-4 sm:grid-cols-2">
+<Screenshot src="section-layout-flex.png" alt="Layout section of a flex element" caption="Flex" variant="panel" className="my-0" />
+<Screenshot src="section-layout-grid.png" alt="Layout section of a grid element" caption="Grid" variant="panel" className="my-0" />
+</div>
+
+<Screenshot src="popover-grid-tracks.png" alt="The grid track editor" caption="Track editor: column and row sizes, auto flow." />
+
+</Tab>
+<Tab value="Children">
+
+**`flexChild`** — only when the parent is flex: sizing presets (shrink / grow / none / custom), align self
+(icons follow the parent direction), order.
+**`gridChild`** — only when the parent is grid: column/row span steppers, full-width/height toggle, horizontal
+& vertical self-alignment, order. (`sections: ['child']` selects both.)
+
+<div className="grid gap-4 sm:grid-cols-2">
+<Screenshot src="section-flex-child.png" alt="Flex child section" caption="Flex child" variant="panel" className="my-0" />
+<Screenshot src="section-grid-child.png" alt="Grid child section" caption="Grid child" variant="panel" className="my-0" />
+</div>
+
+</Tab>
+<Tab value="Spacing">
+
+**`spacing`** — the box model: margin and padding values you drag, click for presets (including size tokens),
+and “both sides” / “all sides” modifiers.
+
+<Screenshot src="section-spacing.png" alt="Spacing section" variant="panel" maxWidth={420} />
+
+</Tab>
+<Tab value="Size">
+
+**`size`** — width, height, min/max with units and keywords, overflow, aspect ratio, object fit.
+
+<Screenshot src="section-size.png" alt="Size section" variant="panel" maxWidth={420} />
+
+</Tab>
+<Tab value="Position">
+
+**`position`** — position (static, relative, absolute, fixed, sticky), an inset box, presets (full, top,
+center…), z-index.
+
+<Screenshot src="section-position.png" alt="Position section" variant="panel" maxWidth={420} />
+
+</Tab>
+<Tab value="Typography">
+
+**`typography`** — font (tokens, previewed in their face), weight, size, line height, color, align, style,
+case, letter spacing, wrap, text shadows.
+
+<Screenshot src="section-typography.png" alt="Typography section" variant="panel" maxWidth={420} />
+
+<Screenshot src="popover-color.png" alt="The color picker with token swatches" caption="Colors: HSV picker with alpha, hex/rgba input, eyedropper (where supported) and token swatches." />
+
+</Tab>
+<Tab value="Backgrounds">
+
+**`background`** — layers of images and linear/radial gradients (size, 3×3 position, tiling; angle dial and
+draggable stops for gradients), and a background color.
+
+<Screenshot src="section-backgrounds.png" alt="Backgrounds section" variant="panel" maxWidth={420} />
+<Screenshot src="popover-background.png" alt="Background color popover" />
+
+</Tab>
+<Tab value="Borders">
+
+**`border`** — radius (all corners or each one); a side picker (all/top/right/bottom/left) with style, width
+and color.
+
+<Screenshot src="section-borders.png" alt="Borders section" variant="panel" maxWidth={420} />
+
+</Tab>
+<Tab value="Effects">
+
+**`effects`** — opacity, blending, box shadows, 2D transforms (move/scale/rotate/skew), transitions, filters,
+backdrop filters, cursor.
+
+<Screenshot src="section-effects.png" alt="Effects section" variant="panel" maxWidth={420} />
+<Screenshot src="popover-shadow.png" alt="Box shadow editor" caption="The box shadow editor." />
+
+</Tab>
+</Tabs>
+
+## Limit the sections
+
+For simple custom components, show only what makes sense:
+
+```ts
+styleField({ sections: ['spacing', 'size', 'border'] });
+```
+
+## The Advanced section
+
+Below the style sections, **Advanced** (the `advanced` prop) sets an **HTML id**, **extra classes** and an
+**ARIA label**. Extra classes are sanitized (only letters, digits, `_`, `-` and spaces are kept).

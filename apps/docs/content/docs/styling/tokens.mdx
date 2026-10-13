@@ -1,0 +1,123 @@
+---
+title: Design tokens
+description: Colors, fonts and sizes stored with the page, emitted as CSS variables and offered everywhere.
+icon: Palette
+---
+
+Tokens are named values — **colors**, **fonts** and **sizes** — that elements reference instead of raw
+values. Change a token once, and every element using it follows.
+
+<div className="grid gap-4 sm:grid-cols-[minmax(0,320px)_1fr] items-start">
+
+<Screenshot src="editor-tokens.png" alt="The Tokens panel in the editor's left rail" variant="panel" className="my-0" />
+
+<div>
+
+- Edited in the **Tokens** panel, in the left rail (part of the `puckKit` plugin).
+- Stored in **`root.props.tokens`** — they travel with the page data.
+- Emitted as CSS variables: `--pk-color-<name>`, `--pk-font-<name>`, `--pk-size-<name>`.
+- Offered as **swatches** in color pickers, **presets** in spacing and size inputs, and entries in the font
+  picker.
+- Each token shows **how many places use it**.
+
+</div>
+</div>
+
+## Data and CSS
+
+<Tabs items={['root.props.tokens', 'Emitted CSS', 'A reference']}>
+<Tab value="root.props.tokens">
+
+```json
+{
+  "colors": [
+    { "name": "Primary", "value": "#4f46e5" },
+    { "name": "Text", "value": "#111827" }
+  ],
+  "fonts": [{ "name": "Sans", "value": "\"Inter\", sans-serif" }],
+  "sizes": [{ "name": "MD", "value": "16px" }]
+}
+```
+
+</Tab>
+<Tab value="Emitted CSS">
+
+```css
+:root{--pk-color-primary:#4f46e5;--pk-color-text:#111827;--pk-font-sans:"Inter", sans-serif;--pk-size-md:16px}
+```
+
+</Tab>
+<Tab value="A reference">
+
+```json
+{ "base": { "color": "var(--pk-color-primary)", "paddingTop": "var(--pk-size-md)" } }
+```
+
+</Tab>
+</Tabs>
+
+Names are slugified for the variable: `"Brand Blue"` → `--pk-color-brand-blue`.
+
+## Renaming and deleting
+
+- **Rename** a token and every reference in the page is rewritten (`var(--pk-color-old)` →
+  `var(--pk-color-new)`) — one undo step.
+- **Delete** a used token and you can **detach** it: references are replaced by the raw value, so nothing
+  breaks.
+
+## Defaults
+
+A new page starts with `defaultTokens`, or with the tokens you pass to the config:
+
+<Tabs items={['Defaults', 'Your own']}>
+<Tab value="Defaults">
+
+| Colors | Fonts | Sizes |
+| --- | --- | --- |
+| Primary `#4f46e5` | Sans — system sans stack | XS `4px` |
+| Text `#111827` | Serif — system serif stack | SM `8px` |
+| Muted `#6b7280` | Mono — system mono stack | MD `16px` |
+| Surface `#f3f4f6` | | LG `32px` |
+| White `#ffffff` | | XL `64px` |
+
+</Tab>
+<Tab value="Your own">
+
+```ts title="lib/config.ts"
+import { createBuilderConfig, defaultTokens } from 'puck-kit';
+
+export const config = createBuilderConfig({
+  tokens: {
+    ...defaultTokens,
+    colors: [
+      { name: 'Primary', value: '#e11d48' },
+      { name: 'Text', value: '#0f172a' },
+      { name: 'Muted', value: '#64748b' },
+      { name: 'Surface', value: '#f8fafc' },
+      { name: 'White', value: '#ffffff' },
+    ],
+  },
+});
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="info" title="Tokens the kit relies on">
+  Kit defaults reference some token names: `Primary` and `White` (Button, Text Link), `Text` and `Sans` (base
+  stylesheet: `color: var(--pk-color-text)`, `font-family: var(--pk-font-sans)`). If you remove them, those
+  values fall back (the base stylesheet has fallbacks) or become unset — keep them or restyle the defaults.
+</Callout>
+
+## Using tokens in code
+
+```ts
+import { tokenRef, tokenVar, tokensToCss } from 'puck-kit';
+
+tokenVar('colors', 'Brand Blue'); // "--pk-color-brand-blue"
+tokenRef('sizes', 'LG');          // "var(--pk-size-lg)"
+tokensToCss(data.root.props.tokens); // ":root{…}"
+```
+
+In your own components, a [`color` field](/docs/editor/field-types#color) stores `var(--pk-color-…)` when a
+swatch is picked, so tokens work in inline styles too.

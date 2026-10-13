@@ -6,6 +6,9 @@
     "build": "pnpm --filter puck-kit build",
     "dev": "pnpm --filter playground dev",
     "test": "pnpm --filter puck-kit test",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "docs": "pnpm --filter docs dev",
+    "docs:build": "pnpm --filter docs build",
+    "docs:screenshots": "pnpm --filter docs screenshots"
   }
 }

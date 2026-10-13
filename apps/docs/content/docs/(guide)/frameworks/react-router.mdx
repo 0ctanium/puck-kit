@@ -1,0 +1,111 @@
+---
+title: React Router (framework mode)
+description: Server-rendered pages with loaders, an editor route, and an action to save.
+icon: Route
+---
+
+React Router v7 in framework mode (the successor of Remix) server-renders routes with React 19, so the kit’s
+hoisted `<style>` tags land in the document `<head>` like with Next.js.
+
+## Routes
+
+```ts title="app/routes.ts"
+import { type RouteConfig, index, route } from '@react-router/dev/routes';
+
+export default [
+  route('edit/:slug', 'routes/edit.tsx'),
+  route('api/pages/:slug', 'routes/save.ts'),
+  index('routes/page.tsx', { id: 'home' }),
+  route(':slug', 'routes/page.tsx'),
+] satisfies RouteConfig;
+```
+
+<Steps>
+<Step>
+
+### Shared config
+
+```ts title="app/lib/config.ts"
+import { createBuilderConfig } from 'puck-kit';
+
+export const config = createBuilderConfig();
+```
+
+</Step>
+<Step>
+
+### Public page
+
+```tsx title="app/routes/page.tsx"
+import { Render } from '@puckeditor/core';
+import { data as response } from 'react-router';
+import type { Route } from './+types/page';
+import { config } from '~/lib/config';
+import { loadPage } from '~/lib/store.server';
+
+export async function loader({ params }: Route.LoaderArgs) {
+  const data = await loadPage(params.slug ?? 'home');
+  if (!data) throw response('Not found', { status: 404 });
+  return { data };
+}
+
+export default function Page({ loaderData }: Route.ComponentProps) {
+  return <Render config={config} data={loaderData.data} />;
+}
+```
+
+</Step>
+<Step>
+
+### Editor
+
+```tsx title="app/routes/edit.tsx"
+import { Puck } from '@puckeditor/core';
+import puckCss from '@puckeditor/core/puck.css?url';
+import { usePuckKit } from 'puck-kit/editor';
+import type { Route } from './+types/edit';
+import { config } from '~/lib/config';
+import { loadPage } from '~/lib/store.server';
+
+export const links: Route.LinksFunction = () => [{ rel: 'stylesheet', href: puckCss }];
+
+export async function loader({ params }: Route.LoaderArgs) {
+  return { slug: params.slug, data: await loadPage(params.slug) };
+}
+
+export default function Edit({ loaderData: { slug, data } }: Route.ComponentProps) {
+  const kit = usePuckKit(config);
+  return (
+    <Puck
+      config={config}
+      data={data ?? { content: [], root: { props: {} } }}
+      {...kit}
+      onPublish={(next) => fetch(`/api/pages/${slug}`, { method: 'POST', body: JSON.stringify(next) })}
+    />
+  );
+}
+```
+
+</Step>
+<Step>
+
+### Save action
+
+```ts title="app/routes/save.ts"
+import type { Route } from './+types/save';
+import { savePage } from '~/lib/store.server';
+
+export async function action({ request, params }: Route.ActionArgs) {
+  // Authorize the user here.
+  await savePage(params.slug, await request.json());
+  return Response.json({ ok: true });
+}
+```
+
+</Step>
+</Steps>
+
+<Callout type="info" title="Editor CSS">
+  `puck-kit/editor` imports its own CSS files; Vite (used by React Router) bundles them automatically. Only
+  Puck’s stylesheet needs the `links` export (or a plain `import '@puckeditor/core/puck.css'`).
+</Callout>

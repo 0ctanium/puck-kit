@@ -1,0 +1,195 @@
+---
+title: Next.js (App Router)
+description: Editor as a client component, public pages as server components, data in your storage.
+icon: Triangle
+---
+
+The App Router is the most natural fit: public pages are **server components** (no kit JavaScript sent to the
+browser), and the editor is a **client component**. The repository’s playground (`apps/playground`) is a
+complete example of this setup.
+
+## Project layout
+
+<Files>
+  <Folder name="app" defaultOpen>
+    <Folder name="[[...slug]]" defaultOpen>
+      <File name="page.tsx" />
+    </Folder>
+    <Folder name="edit" defaultOpen>
+      <Folder name="[slug]" defaultOpen>
+        <File name="page.tsx" />
+        <File name="Editor.tsx" />
+      </Folder>
+    </Folder>
+    <Folder name="api/pages/[slug]" defaultOpen>
+      <File name="route.ts" />
+    </Folder>
+  </Folder>
+  <Folder name="lib" defaultOpen>
+    <File name="config.ts" />
+    <File name="fonts.ts" />
+    <File name="store.ts" />
+  </Folder>
+</Files>
+
+<Steps>
+<Step>
+
+### Install
+
+```package-install
+@puckeditor/core@~0.23 puck-kit
+```
+
+</Step>
+<Step>
+
+### Shared config
+
+```ts title="lib/config.ts"
+// No "use client": imported by server pages and by the editor.
+import { createBuilderConfig } from 'puck-kit';
+
+export const config = createBuilderConfig({
+  // components: { … }, categories: { … }, breakpoints: …, exclude: […]
+});
+```
+
+</Step>
+<Step>
+
+### The editor (client component)
+
+```tsx title="app/edit/[slug]/Editor.tsx"
+'use client';
+
+import { Puck, type Data } from '@puckeditor/core';
+import '@puckeditor/core/puck.css';
+import type { FontDefinition } from 'puck-kit';
+import { usePuckKit } from 'puck-kit/editor';
+import { config } from '@/lib/config';
+
+export function Editor({ slug, data, fonts }: { slug: string; data: Data | null; fonts: FontDefinition[] }) {
+  const kit = usePuckKit(config, { fonts });
+
+  return (
+    <Puck
+      config={config}
+      data={data ?? { content: [], root: { props: {} } }}
+      {...kit}
+      headerPath={`/${slug}`}
+      onPublish={async (next) => {
+        const res = await fetch(`/api/pages/${slug}`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(next),
+        });
+        if (res.ok) window.open(`/${slug}`, '_blank');
+      }}
+    />
+  );
+}
+```
+
+```tsx title="app/edit/[slug]/page.tsx"
+import { Editor } from './Editor';
+import { loadPage } from '@/lib/store';
+import { fonts } from '@/lib/fonts';
+
+export default async function EditPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  return <Editor slug={slug} data={await loadPage(slug)} fonts={fonts} />;
+}
+```
+
+</Step>
+<Step>
+
+### Saving
+
+```ts title="app/api/pages/[slug]/route.ts"
+import type { Data } from '@puckeditor/core';
+import { savePage } from '@/lib/store';
+
+export async function POST(req: Request, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  // Check the user is allowed to edit here!
+  await savePage(slug, (await req.json()) as Data);
+  return Response.json({ ok: true });
+}
+```
+
+`loadPage` / `savePage` are yours: a database, a CMS, files… See [Persistence](/docs/guides/persistence).
+
+</Step>
+<Step>
+
+### Public pages (server component)
+
+```tsx title="app/[[...slug]]/page.tsx"
+import { Render } from '@puckeditor/core';
+import { fontMetadata } from 'puck-kit';
+import { notFound } from 'next/navigation';
+import { config } from '@/lib/config';
+import { fonts } from '@/lib/fonts';
+import { loadPage } from '@/lib/store';
+
+export default async function Page({ params }: { params: Promise<{ slug?: string[] }> }) {
+  const { slug = ['home'] } = await params;
+  const data = await loadPage(slug.join('/'));
+  if (!data) notFound();
+
+  // Only the fonts this page uses are loaded.
+  return <Render config={config} data={data} metadata={fontMetadata(fonts, data)} />;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug?: string[] }> }) {
+  const { slug = ['home'] } = await params;
+  const data = await loadPage(slug.join('/'));
+  return { title: (data?.root.props as { title?: string } | undefined)?.title || 'Untitled' };
+}
+```
+
+</Step>
+</Steps>
+
+## What ends up in the HTML
+
+The public page HTML contains the elements and, in `<head>`, one `<style>` per element plus the global one —
+React deduplicates them by `href` and streams them with the page:
+
+```html
+<head>
+  <style data-precedence="puck-kit-base" data-href="puck-kit-global-1x2y3z">:where(.pk-page) *…:root{--pk-color-primary:#4f46e5;…}</style>
+  <style data-precedence="puck-kit" data-href="pk-Heading-1a2b-9k8j">.pk-Heading-1a2b{font-size:48px}…</style>
+</head>
+```
+
+<Accordions type="multiple">
+<Accordion title="Using puck-kit from source in a monorepo">
+
+If your app imports a workspace copy of `puck-kit` whose `exports` point at TypeScript source (like the
+playground does), let Next compile it:
+
+```ts title="next.config.ts"
+const nextConfig = { transpilePackages: ['puck-kit'] };
+export default nextConfig;
+```
+
+The published package ships compiled ESM and doesn’t need this.
+
+</Accordion>
+<Accordion title="Static generation and caching">
+
+`<Render>` is a server component, so pages can be statically generated (`generateStaticParams`) or cached
+with `revalidate` like any other page. To serve the CSS as a separate cacheable file instead, see
+[`getPageCss`](/docs/styling/css-output#one-stylesheet-per-page).
+
+</Accordion>
+<Accordion title="Protect the editor">
+
+The editor route and the save endpoint are regular routes: protect them with your auth (middleware/proxy,
+a session check in `page.tsx` and in the route handler).
+
+</Accordion>
+</Accordions>

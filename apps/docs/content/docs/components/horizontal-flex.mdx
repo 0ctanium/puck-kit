@@ -1,0 +1,107 @@
+---
+title: Horizontal Flex
+description: "A flex row, vertically centered, with a 16px gap — put elements side by side."
+icon: LayoutArrowRight
+---
+
+<ComponentHeader name="HorizontalFlex" icon="layout-arrow-right" category="Structure" tags={["div", "section", "article", "aside", "header", "footer", "nav", "main"]} slot={true} />
+
+**H Flex** (“Horizontal Flex”) lays its children out in a row, vertically centered, with a 16px gap. Children get a **Flex child** section (grow / shrink presets, align self, order).
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-horizontal-flex.png" alt="Horizontal Flex rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "HorizontalFlex", "props": {"content": [{"type": "Button", "props": {"label": "Primary"}}, {"type": "TextLink", "props": {"text": "Secondary link"}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-horizontal-flex.png" alt="Horizontal Flex settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    tag: {"type": "\"div\" | \"section\" | \"article\" | \"aside\" | \"header\" | \"footer\" | \"nav\" | \"main\"", "description": "Rendered element. Shown as a **Tag** select in the Style tab.", "default": "\"div\""},
+    content: {"type": "Slot", "description": "Children (a Puck slot, rendered *as* this element: no wrapper div).", "default": "[]"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Horizontal Flex starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "display": "flex",
+    "flexDirection": "row",
+    "alignItems": "center",
+    "gap": "16px"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+```
+
+</Tab>
+</Tabs>
+
+## Tips
+
+- Turn **wrap** on (Layout → Children) for rows of tags or logos.
+- On Mobile, set the direction to vertical to stack the items.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Horizontal Flex as stored by Puck">
+
+```json
+{
+  "type": "HorizontalFlex",
+  "props": {
+    "id": "HorizontalFlex-a1b2c3",
+    "tag": "div",
+    "content": [],
+    "styles": {
+      "base": {
+        "display": "flex",
+        "flexDirection": "row",
+        "alignItems": "center",
+        "gap": "16px"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Vertical Flex" href="/docs/components/vertical-flex" description="A flex column with a 16px gap — stack elements vertically." />
+  <Card title="Grid" href="/docs/components/grid" description="A CSS grid, 2 columns × 2 rows by default, with a visual track editor." />
+</Cards>

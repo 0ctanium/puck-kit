@@ -1,0 +1,86 @@
+---
+title: States
+description: Style hover, pressed, focus and structural states per breakpoint.
+icon: MousePointerClick
+---
+
+Pick a state in the panel’s **State** bar, then style as usual: every change goes to that state. While the
+element is selected, the canvas **previews the edited state** (CSS can’t force `:hover`, so the kit adds an
+editor-only `data-pk-state` attribute that the compiled rules also match).
+
+<Screenshot src="style-states.png" alt="The State dropdown of the style panel" caption="States grouped by Interaction and Structure; the counts show how many properties are set." variant="panel" maxWidth={400} />
+
+## Default states
+
+| Key | Label | Selector |
+| --- | --- | --- |
+| `hover` | Hover | `:hover` |
+| `focus-visible` | Keyboard focus | `:focus-visible` |
+| `focus` | Focused | `:focus` |
+| `focus-within` | Focus within | `:focus-within` |
+| `active` | Pressed | `:active` |
+| `first-child` | First child | `:first-child` |
+| `last-child` | Last child | `:last-child` |
+| `odd` | Odd children | `:nth-child(odd)` |
+| `even` | Even children | `:nth-child(even)` |
+
+They are listed in cascade order: interaction states follow the link-visited-hover-focus-active convention,
+so **Pressed overrides Hover**.
+
+## How they’re stored and compiled
+
+States live in the same `styles` object, as `<breakpoint>:<state>` keys:
+
+<Tabs items={['styles', 'CSS']}>
+<Tab value="styles">
+
+```json
+{
+  "base": { "backgroundColor": "var(--pk-color-primary)" },
+  "base:hover": { "filter": "brightness(110%)" },
+  "mobile": { "width": "100%" },
+  "mobile:hover": { "filter": "none" }
+}
+```
+
+</Tab>
+<Tab value="CSS">
+
+```css
+.pk-x{background-color:var(--pk-color-primary)}
+.pk-x:hover{filter:brightness(110%)}
+@media (max-width:767px){.pk-x{width:100%}.pk-x:hover{filter:none}}
+```
+
+</Tab>
+</Tabs>
+
+A state set on Desktop **keeps applying** on Tablet and Mobile (state rules are more specific than plain ones)
+unless you override it there — exactly like the plain values.
+
+## Custom state lists
+
+`styleField` takes the states to offer:
+
+```ts
+import { defaultStates, styleField, type StyleState } from 'puck-kit';
+
+const states: StyleState[] = [
+  ...defaultStates,
+  { key: 'visited', label: 'Visited', selector: ':visited' },
+  { key: 'checked', label: 'Checked', selector: ':checked' },
+];
+
+styleField({ states });        // your list
+styleField({ states: false }); // no state bar (the page's root style does this)
+```
+
+<Callout type="info" title="Selectors are appended">
+  `selector` is appended to the element’s class: `.pk-x` + `:nth-child(3n)`. Use pseudo-classes (or attribute
+  selectors like `[aria-current="page"]`), not descendant selectors.
+</Callout>
+
+<Callout title="Why inside styles?">
+  States live inside `styles` on purpose: a future class/selector system can reuse the exact same shape —
+  `compileStyles('.card', classStyles)`.
+</Callout>

@@ -1,0 +1,61 @@
+---
+title: Accessibility & SEO
+description: Semantic tags, headings, alt text, ARIA labels and focus styles with the kit.
+icon: Accessibility
+---
+
+Because the kit outputs real elements (not divs styled to look like them), most of accessibility and SEO comes
+down to choosing the right element and filling the right field.
+
+<Accordions type="multiple">
+<Accordion title="Use landmark tags" id="landmarks">
+
+Section and Box offer semantic tags in their **Tag** select: `header`, `nav`, `main`, `footer`, `article`,
+`aside`. Screen reader users jump between landmarks; search engines understand the page structure.
+
+</Accordion>
+<Accordion title="Keep a logical heading outline" id="headings">
+
+Choose a Heading’s **tag** for the outline (one `<h1>` per page, then `<h2>`, `<h3>`…) and its **size with
+styles**. The kit decouples the two, so a small `<h2>` or a huge `<h3>` is fine.
+
+</Accordion>
+<Accordion title="Describe images and videos" id="media">
+
+Fill Image’s **Alt text** (leave it empty only for decorative images). YouTube and Vimeo have a **Title (for
+screen readers)** field used as the iframe `title`.
+
+</Accordion>
+<Accordion title="Label icon-only and ambiguous elements" id="aria">
+
+Every component has **Advanced → ARIA label** (`aria-label`). Use it on an icon-only Link Block or Button, or
+a `nav` that needs a name (“Footer navigation”).
+
+</Accordion>
+<Accordion title="Keep focus visible" id="focus">
+
+The Button ships with a **Keyboard focus** (`:focus-visible`) ring. When you restyle links and buttons, style
+that state too — see [States](/docs/styling/states).
+
+</Accordion>
+<Accordion title="Links that open new tabs" id="target">
+
+Choosing **New tab** adds `target="_blank"` and `rel="noopener noreferrer"` automatically.
+
+</Accordion>
+<Accordion title="Lists are real lists" id="lists">
+
+List only accepts List Items, so assistive technologies announce “list, 3 items” correctly.
+
+</Accordion>
+<Accordion title="Page title" id="title">
+
+The page’s **Page title** (root Settings) is stored in `root.props.title`: use it for the document `<title>`
+(see the [Next.js guide](/docs/frameworks/nextjs)).
+
+</Accordion>
+</Accordions>
+
+<Callout type="info" title="Anchors">
+  **Advanced → HTML id** gives an element an `id`, so `#pricing` links (Button, Text Link…) scroll to it.
+</Callout>

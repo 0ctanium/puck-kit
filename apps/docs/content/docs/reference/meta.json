@@ -1,0 +1,24 @@
+{
+  "title": "API Reference",
+  "description": "Every export, by entry point",
+  "icon": "FileCode",
+  "root": true,
+  "pages": [
+    "index",
+    "---Config---",
+    "create-builder-config",
+    "breakpoints",
+    "component-factories",
+    "---Editor---",
+    "puck-kit-plugin",
+    "editor-exports",
+    "---Styles---",
+    "styles",
+    "custom-component-helpers",
+    "tokens",
+    "---Fonts & fields---",
+    "fonts",
+    "field-types",
+    "video"
+  ]
+}

@@ -1,0 +1,147 @@
+---
+title: Customizing the set
+description: Remove, replace, regroup or re-create kit components with createBuilderConfig and the component factories.
+icon: SlidersHorizontal
+---
+
+All customization goes through [`createBuilderConfig`](/docs/reference/create-builder-config). It returns
+a regular Puck `Config`, so anything Puck allows still works afterwards.
+
+## Remove components
+
+```ts title="lib/config.ts"
+import { createBuilderConfig } from 'puck-kit';
+
+export const config = createBuilderConfig({
+  exclude: ['Quote', 'Vimeo'], // [!code highlight]
+});
+```
+
+Excluded components disappear from the drawer and from their category.
+
+<Callout type="warn" title="Existing pages">
+  Puck can’t render a component type that’s missing from the config. Only exclude components your stored
+  pages don’t use (or migrate the data first).
+</Callout>
+
+## Add your own
+
+```ts title="lib/config.ts"
+import { createBuilderConfig } from 'puck-kit';
+import { Banner } from './Banner';
+import { Pricing } from './Pricing';
+
+export const config = createBuilderConfig({
+  components: { Banner, Pricing }, // [!code highlight]
+  categories: {
+    blocks: { title: 'Blocks', components: ['Banner', 'Pricing'] }, // [!code highlight]
+  },
+});
+```
+
+- `components` are added next to the kit’s. **A component with the same name replaces the kit’s one** — for
+  example `components: { Button: MyButton }`.
+- `categories` are merged with the kit’s (`structure`, `basic`, `typography`, `media`). Reusing a key
+  replaces that category.
+
+See [Building your own components](/docs/guides/custom-components) to give them the same style panel.
+
+## Rename or reorder categories
+
+The kit categories are plain Puck categories, so you can override them by key:
+
+```ts
+createBuilderConfig({
+  categories: {
+    // Same key as the kit's: replaces it.
+    media: { title: 'Images & video', components: ['Image', 'YouTube'] },
+  },
+});
+```
+
+## Re-create a kit component with other defaults
+
+The factories behind the native components are exported. Create variants with your own defaults — they get
+the full style panel and behave exactly like the originals.
+
+<Tabs items={['A "Card" box', 'A "Lead" paragraph', 'Image']}>
+<Tab value='A "Card" box'>
+
+```tsx title="lib/Card.ts"
+import { createContainer, defaultBreakpoints } from 'puck-kit';
+
+export const Card = createContainer(
+  {
+    label: 'Card',
+    tags: ['article', 'div'],
+    metadata: { icon: 'square' },
+    defaultStyles: {
+      base: {
+        paddingTop: '24px', paddingBottom: '24px', paddingLeft: '24px', paddingRight: '24px',
+        borderRadius: '12px', borderWidth: '1px', borderStyle: 'solid', borderColor: '#e5e7eb',
+      },
+      'base:hover': { boxShadow: '0px 8px 24px 0px rgba(17, 24, 39, 0.08)' },
+    },
+  },
+  { breakpoints: defaultBreakpoints }, // the same breakpoints as your config
+);
+```
+
+</Tab>
+<Tab value='A "Lead" paragraph'>
+
+```tsx title="lib/Lead.ts"
+import { createTextElement, defaultBreakpoints } from 'puck-kit';
+
+export const Lead = createTextElement(
+  {
+    label: 'Lead',
+    kind: 'richtext',
+    tags: ['p'],
+    defaultText: '<p>An introduction that stands out.</p>',
+    defaultStyles: { base: { fontSize: '20px', color: 'var(--pk-color-muted)' } },
+    richtextOptions: { heading: false },
+  },
+  { breakpoints: defaultBreakpoints },
+);
+```
+
+</Tab>
+<Tab value="Image">
+
+```tsx title="lib/config.ts"
+import { createBuilderConfig, createImage, defaultBreakpoints } from 'puck-kit';
+
+const Photo = createImage({ breakpoints: defaultBreakpoints });
+
+export const config = createBuilderConfig({
+  components: {
+    Photo: { ...Photo, label: 'Photo', defaultProps: { ...Photo.defaultProps, loading: 'eager' } },
+  },
+});
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="info" title="Pass the same breakpoints">
+  Factories take a context `{ breakpoints }` as their second argument: the style panel and the compiled CSS
+  use it. Pass the breakpoints you give `createBuilderConfig` (`defaultBreakpoints` if you don’t customize them).
+</Callout>
+
+The options are documented in the [component factories reference](/docs/reference/component-factories).
+
+## Tweak a kit component
+
+`config.components` is a plain object: you can adjust a kit component after creating the config.
+
+```ts
+const config = createBuilderConfig();
+
+// Rename it in the drawer and start it as an <h1>.
+config.components.Heading = {
+  ...config.components.Heading,
+  label: 'Title',
+  defaultProps: { ...config.components.Heading.defaultProps, tag: 'h1' },
+};
+```

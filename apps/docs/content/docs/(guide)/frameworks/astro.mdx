@@ -1,0 +1,124 @@
+---
+title: Astro
+description: Static or server-rendered pages from Puck data, with the editor as a client-only React island.
+icon: Orbit
+---
+
+Astro renders React components to HTML on the server without shipping their JavaScript unless you add a
+`client:*` directive — a perfect match for the kit’s server-safe components.
+
+<Steps>
+<Step>
+
+### Add React and install
+
+```bash
+npx astro add react
+```
+
+```package-install
+@puckeditor/core@~0.23 puck-kit
+```
+
+</Step>
+<Step>
+
+### Config
+
+```ts title="src/lib/config.ts"
+import { createBuilderConfig } from 'puck-kit';
+
+export const config = createBuilderConfig();
+```
+
+</Step>
+<Step>
+
+### Public page
+
+Render Puck’s `<Render>` from a small React component, **without** a client directive, and put the page’s
+stylesheet in `<head>` with `getPageCss` (the most reliable way to get all CSS in the head of a non-streamed
+React render):
+
+```tsx title="src/components/PuckPage.tsx"
+import { Render, type Data } from '@puckeditor/core';
+import { config } from '../lib/config';
+
+export default function PuckPage({ data }: { data: Data }) {
+  return <Render config={config} data={data} />;
+}
+```
+
+```astro title="src/pages/[slug].astro"
+---
+import { getPageCss } from 'puck-kit/styles';
+import PuckPage from '../components/PuckPage';
+import { loadPage } from '../lib/store';
+
+const data = await loadPage(Astro.params.slug!);
+if (!data) return Astro.redirect('/404');
+const css = getPageCss(data);
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{data.root.props?.title}</title>
+    <style set:html={css}></style>
+  </head>
+  <body>
+    <PuckPage data={data} />
+  </body>
+</html>
+```
+
+For static builds, add `getStaticPaths` returning your slugs.
+
+</Step>
+<Step>
+
+### Editor island
+
+The editor is interactive: render it client-side only.
+
+```tsx title="src/components/Editor.tsx"
+import { Puck, type Data } from '@puckeditor/core';
+import '@puckeditor/core/puck.css';
+import { usePuckKit } from 'puck-kit/editor';
+import { config } from '../lib/config';
+
+export default function Editor({ slug, data }: { slug: string; data: Data | null }) {
+  const kit = usePuckKit(config);
+  return (
+    <Puck
+      config={config}
+      data={data ?? { content: [], root: { props: {} } }}
+      {...kit}
+      onPublish={(next) => fetch(`/api/pages/${slug}`, { method: 'POST', body: JSON.stringify(next) })}
+    />
+  );
+}
+```
+
+```astro title="src/pages/edit/[slug].astro"
+---
+import Editor from '../../components/Editor';
+import { loadPage } from '../../lib/store';
+
+export const prerender = false;
+const slug = Astro.params.slug!;
+const data = await loadPage(slug);
+---
+<html lang="en">
+  <body style="margin:0">
+    <Editor client:only="react" slug={slug} data={data} />
+  </body>
+</html>
+```
+
+</Step>
+</Steps>
+
+<Callout type="info">
+  Saving needs an endpoint (`src/pages/api/pages/[slug].ts` exporting `POST`) and therefore an Astro adapter
+  (server or hybrid output).
+</Callout>

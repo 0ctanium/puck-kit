@@ -1,0 +1,111 @@
+---
+title: Persistence
+description: Pages are plain JSON. Store them in files, a database or a CMS.
+icon: Database
+---
+
+puck-kit doesn’t store anything. A page is Puck’s `Data` object — JSON you get from `onPublish` (or
+`onChange`) and give back to `<Puck data>` and `<Render data>`. Everything the kit needs lives inside it:
+
+<Files>
+  <Folder name="Data" defaultOpen>
+    <Folder name="root.props" defaultOpen>
+      <File name="title — page title (Settings)" />
+      <File name="styles — page styles (Style tab of the page)" />
+      <File name="tokens — colors, fonts, sizes" />
+    </Folder>
+    <Folder name="content[] — the elements" defaultOpen>
+      <File name="props.id — stable id → class pk-<id>" />
+      <File name="props.styles — per breakpoint / state" />
+      <File name="props.advanced — html id, classes, aria-label" />
+      <File name="props.content — nested elements (slots)" />
+    </Folder>
+  </Folder>
+</Files>
+
+## Recipes
+
+<Tabs items={['Files (dev)', 'SQL', 'Key-value']} groupId="store" persist>
+<Tab value="Files (dev)">
+
+The playground’s store — fine for development and demos:
+
+```ts title="lib/store.ts"
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import type { Data } from '@puckeditor/core';
+
+const dir = path.join(process.cwd(), 'data');
+
+export const isValidSlug = (slug: string) => /^[a-z0-9-]+$/.test(slug);
+
+export async function loadPage(slug: string): Promise<Data | null> {
+  if (!isValidSlug(slug)) return null;
+  try {
+    return JSON.parse(await readFile(path.join(dir, `${slug}.json`), 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+export async function savePage(slug: string, data: Data) {
+  if (!isValidSlug(slug)) throw new Error('Invalid slug');
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, `${slug}.json`), JSON.stringify(data, null, 2));
+}
+```
+
+</Tab>
+<Tab value="SQL">
+
+```ts title="lib/store.ts"
+import type { Data } from '@puckeditor/core';
+import { sql } from './db'; // e.g. postgres.js, Neon, Vercel Postgres…
+
+// create table pages (slug text primary key, data jsonb not null, updated_at timestamptz default now());
+
+export async function loadPage(slug: string): Promise<Data | null> {
+  const [row] = await sql`select data from pages where slug = ${slug}`;
+  return (row?.data as Data) ?? null;
+}
+
+export async function savePage(slug: string, data: Data) {
+  await sql`
+    insert into pages (slug, data) values (${slug}, ${sql.json(data)})
+    on conflict (slug) do update set data = excluded.data, updated_at = now()`;
+}
+```
+
+</Tab>
+<Tab value="Key-value">
+
+```ts title="lib/store.ts"
+import type { Data } from '@puckeditor/core';
+import { kv } from './kv'; // Redis, Upstash, Cloudflare KV…
+
+export const loadPage = async (slug: string) => (await kv.get<Data>(`page:${slug}`)) ?? null;
+export const savePage = (slug: string, data: Data) => kv.set(`page:${slug}`, data);
+```
+
+</Tab>
+</Tabs>
+
+## Drafts and versions
+
+Puck gives you two hooks: `onChange(data)` (every edit) and `onPublish(data)` (the Publish button). A common
+setup:
+
+- **autosave** a draft with a debounced `onChange`;
+- **publish** copies the draft to the live version;
+- keep **history** by inserting a new row per publish instead of updating.
+
+<Callout type="warn" title="Validate on the server">
+  The save endpoint receives arbitrary JSON from the browser. Check the user’s permissions, validate the slug,
+  and consider a size limit. The kit sanitizes CSS values when compiling (`; { } < >` are stripped), so stored
+  styles can’t break out of their `<style>` tag.
+</Callout>
+
+## Caching rendered pages
+
+Rendering is deterministic: the same `data` always produces the same HTML and CSS. Cache aggressively and
+invalidate on publish (`revalidatePath`, CDN purge, `updated_at` in an ETag…).

@@ -1,0 +1,71 @@
+---
+title: Box
+description: "The generic element: a div (or semantic tag) with a drop zone and no default styles."
+icon: Square
+---
+
+<ComponentHeader name="Box" icon="square" category="Basic" tags={["div", "section", "article", "aside", "header", "footer", "nav", "main"]} slot={true} />
+
+**Box** is the most generic element: a `<div>` — or `<section>`, `<article>`, `<aside>`, `<header>`, `<footer>`, `<nav>`, `<main>` — with a drop zone and **no default styles**. Section, Container, the Flex presets and Grid are all Boxes with different defaults.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-box.png" alt="Box rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "Box", "props": {"tag": "article", "styles": {"base": {"paddingTop": "24px", "paddingBottom": "24px", "paddingLeft": "24px", "paddingRight": "24px", "borderWidth": "1px", "borderStyle": "solid", "borderColor": "#e5e7eb", "borderRadius": "12px", "maxWidth": "360px"}}, "content": [{"type": "Heading", "props": {"text": "A card", "tag": "h3", "styles": {"base": {"fontSize": "20px", "fontWeight": "700", "marginBottom": "8px"}}}}, {"type": "Paragraph", "props": {"text": "<p>A Box with a border, radius and padding.</p>", "styles": {"base": {"color": "var(--pk-color-muted)"}}}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-box.png" alt="Box settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    tag: {"type": "\"div\" | \"section\" | \"article\" | \"aside\" | \"header\" | \"footer\" | \"nav\" | \"main\"", "description": "Rendered element. Shown as a **Tag** select in the Style tab.", "default": "\"div\""},
+    content: {"type": "Slot", "description": "Children (a Puck slot, rendered *as* this element: no wrapper div).", "default": "[]"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+None: a fresh Box only gets the [base stylesheet](/docs/styling/css-output#the-base-stylesheet). Everything comes from the Style tab.
+
+## Tips
+
+- Build cards, badges, dividers, overlays… anything that is “a styled element containing other elements”.
+- Choose the semantic tag that matches the content (an `<article>` for a blog card, a `<nav>` for a menu).
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Box as stored by Puck">
+
+```json
+{
+  "type": "Box",
+  "props": {
+    "id": "Box-a1b2c3",
+    "tag": "div",
+    "content": [],
+    "styles": {},
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Link Block" href="/docs/components/link-block" description="An <a> that can contain anything — make a whole card clickable." />
+  <Card title="Section" href="/docs/components/section" description="A full-width page band with vertical padding — the outermost building block of a page." />
+</Cards>

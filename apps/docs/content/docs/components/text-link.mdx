@@ -1,0 +1,117 @@
+---
+title: Text Link
+description: "An inline, underlined link with an inline-editable label."
+icon: Link2
+---
+
+<ComponentHeader name="TextLink" icon="link-2" category="Typography" tags={["a"]} slot={false} />
+
+**Text Link** is a standalone `<a>` styled as a link (primary color, underline) with a hover state. The text is edited inline. Use it for “Read more”, footer links or menus; links *inside* paragraphs are made with the rich text toolbar.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-text-link.png" alt="Text Link rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "HorizontalFlex", "props": {"styles": {"base": {"display": "flex", "gap": "20px"}}, "content": [{"type": "TextLink", "props": {"text": "Docs"}}, {"type": "TextLink", "props": {"text": "Pricing"}}, {"type": "TextLink", "props": {"text": "Blog"}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-text-link.png" alt="Text Link settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    text: {"type": "ReactNode", "description": "Link text, editable inline.", "default": "\"Text link\""},
+    href: {"type": "string", "description": "Link target (`url` field type).", "default": "\"#\""},
+    target: {"type": "\"\" | \"_blank\"", "description": "Same tab / new tab (adds `rel=\"noopener noreferrer\"`).", "default": "\"\""},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Text Link starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "color": "var(--pk-color-primary)",
+    "textDecoration": "underline",
+    "cursor": "pointer",
+    "transition": "opacity 150ms ease"
+  },
+  "base:hover": {
+    "opacity": "0.75"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  color: var(--pk-color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+.pk-id:hover {
+  opacity: 0.75;
+}
+```
+
+</Tab>
+</Tabs>
+
+## Tips
+
+- Put Text Links in an H Flex to build a simple navigation bar.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Text Link as stored by Puck">
+
+```json
+{
+  "type": "TextLink",
+  "props": {
+    "id": "TextLink-a1b2c3",
+    "text": "Text link",
+    "href": "#",
+    "target": "",
+    "styles": {
+      "base": {
+        "color": "var(--pk-color-primary)",
+        "textDecoration": "underline",
+        "cursor": "pointer",
+        "transition": "opacity 150ms ease"
+      },
+      "base:hover": {
+        "opacity": "0.75"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Button" href="/docs/components/button" description="A call to action: a link (<a>) or a <button>, with hover, focus and pressed styles out of the box." />
+  <Card title="Link Block" href="/docs/components/link-block" description="An <a> that can contain anything — make a whole card clickable." />
+</Cards>

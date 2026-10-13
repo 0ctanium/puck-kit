@@ -1,0 +1,125 @@
+---
+title: YouTube
+description: "A responsive YouTube embed from any video link, with privacy-enhanced mode on by default."
+icon: SquarePlay
+---
+
+<ComponentHeader name="YouTube" icon="square-play" category="Media" tags={["iframe"]} slot={false} />
+
+**YouTube** embeds a video from any link: `watch?v=`, `youtu.be`, `shorts`, `live`, `embed` or a bare id; a `?t=` / `?start=` in the link becomes the start time. It is **16:9 and full width** by default, and uses **youtube-nocookie.com** (privacy-enhanced mode) unless you turn privacy off.
+
+<Tabs items={["Rendered", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-youtube.png" alt="YouTube rendered on a public page" />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-youtube.png" alt="YouTube settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    url: {"type": "string", "description": "Any YouTube link (plain `text` field, so overriding `url` doesn’t affect it).", "default": "\"https://www.youtube.com/watch?v=aqz-KE-bpKQ\""},
+    title: {"type": "string", "description": "Title for screen readers (defaults to “YouTube video”).", "default": "\"\""},
+    autoplay: {"type": "boolean", "description": "Autoplay — always muted, since browsers block autoplay with sound. Hides the **Sound** switch.", "default": "false"},
+    muted: {"type": "boolean", "description": "Start muted.", "default": "false"},
+    loop: {"type": "boolean", "description": "Loop the video.", "default": "false"},
+    controls: {"type": "boolean", "description": "Show the player controls.", "default": "true"},
+    start: {"type": "number", "description": "Start at (seconds).", "default": "0"},
+    privacy: {"type": "boolean", "description": "Privacy-enhanced mode: `youtube-nocookie.com`, no cookies until play.", "default": "true"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped YouTube starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "display": "block",
+    "width": "100%",
+    "height": "auto",
+    "aspectRatio": "16/9",
+    "borderWidth": "0",
+    "borderStyle": "none"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  border-width: 0;
+  border-style: none;
+}
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="info" title="In the editor">
+  Players never autoplay on the canvas and don’t catch clicks (`pointer-events: none`), so the element stays selectable. With an invalid link the editor shows a hint and the public page renders nothing.
+</Callout>
+
+## Tips
+
+- The helpers `youtubeId()` and `youtubeEmbedUrl()` are exported if you need them in your own components — see [Video helpers](/docs/reference/video).
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="YouTube as stored by Puck">
+
+```json
+{
+  "type": "YouTube",
+  "props": {
+    "id": "YouTube-a1b2c3",
+    "url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+    "title": "",
+    "autoplay": false,
+    "muted": false,
+    "loop": false,
+    "controls": true,
+    "start": 0,
+    "privacy": true,
+    "styles": {
+      "base": {
+        "display": "block",
+        "width": "100%",
+        "height": "auto",
+        "aspectRatio": "16/9",
+        "borderWidth": "0",
+        "borderStyle": "none"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Vimeo" href="/docs/components/vimeo" description="A responsive Vimeo embed, unlisted links included, with “do not track” on by default." />
+  <Card title="Image" href="/docs/components/image" description="An <img> whose source comes from the image field type — plug in your own media library." />
+</Cards>

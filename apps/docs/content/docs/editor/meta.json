@@ -1,0 +1,7 @@
+{
+  "title": "Editor",
+  "description": "The puckKit plugin and field types",
+  "icon": "PanelsTopLeft",
+  "root": true,
+  "pages": ["index", "editor-ui", "field-types", "overriding-fields"]
+}

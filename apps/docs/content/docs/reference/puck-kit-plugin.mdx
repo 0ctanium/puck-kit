@@ -1,0 +1,55 @@
+---
+title: puckKit / usePuckKit
+description: The editor plugin and the hook that pairs it with matching viewports.
+icon: Plug
+---
+
+```ts
+import { puckKit, usePuckKit } from 'puck-kit/editor';
+```
+
+## usePuckKit
+
+```ts
+function usePuckKit(
+  config: Config,
+  options?: PuckKitOptions,
+): {
+  plugins: Plugin[];
+  viewports: Viewport[];
+  ui: { viewports: { options: []; controlsVisible: true; current: { width: number; height: 'auto' } } };
+};
+```
+
+- `plugins` — the kit plugin, created once per component instance;
+- `viewports` — `toViewports(getBreakpoints(config))`;
+- `ui` — opens the editor on the base breakpoint’s viewport.
+
+Options are synced into the plugin on every render (via a small external store), so passing new values —
+including inline functions — never remounts Puck.
+
+## puckKit
+
+```ts
+function puckKit(options?: PuckKitOptions): Plugin;
+```
+
+Create it once (module level or `useMemo`). For options that change, prefer `usePuckKit`.
+
+## PuckKitOptions
+
+<auto-type-table path="../../../../../packages/puck-kit/src/editor/plugin.tsx" name="PuckKitOptions" />
+
+## What the plugin contains
+
+| Plugin key | Value |
+| --- | --- |
+| `name` | `"puck-kit"` |
+| `label` / `icon` | Left-rail tab (“Tokens”, palette icon) |
+| `render` | `TokensPanel` |
+| `overrides.puck` | Font context + editor chrome |
+| `overrides.iframe` | Loads the font library in the canvas |
+| `overrides.headerActions` | `ViewportBar`, then your header actions |
+| `overrides.fields` | Settings / Style tabs |
+| `overrides.drawer` / `drawerItem` | Compact drawer |
+| `overrides.fieldTypes` | `kitFieldTypes` |

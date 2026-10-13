@@ -1,0 +1,124 @@
+---
+title: Introduction
+description: Webflow-style building blocks and a style engine for the Puck page builder.
+icon: Sparkles
+---
+
+import { Blocks, Paintbrush, PanelsTopLeft, Rocket, FileCode, Zap } from 'lucide-react';
+
+**puck-kit** turns [Puck](https://puckeditor.com) into a visual site builder in the spirit of Webflow:
+instead of rigid, pre-designed blocks, you get **generic HTML elements** (sections, containers, flex,
+grid, headings, links, images…) that editors nest freely and style with a **responsive style panel**.
+
+<Screenshot
+  src="editor-overview.png"
+  alt="The Puck editor with puck-kit: component drawer, canvas, breakpoint switcher and style panel"
+  variant="browser"
+  caption="The Puck editor with the puck-kit plugin: compact component drawer, canvas and Style tab."
+/>
+
+Styles compile to **plain CSS at render time**: no Tailwind, no build step, and no client-side
+JavaScript on public pages. The page you publish is just Puck's `<Render>` output and a few
+`<style>` tags hoisted to `<head>`.
+
+## What you get
+
+<Cards>
+  <Card icon={<Blocks />} title="19 native components" href="/docs/components">
+    Structure, basic, typography and media elements, each with its own drop zones, tags and defaults.
+  </Card>
+  <Card icon={<Paintbrush />} title="A real style system" href="/docs/styling">
+    Per-breakpoint and per-state styles, design tokens and a font library, compiled to CSS.
+  </Card>
+  <Card icon={<PanelsTopLeft />} title="One editor plugin" href="/docs/editor">
+    Tokens panel, field types, breakpoint switcher, Settings/Style tabs and a compact drawer.
+  </Card>
+  <Card icon={<FileCode />} title="Typed, extensible API" href="/docs/reference">
+    Add your own components with the same style panel, or swap in your media library.
+  </Card>
+</Cards>
+
+## A taste
+
+One shared config, Puck's own editor with the kit's plugin, and Puck's own `<Render>` on the public page:
+
+<Tabs items={['config.ts', 'Editor.tsx', 'page.tsx']}>
+<Tab value="config.ts">
+
+```ts title="lib/config.ts"
+import { createBuilderConfig } from 'puck-kit';
+
+export const config = createBuilderConfig();
+```
+
+</Tab>
+<Tab value="Editor.tsx">
+
+```tsx title="app/edit/Editor.tsx"
+'use client';
+import { Puck, type Data } from '@puckeditor/core';
+import '@puckeditor/core/puck.css';
+import { usePuckKit } from 'puck-kit/editor';
+import { config } from '@/lib/config';
+
+export function Editor({ data }: { data: Data }) {
+  const kit = usePuckKit(config); // { plugins, viewports, ui }
+  return <Puck config={config} data={data} {...kit} onPublish={save} />;
+}
+```
+
+</Tab>
+<Tab value="page.tsx">
+
+```tsx title="app/[slug]/page.tsx"
+import { Render } from '@puckeditor/core';
+import { config } from '@/lib/config';
+
+export default async function Page() {
+  const data = await loadPage(); // your storage
+  return <Render config={config} data={data} />;
+}
+```
+
+</Tab>
+</Tabs>
+
+Everything below is rendered **live** in this documentation by the real components, with Puck's `<Render>`:
+
+<KitPreview
+  content={[
+    {
+      type: 'VerticalFlex',
+      props: {
+        styles: { base: { display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start' } },
+        content: [
+          { type: 'Heading', props: { text: 'Built with puck-kit' } },
+          {
+            type: 'Paragraph',
+            props: {
+              text: '<p>Generic elements, styled per breakpoint. This preview is server-rendered by the docs site.</p>',
+              styles: { base: { color: 'var(--pk-color-muted)' } },
+            },
+          },
+          { type: 'Button', props: { label: 'Hover me' } },
+        ],
+      },
+    },
+  ]}
+/>
+
+## Where to next?
+
+<Cards>
+  <Card icon={<Zap />} title="How it works" href="/docs/how-it-works">
+    The data model, the editor plugin and the render path, in one diagram.
+  </Card>
+  <Card icon={<Rocket />} title="Quick start" href="/docs/quick-start">
+    Install the package and get an editor plus a public page running in minutes.
+  </Card>
+</Cards>
+
+<Callout title="Requirements">
+  React 19, `@puckeditor/core` `~0.23` and an ESM-capable bundler (Next.js, Vite, …). The kit relies on
+  React 19 stylesheet hoisting (`<style href precedence>`) to put CSS in `<head>`.
+</Callout>

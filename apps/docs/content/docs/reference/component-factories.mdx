@@ -1,0 +1,91 @@
+---
+title: Component factories
+description: createContainer, createTextElement, createImage, createYouTube and createVimeo — the functions behind the native components.
+icon: Boxes
+---
+
+Every factory takes a **context** `{ breakpoints }` (the breakpoints your config uses) and returns a Puck
+`ComponentConfig` with `inline: true`, a `styles` field and an `advanced` field.
+
+```ts
+interface KitContext {
+  breakpoints: Breakpoint[];
+}
+```
+
+## createContainer
+
+A styled element whose children are a Puck slot rendered **as** the element. Section, Container, V Flex,
+H Flex, Grid, Box, List, List Item and Link Block are all `createContainer`s.
+
+```ts
+function createContainer(opts: ContainerOptions, ctx: KitContext): ComponentConfig<ContainerProps>;
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/components/container.tsx" name="ContainerOptions" />
+
+```ts title="Example: a Figure container"
+import { createContainer, defaultBreakpoints } from 'puck-kit';
+
+export const Figure = createContainer(
+  {
+    label: 'Figure',
+    tags: ['figure'],
+    metadata: { icon: 'image' },
+    allow: ['Image', 'Paragraph'],
+    defaultStyles: { base: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+  },
+  { breakpoints: defaultBreakpoints },
+);
+```
+
+```ts title="Example: attributes from props (like Link Block)"
+createContainer(
+  {
+    label: 'Anchor box',
+    tags: ['a'],
+    fields: { href: { type: 'url', label: 'Link' } },
+    defaultProps: { href: '#' },
+    attrs: (props) => ({ href: (props.href as string) || undefined }), // public page only
+  },
+  ctx,
+);
+```
+
+The props are `{ tag, content, styles, advanced }` plus your extra fields. The Tag select is shown only when
+`tags` has more than one entry.
+
+## createTextElement
+
+A typography element: single-line inline text, or rich text.
+
+```ts
+function createTextElement(opts: TextElementOptions, ctx: KitContext): ComponentConfig<TextElementProps>;
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/components/text.tsx" name="TextElementOptions" />
+
+Rich text elements get the class `pk-rich` (spacing between blocks), and a rich text element whose tag can’t
+contain blocks (`p`) renders a `<div>` instead — its content is still real `<p>` elements.
+
+## createImage
+
+```ts
+function createImage(ctx: KitContext): ComponentConfig<ImageProps>;
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/components/media.tsx" name="ImageProps" />
+
+## createYouTube / createVimeo
+
+```ts
+function createYouTube(ctx: KitContext): ComponentConfig<VideoProps>;
+function createVimeo(ctx: KitContext): ComponentConfig<VideoProps>;
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/components/media.tsx" name="VideoProps" />
+
+<Callout type="info" title="Not exported">
+  Button, Text Link and Columns are built by internal factories. To customize them, spread the kit’s component
+  from the config (`{ ...config.components.Button, … }`) — see [Customizing the set](/docs/components/customizing).
+</Callout>

@@ -1,0 +1,68 @@
+---
+title: Text
+description: "A rich text block with every rich text feature: headings, lists, quotes, code."
+icon: TextAlignJustifyStart
+---
+
+<ComponentHeader name="Text" icon="text-align-justify-start" category="Typography" tags={["div"]} slot={false} />
+
+**Text** is a `<div class="pk-rich">` with the **full rich text toolbar** — headings, lists, quotes, code blocks, rules. Use it for long-form content (articles, legal pages) or small labels inside layouts.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-text.png" alt="Text rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "Text", "props": {"text": "<h3>Rich text</h3><p>Everything the toolbar offers:</p><ul><li>lists</li><li><strong>bold</strong> and <em>italic</em></li></ul>", "styles": {"base": {"maxWidth": "520px"}}}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-text.png" alt="Text settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    text: {"type": "string (HTML)", "description": "Rich text with every option enabled.", "default": "\"<p>Text block</p>\""},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+None: a fresh Text only gets the [base stylesheet](/docs/styling/css-output#the-base-stylesheet). Everything comes from the Style tab.
+
+## Tips
+
+- Styles set on the Text element (font, color, size) apply to everything inside; the rich text keeps semantic markup only.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Text as stored by Puck">
+
+```json
+{
+  "type": "Text",
+  "props": {
+    "id": "Text-a1b2c3",
+    "text": "<p>Text block</p>",
+    "styles": {},
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Paragraph" href="/docs/components/paragraph" description="Rich text paragraphs (bold, italic, links, lists) without headings." />
+  <Card title="Quote" href="/docs/components/quote" description="A <blockquote> with rich text, italic and indented by default." />
+</Cards>

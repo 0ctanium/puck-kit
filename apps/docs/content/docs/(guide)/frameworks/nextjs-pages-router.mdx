@@ -1,0 +1,134 @@
+---
+title: Next.js (Pages Router)
+description: Load the data in getServerSideProps or getStaticProps, render with Puck.
+icon: Triangle
+---
+
+The Pages Router works too. Every page is a client component there, so the public pages ship the kit’s render
+code in their bundle (still no extra runtime: styles are plain `<style>` tags).
+
+<Callout type="warn" title="React 19">
+  The kit needs React 19. Make sure your Pages Router app uses `react@19` and `react-dom@19` (Next.js 15+ supports it).
+</Callout>
+
+<Steps>
+<Step>
+
+### Shared config
+
+```ts title="lib/config.ts"
+import { createBuilderConfig } from 'puck-kit';
+
+export const config = createBuilderConfig();
+```
+
+</Step>
+<Step>
+
+### Editor page
+
+```tsx title="pages/edit/[slug].tsx"
+import type { GetServerSideProps } from 'next';
+import { Puck, type Data } from '@puckeditor/core';
+import '@puckeditor/core/puck.css';
+import { usePuckKit } from 'puck-kit/editor';
+import { config } from '@/lib/config';
+import { loadPage } from '@/lib/store';
+
+export const getServerSideProps: GetServerSideProps<{ slug: string; data: Data | null }> = async ({ params }) => {
+  const slug = String(params?.slug);
+  return { props: { slug, data: await loadPage(slug) } };
+};
+
+export default function EditPage({ slug, data }: { slug: string; data: Data | null }) {
+  const kit = usePuckKit(config);
+  return (
+    <Puck
+      config={config}
+      data={data ?? { content: [], root: { props: {} } }}
+      {...kit}
+      onPublish={(next) =>
+        fetch(`/api/pages/${slug}`, { method: 'POST', body: JSON.stringify(next) })
+      }
+    />
+  );
+}
+```
+
+<Callout type="info" title="Global CSS">
+  Since Next.js 9.5.4, CSS files from `node_modules` can be imported from any component, so
+  `@puckeditor/core/puck.css` and the kit’s own editor CSS can be imported here instead of `_app.tsx`.
+</Callout>
+
+</Step>
+<Step>
+
+### Save endpoint
+
+```ts title="pages/api/pages/[slug].ts"
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { savePage } from '@/lib/store';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') return res.status(405).end();
+  await savePage(String(req.query.slug), typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+  res.json({ ok: true });
+}
+```
+
+</Step>
+<Step>
+
+### Public page
+
+```tsx title="pages/[slug].tsx"
+import type { GetStaticPaths, GetStaticProps } from 'next';
+import { Render, type Data } from '@puckeditor/core';
+import { config } from '@/lib/config';
+import { loadPage } from '@/lib/store';
+
+export const getStaticPaths: GetStaticPaths = async () => ({ paths: [], fallback: 'blocking' });
+
+export const getStaticProps: GetStaticProps<{ data: Data }> = async ({ params }) => {
+  const data = await loadPage(String(params?.slug));
+  if (!data) return { notFound: true };
+  return { props: { data }, revalidate: 60 };
+};
+
+export default function Page({ data }: { data: Data }) {
+  return <Render config={config} data={data} />;
+}
+```
+
+</Step>
+</Steps>
+
+<Accordions type="single">
+<Accordion title="Prefer a single stylesheet in <Head>?">
+
+Compute the whole page’s CSS on the server and put it in `<Head>`:
+
+```tsx
+import Head from 'next/head';
+import { getPageCss } from 'puck-kit/styles';
+
+export const getStaticProps = async ({ params }) => {
+  const data = await loadPage(String(params?.slug));
+  return { props: { data, css: getPageCss(data) } };
+};
+
+export default function Page({ data, css }) {
+  return (
+    <>
+      <Head><style dangerouslySetInnerHTML={{ __html: css }} /></Head>
+      <Render config={config} data={data} />
+    </>
+  );
+}
+```
+
+The elements still emit their own (deduplicated) styles; `getPageCss` just guarantees everything is in the
+initial `<head>`. See [CSS output](/docs/styling/css-output).
+
+</Accordion>
+</Accordions>

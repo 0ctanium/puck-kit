@@ -1,0 +1,95 @@
+---
+title: CSS output
+description: Where the CSS goes — hoisted style tags, the base stylesheet, the editor iframe, and getPageCss.
+icon: FileCode
+---
+
+## On public pages: hoisted `<style>` tags
+
+Each element renders an `<ElementStyle>`:
+
+```tsx
+<style href="pk-Heading-1a2b-k3j9" precedence="puck-kit">
+  .pk-Heading-1a2b{font-size:48px}…
+</style>
+```
+
+With React 19, a `<style>` with `href` and `precedence` is a **hoistable resource**:
+
+- it’s moved into `<head>`, whatever the position in the tree;
+- it’s **deduplicated** by `href` (the `href` contains a hash of the CSS);
+- it’s **streamed** with server rendering and ordered by precedence.
+
+| Precedence | Contents |
+| --- | --- |
+| `puck-kit-base` | Base stylesheet + Columns helper + tokens (`:root{--pk-…}`), from the root |
+| `puck-kit-fonts` | Font `<link>`s and `@font-face` rules |
+| `puck-kit` | One tag per element |
+
+No client JavaScript is needed: on a server-rendered page, all of this is in the HTML.
+
+## In the editor: inline in the iframe
+
+In the editor, styles are plain inline `<style>` tags **inside Puck’s iframe**, so media queries follow the
+viewport switcher. Two editor-only differences:
+
+- selectors are tripled (`.pk-x.pk-x.pk-x`) to out-rank Puck’s drop-zone rules;
+- state rules also match `[data-pk-state="hover"]`, to preview a state while it’s being edited.
+
+## The base stylesheet
+
+The root emits a minimal base, at zero specificity (`:where()`) so element styles always win:
+
+```css
+:where(.pk-page) *,:where(.pk-page) *::before,:where(.pk-page) *::after{box-sizing:border-box}
+:where(.pk-page){font-family:var(--pk-font-sans,system-ui,sans-serif);color:var(--pk-color-text,inherit);line-height:1.5}
+:where(.pk-page) :where(h1,h2,h3,h4,h5,h6,p,blockquote,ul,ol,figure){margin:0}
+:where(.pk-page) :where(img,video){max-width:100%;display:block}
+:where(.pk-rich) :where(p,ul,ol,blockquote){margin:0}
+:where(.pk-rich) :where(p+p,p+ul,p+ol,ul+p,ol+p){margin-top:.75em}
+:where(.pk-rich) :where(ul,ol){padding-left:1.5em}
+:where(.pk-rich) a{color:inherit}
+```
+
+It’s scoped to `.pk-page` (the root wrapper), so it doesn’t touch the rest of your site. Exported as `baseCss`.
+
+## One stylesheet per page
+
+`getPageCss(data, breakpoints?)` returns a page’s whole stylesheet in one string: base + tokens + every element.
+
+```ts
+import { getPageCss } from 'puck-kit/styles';
+
+const css = getPageCss(data); // pass your breakpoints if you customized them
+```
+
+Use it to:
+
+- serve a **cacheable `.css` file** per page (e.g. a route returning `text/css` with an ETag);
+- **inline** all CSS in `<head>` for static exports or renderers that don’t hoist (see [Astro](/docs/frameworks/astro));
+- precompute CSS at publish time and store it next to the data.
+
+<Callout type="info" title="What getPageCss doesn’t include">
+  Font loading (use `getFontAssets` / `FontLinks`) and the tiny Columns helper (`:where(.pk-col){min-width:0}`).
+  The elements still render their own `<style>` tags too; React deduplicates identical ones, and duplicates of
+  the same rules are harmless.
+</Callout>
+
+## Compile anything
+
+The compiler is a pure function, usable for any selector:
+
+```ts twoslash
+// @noErrors
+import { compileStyles, defaultBreakpoints } from 'puck-kit';
+
+const css = compileStyles('.card', {
+  base: { paddingTop: '24px', paddingBottom: '24px', borderRadius: '12px' },
+  'base:hover': { boxShadow: '0px 8px 24px 0px rgba(0,0,0,.1)' },
+  mobile: { paddingTop: '16px', paddingBottom: '16px' },
+}, defaultBreakpoints);
+```
+
+Only properties of the `STYLE_PROPS` whitelist are emitted — longhands like `paddingTop`, not the `padding`
+shorthand; anything else is ignored.
+→ [Styles API](/docs/reference/styles)

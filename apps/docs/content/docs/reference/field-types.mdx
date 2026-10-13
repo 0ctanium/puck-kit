@@ -1,0 +1,51 @@
+---
+title: Field types
+description: The kit field definitions, KitFields, backgroundStyle and iconOptions.
+icon: TextCursorInput
+---
+
+Guide: [Field types](/docs/editor/field-types).
+
+```ts
+type KitFields = {
+  color: ColorField;
+  background: BackgroundField;
+  font: FontField;
+  range: RangeField;
+  checkbox: CheckboxField;
+  url: UrlField;
+  image: ImageField;
+};
+type KitField = KitFields[keyof KitFields];
+
+// Use: ComponentConfig<{ props: MyProps; fields: KitFields }>
+```
+
+All extend Puck’s `BaseField` (`label`, `labelIcon`, `metadata`, `visible`).
+
+<auto-type-table path="../../../../../packages/puck-kit/src/fieldTypes/definitions.ts" name="ColorField" />
+<auto-type-table path="../../../../../packages/puck-kit/src/fieldTypes/definitions.ts" name="FontField" />
+<auto-type-table path="../../../../../packages/puck-kit/src/fieldTypes/definitions.ts" name="RangeField" />
+<auto-type-table path="../../../../../packages/puck-kit/src/fieldTypes/definitions.ts" name="CheckboxField" />
+<auto-type-table path="../../../../../packages/puck-kit/src/fieldTypes/definitions.ts" name="UrlField" />
+<auto-type-table path="../../../../../packages/puck-kit/src/fieldTypes/definitions.ts" name="ImageField" />
+
+## BackgroundValue / backgroundStyle
+
+<auto-type-table path="../../../../../packages/puck-kit/src/fieldTypes/definitions.ts" name="BackgroundValue" />
+
+```ts
+function backgroundStyle(value: BackgroundValue | null | undefined): CSSProperties;
+```
+
+Converts a `background` field value to inline styles (`backgroundColor`, and the image properties when an image is set).
+
+## iconOptions
+
+```ts
+function iconOptions(
+  options: { label: string; value: string | number | boolean | null; icon?: ReactNode }[],
+): SelectField['options'];
+```
+
+Options with icons for a `select` field, shown by the kit’s dropdown.

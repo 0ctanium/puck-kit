@@ -1,0 +1,104 @@
+---
+title: Vertical Flex
+description: "A flex column with a 16px gap — stack elements vertically."
+icon: LayoutArrowDown
+---
+
+<ComponentHeader name="VerticalFlex" icon="layout-arrow-down" category="Structure" tags={["div", "section", "article", "aside", "header", "footer", "nav", "main"]} slot={true} />
+
+**V Flex** (“Vertical Flex”) is a Box preset with `display: flex; flex-direction: column` and a 16px gap. Children dropped inside stack vertically, evenly spaced; their own **Flex child** section appears in the Style tab.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-vertical-flex.png" alt="Vertical Flex rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "VerticalFlex", "props": {"content": [{"type": "Heading", "props": {"text": "Stacked", "tag": "h3", "styles": {"base": {"fontSize": "22px", "fontWeight": "700"}}}}, {"type": "Paragraph", "props": {"text": "<p>Children are separated by the 16px gap.</p>"}}, {"type": "Button", "props": {"label": "Action"}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-vertical-flex.png" alt="Vertical Flex settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    tag: {"type": "\"div\" | \"section\" | \"article\" | \"aside\" | \"header\" | \"footer\" | \"nav\" | \"main\"", "description": "Rendered element. Shown as a **Tag** select in the Style tab.", "default": "\"div\""},
+    content: {"type": "Slot", "description": "Children (a Puck slot, rendered *as* this element: no wrapper div).", "default": "[]"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Vertical Flex starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "display": "flex",
+    "flexDirection": "column",
+    "gap": "16px"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+```
+
+</Tab>
+</Tabs>
+
+## Tips
+
+- Use it for text stacks (eyebrow, heading, paragraph, buttons): the gap replaces margins.
+- Switch the direction to horizontal on one breakpoint only to turn a stack into a row on Desktop.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Vertical Flex as stored by Puck">
+
+```json
+{
+  "type": "VerticalFlex",
+  "props": {
+    "id": "VerticalFlex-a1b2c3",
+    "tag": "div",
+    "content": [],
+    "styles": {
+      "base": {
+        "display": "flex",
+        "flexDirection": "column",
+        "gap": "16px"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Horizontal Flex" href="/docs/components/horizontal-flex" description="A flex row, vertically centered, with a 16px gap — put elements side by side." />
+  <Card title="Grid" href="/docs/components/grid" description="A CSS grid, 2 columns × 2 rows by default, with a visual track editor." />
+</Cards>

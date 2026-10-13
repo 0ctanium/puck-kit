@@ -1,0 +1,91 @@
+---
+title: TanStack Start
+description: File routes with server functions for loading and saving pages.
+icon: Layers
+---
+
+TanStack Start renders routes on the server with React 19 and streams them, so the kit’s styles are hoisted to
+`<head>`.
+
+<Steps>
+<Step>
+
+### Server functions
+
+```ts title="src/lib/pages.ts"
+import { createServerFn } from '@tanstack/react-start';
+import type { Data } from '@puckeditor/core';
+import { loadPage, savePage } from './store.server';
+
+export const getPage = createServerFn({ method: 'GET' })
+  .validator((slug: string) => slug)
+  .handler(({ data: slug }) => loadPage(slug));
+
+export const publishPage = createServerFn({ method: 'POST' })
+  .validator((input: { slug: string; data: Data }) => input)
+  .handler(({ data }) => savePage(data.slug, data.data));
+```
+
+</Step>
+<Step>
+
+### Public route
+
+```tsx title="src/routes/$slug.tsx"
+import { createFileRoute, notFound } from '@tanstack/react-router';
+import { Render } from '@puckeditor/core';
+import { config } from '../lib/config';
+import { getPage } from '../lib/pages';
+
+export const Route = createFileRoute('/$slug')({
+  loader: async ({ params }) => {
+    const data = await getPage({ data: params.slug });
+    if (!data) throw notFound();
+    return data;
+  },
+  component: function Page() {
+    return <Render config={config} data={Route.useLoaderData()} />;
+  },
+});
+```
+
+</Step>
+<Step>
+
+### Editor route
+
+```tsx title="src/routes/edit.$slug.tsx"
+import { createFileRoute } from '@tanstack/react-router';
+import { Puck } from '@puckeditor/core';
+import '@puckeditor/core/puck.css';
+import { usePuckKit } from 'puck-kit/editor';
+import { config } from '../lib/config';
+import { getPage, publishPage } from '../lib/pages';
+
+export const Route = createFileRoute('/edit/$slug')({
+  loader: ({ params }) => getPage({ data: params.slug }),
+  component: function Edit() {
+    const { slug } = Route.useParams();
+    const data = Route.useLoaderData();
+    const kit = usePuckKit(config);
+    return (
+      <Puck
+        config={config}
+        data={data ?? { content: [], root: { props: {} } }}
+        {...kit}
+        onPublish={(next) => publishPage({ data: { slug, data: next } })}
+      />
+    );
+  },
+});
+```
+
+</Step>
+</Steps>
+
+`lib/config.ts` is the usual `export const config = createBuilderConfig()`.
+
+<Callout type="warn" title="API names">
+  TanStack Start’s server function API has evolved between releases (e.g. `.validator` vs `.inputValidator`).
+  Adapt these snippets to the version you use; the puck-kit parts don’t change.
+</Callout>

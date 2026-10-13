@@ -7,3 +7,7 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - '@fumadocs/base-ui@16.17.2'
+  - fumadocs-core@16.17.2

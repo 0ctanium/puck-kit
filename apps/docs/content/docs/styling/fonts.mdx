@@ -1,0 +1,129 @@
+---
+title: Fonts
+description: Give editors a font library — Google, self-hosted or any stylesheet — and load only what each page uses.
+icon: Type
+---
+
+Editors never type CSS font stacks. You give the editor a **font library**; the kit loads it in the canvas and
+offers it in every font picker (the Typography section, font tokens, `font` fields). Public pages load **only
+the fonts they use**.
+
+<Screenshot src="popover-font.png" alt="The font picker: tokens, your fonts and system fonts" caption="The font picker lists font tokens, your library and system fonts, each previewed in its own face." variant="panel" maxWidth={560} />
+
+## Define the library
+
+<auto-type-table path="../../../../../packages/puck-kit/src/fonts/types.ts" name="FontDefinition" />
+
+```ts title="lib/fonts.ts"
+import type { FontDefinition } from 'puck-kit';
+
+export const fonts: FontDefinition[] = [
+  // Google Fonts: weights must exist on Google (each family is requested separately,
+  // so a wrong entry only breaks itself).
+  { family: 'Inter', category: 'sans-serif', weights: [400, 600, 700], source: { type: 'google' } },
+  { family: 'Playfair Display', category: 'serif', weights: [400, 700], italic: true, source: { type: 'google' } },
+
+  // Self-hosted files: the kit writes the @font-face rules.
+  {
+    family: 'Brand Sans',
+    category: 'sans-serif',
+    weights: [400, 700],
+    source: {
+      type: 'files',
+      files: [
+        { url: '/fonts/brand.woff2', weight: 400 },
+        { url: '/fonts/brand-bold.woff2', weight: 700 },
+      ],
+    },
+  },
+
+  // Any stylesheet declaring the font (Adobe Fonts, Bunny Fonts, your CSS…).
+  { family: 'Proxima Nova', source: { type: 'css', url: 'https://use.typekit.net/xxxx.css' } },
+];
+```
+
+<Tabs items={['google', 'files', 'css', 'system']}>
+<Tab value="google">
+
+Loaded from `fonts.googleapis.com/css2` with exactly the listed `weights` (and italics if `italic: true`). The
+kit adds `preconnect` hints to Google’s domains on public pages.
+
+</Tab>
+<Tab value="files">
+
+Your own files. Each file becomes an `@font-face` rule with its `weight` and `style`; `format` is inferred from
+the extension (`woff2`, `woff`, `ttf`, `otf`) when omitted.
+
+</Tab>
+<Tab value="css">
+
+Any stylesheet that declares the family — the kit just adds a `<link rel="stylesheet">`.
+
+</Tab>
+<Tab value="system">
+
+Installed on the visitor’s device; nothing to load. The kit always offers 8 system stacks (`systemFonts`): System
+sans, serif and mono, Humanist, Geometric, Transitional, Old style, Rounded.
+
+</Tab>
+</Tabs>
+
+## Wire it in
+
+<Steps>
+<Step>
+
+### Editor
+
+```tsx
+const kit = usePuckKit(config, {
+  fonts,
+  // Optional: shows "Add fonts" buttons in the pickers.
+  onAddFonts: () => window.open('/settings/fonts', '_blank'),
+  addFontsLabel: 'Manage fonts', // default "Add fonts"
+});
+```
+
+The whole library is loaded inside the editor’s iframe. `onAddFonts` can be an inline function: the plugin
+never remounts the editor when it changes.
+
+</Step>
+<Step>
+
+### Public pages
+
+```tsx
+import { fontMetadata } from 'puck-kit';
+
+<Render config={config} data={data} metadata={fontMetadata(fonts, data)} />;
+```
+
+`fontMetadata(fonts, data)` keeps only the library fonts the page uses — through **font tokens**, **`fontFamily`
+styles** or **`font` field values** in your components — and the root renders their `<link>` / `@font-face`
+(hoisted to `<head>`). Omit `data` to load the whole library.
+
+</Step>
+</Steps>
+
+## How values are stored
+
+Font values are stored as **CSS stacks**: `"Inter", sans-serif`. Pages keep working if a font is later removed
+from the library — the browser falls back to the generic family.
+
+```ts
+import { fontStack, findFont } from 'puck-kit';
+
+fontStack({ family: 'Inter', category: 'sans-serif', source: { type: 'google' } }); // '"Inter", sans-serif'
+findFont('"Inter", sans-serif', fonts); // → the Inter definition
+```
+
+## A font settings page
+
+The playground has a demo settings page (`/settings/fonts`): a Google Fonts catalog plus uploading your own
+files, saved to a JSON file. The editor reloads the library when its window regains focus.
+
+<Callout type="info" title="Lower-level helpers">
+  `getFontAssets(fonts)` returns `{ stylesheets, fontFaceCss, google }`, `googleFontsUrl(fonts)` builds a css2 URL,
+  `usedFonts(data, fonts)` lists the fonts a page uses, and `<FontLinks fonts />` renders the tags. See the
+  [fonts reference](/docs/reference/fonts).
+</Callout>

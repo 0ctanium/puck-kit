@@ -1,0 +1,72 @@
+---
+title: Paragraph
+description: "Rich text paragraphs (bold, italic, links, lists) without headings."
+icon: SquareText
+---
+
+<ComponentHeader name="Paragraph" icon="square-text" category="Typography" tags={["div"]} slot={false} />
+
+**Paragraph** holds rich text edited with Puck’s rich text editor: **bold**, *italic*, links, lists — but **no headings, quotes, code blocks or rules** (those toolbar options are disabled). Several paragraphs get a little space between them.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-paragraph.png" alt="Paragraph rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "Paragraph", "props": {"text": "<p>A <strong>Paragraph</strong> with <em>rich text</em> and a <a href=\"#\">link</a>.</p><p>A second paragraph gets a small gap.</p>", "styles": {"base": {"maxWidth": "520px"}}}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-paragraph.png" alt="Paragraph settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    text: {"type": "string (HTML)", "description": "Rich text (Puck `richtext` field, `contentEditable`).", "default": "\"<p>Lorem ipsum…</p>\""},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+None: a fresh Paragraph only gets the [base stylesheet](/docs/styling/css-output#the-base-stylesheet). Everything comes from the Style tab.
+
+<Callout type="info" title="Why a <div>?">
+  The rich text output already contains real `<p>` elements, and a `<p>` can’t contain other `<p>`s. So Paragraph renders `<div class="pk-rich">` around them. The base stylesheet resets their margins and adds `0.75em` between consecutive blocks.
+</Callout>
+
+## Tips
+
+- Need headings inside the text? Use [Text](/docs/components/text) instead.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Paragraph as stored by Puck">
+
+```json
+{
+  "type": "Paragraph",
+  "props": {
+    "id": "Paragraph-a1b2c3",
+    "text": "<p>Lorem ipsum…</p>",
+    "styles": {},
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Text" href="/docs/components/text" description="A rich text block with every rich text feature: headings, lists, quotes, code." />
+  <Card title="Heading" href="/docs/components/heading" description="A single-line, inline-editable <h1>–<h6>." />
+</Cards>

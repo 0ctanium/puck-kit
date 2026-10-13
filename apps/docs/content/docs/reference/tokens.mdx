@@ -1,0 +1,45 @@
+---
+title: Tokens
+description: Token types, defaults and helpers.
+icon: Palette
+---
+
+```ts
+interface Token { name: string; value: string }
+interface Tokens { colors?: Token[]; fonts?: Token[]; sizes?: Token[] }
+```
+
+| Function | Example | Result |
+| --- | --- | --- |
+| `tokenVar(kind, name)` | `tokenVar('colors', 'Brand Blue')` | `--pk-color-brand-blue` |
+| `tokenRef(kind, name)` | `tokenRef('sizes', 'LG')` | `var(--pk-size-lg)` |
+| `tokensToCss(tokens)` | `tokensToCss({ colors: [{ name: 'Primary', value: '#4f46e5' }] })` | `:root{--pk-color-primary:#4f46e5}` |
+
+Prefixes: `colors` → `color`, `fonts` → `font`, `sizes` → `size`. Names are slugified (lowercase, non-alphanumerics
+become `-`). Tokens without a name or value are skipped; values are sanitized like style values.
+
+## defaultTokens
+
+```ts
+const defaultTokens: Tokens = {
+  colors: [
+    { name: 'Primary', value: '#4f46e5' },
+    { name: 'Text', value: '#111827' },
+    { name: 'Muted', value: '#6b7280' },
+    { name: 'Surface', value: '#f3f4f6' },
+    { name: 'White', value: '#ffffff' },
+  ],
+  fonts: [
+    { name: 'Sans', value: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" },
+    { name: 'Serif', value: "ui-serif, Georgia, Cambria, 'Times New Roman', serif" },
+    { name: 'Mono', value: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' },
+  ],
+  sizes: [
+    { name: 'XS', value: '4px' },
+    { name: 'SM', value: '8px' },
+    { name: 'MD', value: '16px' },
+    { name: 'LG', value: '32px' },
+    { name: 'XL', value: '64px' },
+  ],
+};
+```

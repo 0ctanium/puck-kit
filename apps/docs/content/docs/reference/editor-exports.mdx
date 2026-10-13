@@ -1,0 +1,81 @@
+---
+title: Editor building blocks
+description: The pieces of the plugin, exported to build your own editor UI.
+icon: Wrench
+---
+
+All from `puck-kit/editor` (client-only). They must be rendered inside Puck (they read Puck’s state).
+
+## StylePanel
+
+The style panel as a standalone component — what `styleField()` renders.
+
+```tsx
+<StylePanel value={styles} onChange={setStyles} breakpoints={breakpoints} sections={['spacing', 'typography']} />
+```
+
+<auto-type-table path="../../../../../packages/puck-kit/src/fields/StylePanel.tsx" name="StylePanelProps" />
+
+## useActiveBreakpoint
+
+```ts
+function useActiveBreakpoint(breakpoints?: Breakpoint[]): readonly [Breakpoint, (bp: Breakpoint) => void];
+```
+
+The breakpoint matching Puck’s current viewport, and a setter that switches the viewport. Use it to build your
+own breakpoint-aware UI (it’s what the header switcher and the style panel use).
+
+## ViewportBar
+
+```tsx
+<ViewportBar breakpoints={breakpoints} />
+```
+
+The header breakpoint switcher. The plugin already renders it in `headerActions`.
+
+## TokensPanel
+
+The Tokens panel (the plugin’s `render`). Render it elsewhere if you build your own left rail.
+
+## useKitEditor
+
+```ts
+function useKitEditor(): { fonts: FontDefinition[]; onAddFonts?: () => void; addFontsLabel: string };
+```
+
+The font library and “Add fonts” callback given to the plugin — for your own font-aware fields.
+
+## FontPicker
+
+```tsx
+<FontPicker value={value} onChange={setValue} tokens={tokens} clearable placeholder="Inherit" />
+```
+
+The kit’s font dropdown (library + tokens + system fonts, previewed in their face).
+
+## ColorValueField
+
+```tsx
+<ColorValueField value={color} onChange={setColor} />
+```
+
+The color input with picker and token swatches.
+
+## kitFieldTypes
+
+```ts
+const kitFieldTypes: {
+  color; background; font; range; checkbox; url; image; select; object;
+};
+```
+
+The field renderers registered by the plugin. Use them without the plugin:
+`<Puck overrides={{ fieldTypes: kitFieldTypes }} />`.
+
+## defineFieldType
+
+```ts
+function defineFieldType<F, V>(renderer: ComponentType<FieldTypeProps<F, V | undefined>>): FieldTypeRenderer;
+```
+
+Types a renderer for `overrides.fieldTypes`. → [Overriding field types](/docs/editor/overriding-fields)

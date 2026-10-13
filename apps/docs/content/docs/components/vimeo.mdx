@@ -1,0 +1,125 @@
+---
+title: Vimeo
+description: "A responsive Vimeo embed, unlisted links included, with “do not track” on by default."
+icon: Video
+---
+
+<ComponentHeader name="Vimeo" icon="video" category="Media" tags={["iframe"]} slot={false} />
+
+**Vimeo** embeds a video from a Vimeo link, including **unlisted links** with their private hash (`vimeo.com/123/abcdef` or `?h=`). It is 16:9 and full width by default, and sends Vimeo’s **do not track** flag (`dnt=1`) unless you turn privacy off.
+
+<Tabs items={["Rendered", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-vimeo.png" alt="Vimeo rendered on a public page" />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-vimeo.png" alt="Vimeo settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    url: {"type": "string", "description": "Any Vimeo link (plain `text` field, so overriding `url` doesn’t affect it).", "default": "\"https://vimeo.com/76979871\""},
+    title: {"type": "string", "description": "Title for screen readers (defaults to “Vimeo video”).", "default": "\"\""},
+    autoplay: {"type": "boolean", "description": "Autoplay — always muted, since browsers block autoplay with sound. Hides the **Sound** switch.", "default": "false"},
+    muted: {"type": "boolean", "description": "Start muted.", "default": "false"},
+    loop: {"type": "boolean", "description": "Loop the video.", "default": "false"},
+    controls: {"type": "boolean", "description": "Show the player controls.", "default": "true"},
+    start: {"type": "number", "description": "Start at (seconds).", "default": "0"},
+    privacy: {"type": "boolean", "description": "“Do not track” (`dnt=1`).", "default": "true"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Vimeo starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "display": "block",
+    "width": "100%",
+    "height": "auto",
+    "aspectRatio": "16/9",
+    "borderWidth": "0",
+    "borderStyle": "none"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  border-width: 0;
+  border-style: none;
+}
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="info" title="In the editor">
+  Players never autoplay on the canvas and don’t catch clicks, so the element stays selectable.
+</Callout>
+
+## Tips
+
+- Exported helpers: `vimeoId()` and `vimeoEmbedUrl()` — see [Video helpers](/docs/reference/video).
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Vimeo as stored by Puck">
+
+```json
+{
+  "type": "Vimeo",
+  "props": {
+    "id": "Vimeo-a1b2c3",
+    "url": "https://vimeo.com/76979871",
+    "title": "",
+    "autoplay": false,
+    "muted": false,
+    "loop": false,
+    "controls": true,
+    "start": 0,
+    "privacy": true,
+    "styles": {
+      "base": {
+        "display": "block",
+        "width": "100%",
+        "height": "auto",
+        "aspectRatio": "16/9",
+        "borderWidth": "0",
+        "borderStyle": "none"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="YouTube" href="/docs/components/youtube" description="A responsive YouTube embed from any video link, with privacy-enhanced mode on by default." />
+  <Card title="Image" href="/docs/components/image" description="An <img> whose source comes from the image field type — plug in your own media library." />
+</Cards>

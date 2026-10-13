@@ -1,0 +1,87 @@
+---
+title: Troubleshooting
+description: Common setup problems and how to fix them.
+icon: LifeBuoy
+---
+
+<Accordions type="multiple">
+<Accordion title="The style panel / Tokens panel doesn’t show up" id="no-panel">
+
+The editor UI comes from the plugin. Check that you spread the kit on `<Puck>`:
+
+```tsx
+const kit = usePuckKit(config);
+<Puck config={config} data={data} {...kit} />; // or plugins={[puckKit()]}
+```
+
+If you pass your own `plugins` prop **after** `{...kit}`, include the kit’s: `plugins={[...kit.plugins, mine]}`.
+
+</Accordion>
+<Accordion title="Fields render as unknown / empty inputs (url, image, checkbox…)" id="field-types">
+
+Kit components use the kit’s field types. Without the `puckKit` plugin, Puck doesn’t know how to render them.
+Use the plugin, or register `kitFieldTypes` yourself:
+
+```tsx
+import { kitFieldTypes } from 'puck-kit/editor';
+<Puck overrides={{ fieldTypes: kitFieldTypes }} … />
+```
+
+</Accordion>
+<Accordion title="“You're importing a component that needs useState…” / hooks in a server component" id="use-client">
+
+You imported `puck-kit/editor` (or something that imports it) from a server file — usually the shared config.
+The config must only import from `puck-kit`. Keep `usePuckKit`, `puckKit`, `defineFieldType` and your field
+renderers in `"use client"` files.
+
+</Accordion>
+<Accordion title="Styles are missing on the public page" id="no-styles">
+
+- Check you render with the **same config** as the editor (`createBuilderConfig` from the shared module).
+- You need **React 19**: earlier versions don’t hoist `<style href precedence>` and may drop the styles.
+- With custom breakpoints in your own components, pass them to `<ElementStyle breakpoints>` as well.
+- If your renderer doesn’t output a `<head>` (some static renderers), inline `getPageCss(data)` yourself —
+  see [CSS output](/docs/styling/css-output).
+
+</Accordion>
+<Accordion title="Editor styles look different from the page" id="mismatch">
+
+In the editor, the CSS is inside Puck’s iframe and media queries follow the **viewport switcher**, not your
+window. Pick the same breakpoint as the device you compare with. Also check your own global CSS: the public
+page may include site-wide styles the editor iframe doesn’t.
+
+</Accordion>
+<Accordion title="Fonts don’t load on the public page" id="fonts">
+
+Public pages only load fonts passed through Puck metadata:
+
+```tsx
+<Render config={config} data={data} metadata={fontMetadata(fonts, data)} />
+```
+
+`fonts` must be the same library you give the editor. See [Fonts](/docs/styling/fonts).
+
+</Accordion>
+<Accordion title="My drawerItem override is ignored" id="drawer">
+
+The plugin overrides `fields`, `drawer` and `drawerItem` (Settings/Style tabs, compact drawer). A
+`drawerItem` override of yours is replaced by the compact item. Other overrides compose normally; your
+`headerActions` render after the breakpoint switcher.
+
+</Accordion>
+<Accordion title="Module not found: can't resolve '…/X.css' / unexpected token in a .tsx file (monorepos)" id="monorepo">
+
+If `puck-kit` resolves to its TypeScript source (workspace link without a build), your bundler must compile
+it: `transpilePackages: ['puck-kit']` in Next.js, or build the package (`pnpm build`) first.
+
+</Accordion>
+<Accordion title="Puck says a component type is missing" id="missing-type">
+
+The page data uses a component that isn’t in the config — typically one you `exclude`d or renamed. Re-add it,
+or migrate the data.
+
+</Accordion>
+</Accordions>
+
+Still stuck? [Open an issue](https://github.com/0ctanium/puck-kit/issues) with your framework, versions and
+a minimal reproduction.

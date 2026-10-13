@@ -1,0 +1,111 @@
+---
+title: Grid
+description: "A CSS grid, 2 columns × 2 rows by default, with a visual track editor."
+icon: Grid2x2
+---
+
+<ComponentHeader name="Grid" icon="grid-2x2" category="Structure" tags={["div", "section", "article", "aside", "header", "footer", "nav", "main"]} slot={true} />
+
+**Grid** is a Box preset with `display: grid`, two equal columns and two auto rows. The Layout section turns into a **visual grid editor**: steppers for columns and rows, and a popover to size each track in `fr`, `px` or `auto`. Children get a **Grid child** section to span cells.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-grid.png" alt="Grid rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "Grid", "props": {"content": [{"type": "Box", "props": {"styles": {"base": {"backgroundColor": "var(--pk-color-primary)", "minHeight": "64px", "borderRadius": "8px", "gridRow": "span 2"}}}}, {"type": "Box", "props": {"styles": {"base": {"backgroundColor": "#818cf8", "minHeight": "64px", "borderRadius": "8px"}}}}, {"type": "Box", "props": {"styles": {"base": {"backgroundColor": "#a5b4fc", "minHeight": "64px", "borderRadius": "8px"}}}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-grid.png" alt="Grid settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    tag: {"type": "\"div\" | \"section\" | \"article\" | \"aside\" | \"header\" | \"footer\" | \"nav\" | \"main\"", "description": "Rendered element. Shown as a **Tag** select in the Style tab.", "default": "\"div\""},
+    content: {"type": "Slot", "description": "Children (a Puck slot, rendered *as* this element: no wrapper div).", "default": "[]"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped Grid starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "display": "grid",
+    "gridTemplateColumns": "repeat(2,minmax(0,1fr))",
+    "gridTemplateRows": "auto auto",
+    "gap": "16px"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-rows: auto auto;
+  gap: 16px;
+}
+```
+
+</Tab>
+</Tabs>
+
+<Screenshot src="section-layout-grid.png" alt="The Layout section of a Grid: preview, column and row steppers." caption="The Layout section of a Grid: preview, column and row steppers." variant="panel" maxWidth={420} />
+
+<Screenshot src="popover-grid-tracks.png" alt="The track editor popover." caption="The track editor popover." variant="panel" maxWidth={420} />
+
+## Tips
+
+- Columns use `minmax(0, …fr)` so long content can’t overflow its track.
+- Prefer [Columns](/docs/components/columns) when each column holds its own content stack; use Grid for cards, galleries and bento layouts.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="Grid as stored by Puck">
+
+```json
+{
+  "type": "Grid",
+  "props": {
+    "id": "Grid-a1b2c3",
+    "tag": "div",
+    "content": [],
+    "styles": {
+      "base": {
+        "display": "grid",
+        "gridTemplateColumns": "repeat(2,minmax(0,1fr))",
+        "gridTemplateRows": "auto auto",
+        "gap": "16px"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="Columns" href="/docs/components/columns" description="A grid with one drop zone per column (1–12), side by side on large screens and stacked on phones." />
+  <Card title="Horizontal Flex" href="/docs/components/horizontal-flex" description="A flex row, vertically centered, with a 16px gap — put elements side by side." />
+</Cards>

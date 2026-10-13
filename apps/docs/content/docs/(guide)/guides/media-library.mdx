@@ -1,0 +1,111 @@
+---
+title: Plug in your media library
+description: Replace the default image and link inputs with your upload widget, DAM or page picker.
+icon: ImagePlus
+---
+
+The kit’s `image` and `url` field types are **deliberately plain** — a URL input with a preview, and a text
+input. They exist so you can replace them once and have **every** field of that type use your UI: the kit’s
+Image `src`, the `href` of Button, Text Link and Link Block, and any of your own components using those types.
+The stored value stays a string.
+
+<Screenshot src="fields-image.png" alt="The Image settings with the playground's media library override" caption="The playground replaces the image field with a small stock-photo library." variant="panel" maxWidth={380} />
+
+<Steps>
+<Step>
+
+### Write the field
+
+`defineFieldType` types the props Puck passes to `overrides.fieldTypes` renderers (including the `Label`
+component, which Puck’s own types omit).
+
+```tsx title="lib/MediaLibraryField.tsx"
+'use client';
+
+import { defineFieldType, type ImageField } from 'puck-kit/editor';
+
+const LIBRARY = ['mountains', 'city', 'forest', 'ocean', 'desk', 'coffee'].map(
+  (seed) => `https://picsum.photos/seed/${seed}/1200/800`,
+);
+
+export const MediaLibraryField = defineFieldType<ImageField, string>(
+  ({ field, value, onChange, readOnly, Label, label }) => (
+    <Label label={label || field.label || 'Image'} readOnly={readOnly}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+        {LIBRARY.map((src) => (
+          <button
+            key={src}
+            type="button"
+            disabled={readOnly}
+            onClick={() => onChange(src)}
+            style={{
+              aspectRatio: '3 / 2',
+              border: 0,
+              outline: value === src ? '2px solid #3b82f6' : 'none',
+              background: `url(${src}) center / cover`,
+            }}
+          />
+        ))}
+      </div>
+      <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} placeholder="…or paste a URL" />
+    </Label>
+  ),
+);
+```
+
+</Step>
+<Step>
+
+### Register it
+
+Pass it in `overrides.fieldTypes`. The kit’s defaults step aside when you provide `url` or `image`.
+
+```tsx title="app/edit/[slug]/Editor.tsx"
+const overrides = { fieldTypes: { image: MediaLibraryField, url: PagePickerField } };
+
+<Puck config={config} data={data} {...kit} overrides={overrides} />;
+```
+
+You can also ship it from your own plugin: `{ overrides: { fieldTypes: { image: MediaLibraryField } } }`.
+
+</Step>
+</Steps>
+
+## Props your renderer receives
+
+<TypeTable
+  type={{
+    field: { type: 'F & { label?: string }', description: 'The field definition (`{ type: "image", label, placeholder }`).' },
+    name: { type: 'string', description: 'Field name.' },
+    id: { type: 'string', description: 'Unique id, e.g. for `htmlFor`.' },
+    value: { type: 'V | undefined', description: 'Current value (a URL string for `image` and `url`).' },
+    onChange: { type: '(value: V) => void', description: 'Write the new value.' },
+    readOnly: { type: 'boolean', description: 'The field is read-only.' },
+    label: { type: 'string', description: 'Resolved label.' },
+    labelIcon: { type: 'ReactNode', description: 'Icon next to the label.' },
+    Label: { type: 'ComponentType<{ label; icon?; readOnly?; children }>', description: 'Puck’s label wrapper — use it to look native.' },
+  }}
+/>
+
+## A page picker for `url`
+
+```tsx
+import { defineFieldType, type UrlField } from 'puck-kit/editor';
+
+export const PagePickerField = defineFieldType<UrlField, string>(({ value, onChange, Label, label, field }) => {
+  const pages = usePages(); // your data: [{ title, path }]
+  return (
+    <Label label={label || field.label || 'Link'}>
+      <input list="pages" value={value ?? ''} onChange={(e) => onChange(e.target.value)} placeholder="/about, https://…" />
+      <datalist id="pages">
+        {pages.map((p) => <option key={p.path} value={p.path}>{p.title}</option>)}
+      </datalist>
+    </Label>
+  );
+});
+```
+
+<Callout type="info" title="Video links are not affected">
+  The YouTube and Vimeo `url` fields are plain `text` fields on purpose: overriding `fieldTypes.url` (a link
+  target) doesn’t turn them into page pickers.
+</Callout>

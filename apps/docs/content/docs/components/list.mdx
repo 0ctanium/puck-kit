@@ -1,0 +1,98 @@
+---
+title: List
+description: "A <ul> or <ol> that only accepts List Items."
+icon: LayoutList
+---
+
+<ComponentHeader name="List" icon="layout-list" category="Basic" tags={["ul", "ol"]} slot={true} />
+
+**List** renders a real `<ul>` (bulleted) or `<ol>` (numbered) and **only accepts [List Items](/docs/components/list-item)** (`allow: ["ListItem"]`), so the HTML stays valid: `ul > li`, never `ul > div`.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-list.png" alt="List rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "List", "props": {"content": [{"type": "ListItem", "props": {"content": [{"type": "Text", "props": {"text": "<p>First item</p>"}}]}}, {"type": "ListItem", "props": {"content": [{"type": "Text", "props": {"text": "<p>Second item</p>"}}]}}, {"type": "ListItem", "props": {"content": [{"type": "Text", "props": {"text": "<p>Third item</p>"}}]}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-list.png" alt="List settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    tag: {"type": "\"ul\" | \"ol\"", "description": "Rendered element. Shown as a **Tag** select in the Style tab.", "default": "\"ul\""},
+    content: {"type": "Slot", "description": "Children (a Puck slot, rendered *as* this element: no wrapper div). Only `ListItem` can be dropped.", "default": "[]"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+A freshly dropped List starts with these `styles` — all editable, nothing is hard-coded in the render:
+
+<Tabs items={['styles (data)', 'compiled CSS']}>
+<Tab value="styles (data)">
+
+```json
+{
+  "base": {
+    "paddingLeft": "24px"
+  }
+}
+```
+
+</Tab>
+<Tab value="compiled CSS">
+
+```css
+.pk-id {
+  padding-left: 24px;
+}
+```
+
+</Tab>
+</Tabs>
+
+## Tips
+
+- For a simple bulleted list inside text, the rich text of [Text](/docs/components/text) is quicker. Use List when items need their own layout (icon + text, cards…).
+- Turn the list into a flex row or a grid with the Layout section: the items are direct children.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="List as stored by Puck">
+
+```json
+{
+  "type": "List",
+  "props": {
+    "id": "List-a1b2c3",
+    "tag": "ul",
+    "content": [],
+    "styles": {
+      "base": {
+        "paddingLeft": "24px"
+      }
+    },
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="List Item" href="/docs/components/list-item" description="An <li> with a drop zone, to put anything inside a List." />
+  <Card title="Text" href="/docs/components/text" description="A rich text block with every rich text feature: headings, lists, quotes, code." />
+</Cards>

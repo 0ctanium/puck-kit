@@ -1,0 +1,83 @@
+---
+title: List Item
+description: "An <li> with a drop zone, to put anything inside a List."
+icon: StretchHorizontal
+---
+
+<ComponentHeader name="ListItem" icon="stretch-horizontal" category="Basic" tags={["li"]} slot={true} />
+
+**List Item** is an `<li>` with its own drop zone (24px tall when empty). Drop text, icons, images or whole layouts inside. Structural [states](/docs/styling/states) like *Odd children* or *Last child* are handy to stripe rows or remove the last separator.
+
+<Tabs items={["Rendered", "Live preview", "Settings panel"]}>
+<Tab value="Rendered">
+<Screenshot src="component-list-item.png" alt="List Item rendered on a public page" />
+</Tab>
+<Tab value="Live preview">
+<KitPreview title="Live preview — rendered by this page" content={[{"type": "List", "props": {"styles": {"base": {"paddingLeft": "0", "maxWidth": "360px"}}, "content": [{"type": "ListItem", "props": {"styles": {"base": {"display": "flex", "paddingTop": "8px", "paddingBottom": "8px", "paddingLeft": "12px", "borderRadius": "6px"}, "base:odd": {"backgroundColor": "var(--pk-color-surface)"}}, "content": [{"type": "Text", "props": {"text": "<p>Odd rows are striped</p>"}}]}}, {"type": "ListItem", "props": {"styles": {"base": {"display": "flex", "paddingTop": "8px", "paddingBottom": "8px", "paddingLeft": "12px", "borderRadius": "6px"}, "base:odd": {"backgroundColor": "var(--pk-color-surface)"}}, "content": [{"type": "Text", "props": {"text": "<p>with a state style</p>"}}]}}, {"type": "ListItem", "props": {"styles": {"base": {"display": "flex", "paddingTop": "8px", "paddingBottom": "8px", "paddingLeft": "12px", "borderRadius": "6px"}, "base:odd": {"backgroundColor": "var(--pk-color-surface)"}}, "content": [{"type": "Text", "props": {"text": "<p>(base:odd)</p>"}}]}}]}}]} />
+</Tab>
+<Tab value="Settings panel">
+<Screenshot src="fields-list-item.png" alt="List Item settings in the editor's right sidebar" variant="panel" maxWidth={380} />
+</Tab>
+</Tabs>
+
+## Props
+
+Besides Puck’s `id`, the component stores these props (fields of the **Settings** tab, plus `tag`, `styles` and `advanced` in the **Style** tab):
+
+<TypeTable
+  type={{
+    content: {"type": "Slot", "description": "Children (a Puck slot, rendered *as* this element: no wrapper div).", "default": "[]"},
+    styles: {"type": "Styles", "description": "Responsive, per-state styles edited in the Style tab. See [How styles work](/docs/styling)."},
+    advanced: {"type": "Advanced", "description": "HTML `id`, extra classes and `aria-label` (Style tab → Advanced).", "default": "{}"},
+  }}
+/>
+
+## Default styles
+
+None: a fresh List Item only gets the [base stylesheet](/docs/styling/css-output#the-base-stylesheet). Everything comes from the Style tab.
+
+The example above uses the `base:odd` state for the striped background:
+
+```json
+{
+  "base": {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "12px"
+  },
+  "base:odd": {
+    "backgroundColor": "var(--pk-color-surface)"
+  }
+}
+```
+
+## Tips
+
+- A List Item can be dropped anywhere in the editor, but only renders valid HTML inside a List.
+
+## In the page data
+
+<Accordions type="single">
+<Accordion title="List Item as stored by Puck">
+
+```json
+{
+  "type": "ListItem",
+  "props": {
+    "id": "ListItem-a1b2c3",
+    "content": [],
+    "styles": {},
+    "advanced": {}
+  }
+}
+```
+
+</Accordion>
+</Accordions>
+
+## Related
+
+<Cards>
+  <Card title="List" href="/docs/components/list" description="A <ul> or <ol> that only accepts List Items." />
+  <Card title="Box" href="/docs/components/box" description="The generic element: a div (or semantic tag) with a drop zone and no default styles." />
+</Cards>

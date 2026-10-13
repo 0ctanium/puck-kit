@@ -4,8 +4,23 @@
     {
       "name": "playground",
       "runtimeExecutable": "/Users/benjamin/.nvm/versions/node/v22.14.0/bin/node",
-      "runtimeArgs": ["apps/playground/node_modules/next/dist/bin/next", "dev", "apps/playground", "--port", "3030"],
+      "runtimeArgs": [
+        "apps/playground/node_modules/next/dist/bin/next",
+        "dev",
+        "apps/playground",
+        "--port",
+        "3030"
+      ],
       "port": 3030
+    },
+    {
+      "name": "docs",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": [
+        "-c",
+        "cd apps/docs && PATH=\"$HOME/.local/share/fnm/node-versions/v24.18.1/installation/bin:$PATH\" exec node node_modules/next/dist/bin/next dev --port 3031"
+      ],
+      "port": 3031
     }
   ]
 }
