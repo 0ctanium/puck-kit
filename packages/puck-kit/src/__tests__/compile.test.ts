@@ -49,6 +49,36 @@ it("emits shorthands before longhands whatever the insertion order", () => {
     );
   });
 
+describe("states", () => {
+  const styles = {
+    base: { color: "black" },
+    "base:active": { color: "red" },
+    "base:hover": { color: "blue" },
+    "md:hover": { transform: "scale(1.02)" },
+    "base:bogus": { color: "green" },
+  };
+
+  it("emits state rules after the plain rule, inside the same media query, in cascade order", () => {
+    expect(compileStyles(".x", styles)).toBe(
+      ".x{color:black}.x:hover{color:blue}.x:active{color:red}" +
+        "@media (min-width:768px){.x:hover{transform:scale(1.02)}}",
+    );
+  });
+
+  it("adds the editor preview selector only in preview mode", () => {
+    expect(compileStyles(".x", { "base:hover": { color: "blue" } }, undefined, { preview: true })).toBe(
+      '.x:hover,.x[data-pk-state="hover"]{color:blue}',
+    );
+  });
+
+  it("resolves state values through the cascade, falling back to the plain value", () => {
+    expect(resolveValue(styles, "color", "lg", undefined, "hover")).toEqual({ value: "blue", from: "base", fromState: "hover" });
+    expect(resolveValue(styles, "transform", "lg", undefined, "hover")).toEqual({ value: "scale(1.02)", from: "md", fromState: "hover" });
+    expect(resolveValue(styles, "transform", "base", undefined, "hover")).toEqual({ value: undefined, from: undefined });
+    expect(resolveValue(styles, "color", "md", undefined, "focus")).toEqual({ value: "black", from: "base", fromState: undefined });
+  });
+});
+
 describe("resolveValue", () => {
   const styles = { base: { color: "red" }, lg: { color: "blue" } };
   it("cascades from smaller breakpoints", () => {

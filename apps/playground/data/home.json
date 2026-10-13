@@ -106,7 +106,7 @@
                         "props": {
                           "id": "Paragraph-demo2",
                           "tag": "p",
-                          "text": "<p>Every element has its own <strong>responsive</strong> style panel. Styles compile to plain CSS — no Tailwind, no build step.</p>",
+                          "text": "<p>Every element has its own <strong>responsive</strong> style panel. Styles compile to plain CSS \u2014 no Tailwind, no build step.</p>",
                           "styles": {
                             "base": {
                               "fontSize": "18px",
@@ -143,7 +143,20 @@
                                     "fontWeight": "600",
                                     "textDecoration": "none",
                                     "textAlign": "center",
-                                    "cursor": "pointer"
+                                    "cursor": "pointer",
+                                    "transition": "background-color 200ms ease, transform 150ms ease, box-shadow 200ms ease"
+                                  },
+                                  "base:hover": {
+                                    "backgroundColor": "var(--pk-color-text)",
+                                    "transform": "translate(0px, -1px)",
+                                    "boxShadow": "0px 6px 16px 0px rgba(17, 24, 39, 0.2)"
+                                  },
+                                  "base:active": {
+                                    "transform": "scale(0.98, 0.98)",
+                                    "boxShadow": "none"
+                                  },
+                                  "base:focus-visible": {
+                                    "boxShadow": "0px 0px 0px 3px rgba(79, 70, 229, 0.35)"
                                   }
                                 },
                                 "advanced": {}
@@ -170,7 +183,18 @@
                                     "borderStyle": "solid",
                                     "borderColor": "var(--pk-color-primary)",
                                     "fontWeight": "600",
-                                    "textDecoration": "none"
+                                    "textDecoration": "none",
+                                    "transition": "background-color 200ms ease, color 200ms ease"
+                                  },
+                                  "base:hover": {
+                                    "backgroundColor": "var(--pk-color-primary)",
+                                    "color": "var(--pk-color-white)"
+                                  },
+                                  "base:active": {
+                                    "transform": "scale(0.98, 0.98)"
+                                  },
+                                  "base:focus-visible": {
+                                    "boxShadow": "0px 0px 0px 3px rgba(79, 70, 229, 0.35)"
                                   }
                                 },
                                 "advanced": {}
@@ -333,7 +357,15 @@
                               "borderStyle": "solid",
                               "borderColor": "#e5e7eb",
                               "borderRadius": "12px",
-                              "transition": "box-shadow .2s ease"
+                              "transition": "transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease"
+                            },
+                            "base:hover": {
+                              "transform": "translate(0px, -4px)",
+                              "boxShadow": "0px 12px 24px 0px rgba(17, 24, 39, 0.08)",
+                              "borderColor": "var(--pk-color-primary)"
+                            },
+                            "base:active": {
+                              "transform": "translate(0px, -1px)"
                             }
                           },
                           "advanced": {}
@@ -391,7 +423,15 @@
                               "borderStyle": "solid",
                               "borderColor": "#e5e7eb",
                               "borderRadius": "12px",
-                              "transition": "box-shadow .2s ease"
+                              "transition": "transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease"
+                            },
+                            "base:hover": {
+                              "transform": "translate(0px, -4px)",
+                              "boxShadow": "0px 12px 24px 0px rgba(17, 24, 39, 0.08)",
+                              "borderColor": "var(--pk-color-primary)"
+                            },
+                            "base:active": {
+                              "transform": "translate(0px, -1px)"
                             }
                           },
                           "advanced": {}
@@ -452,7 +492,15 @@
                               "borderStyle": "solid",
                               "borderColor": "#e5e7eb",
                               "borderRadius": "12px",
-                              "transition": "box-shadow .2s ease"
+                              "transition": "transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease"
+                            },
+                            "base:hover": {
+                              "transform": "translate(0px, -4px)",
+                              "boxShadow": "0px 12px 24px 0px rgba(17, 24, 39, 0.08)",
+                              "borderColor": "var(--pk-color-primary)"
+                            },
+                            "base:active": {
+                              "transform": "translate(0px, -1px)"
                             }
                           },
                           "advanced": {}
@@ -588,7 +636,18 @@
                                     ],
                                     "id": "ListItem-demo25",
                                     "tag": "li",
-                                    "styles": {},
+                                    "styles": {
+                                      "base": {
+                                        "paddingTop": "6px",
+                                        "paddingBottom": "6px",
+                                        "paddingLeft": "8px",
+                                        "paddingRight": "8px",
+                                        "borderRadius": "4px"
+                                      },
+                                      "base:odd": {
+                                        "backgroundColor": "var(--pk-color-white)"
+                                      }
+                                    },
                                     "advanced": {}
                                   }
                                 },
@@ -609,7 +668,18 @@
                                     ],
                                     "id": "ListItem-demo27",
                                     "tag": "li",
-                                    "styles": {},
+                                    "styles": {
+                                      "base": {
+                                        "paddingTop": "6px",
+                                        "paddingBottom": "6px",
+                                        "paddingLeft": "8px",
+                                        "paddingRight": "8px",
+                                        "borderRadius": "4px"
+                                      },
+                                      "base:odd": {
+                                        "backgroundColor": "var(--pk-color-white)"
+                                      }
+                                    },
                                     "advanced": {}
                                   }
                                 },
@@ -630,7 +700,18 @@
                                     ],
                                     "id": "ListItem-demo29",
                                     "tag": "li",
-                                    "styles": {},
+                                    "styles": {
+                                      "base": {
+                                        "paddingTop": "6px",
+                                        "paddingBottom": "6px",
+                                        "paddingLeft": "8px",
+                                        "paddingRight": "8px",
+                                        "borderRadius": "4px"
+                                      },
+                                      "base:odd": {
+                                        "backgroundColor": "var(--pk-color-white)"
+                                      }
+                                    },
                                     "advanced": {}
                                   }
                                 }
@@ -697,6 +778,73 @@
           }
         },
         "advanced": {}
+      }
+    },
+    {
+      "type": "Section",
+      "props": {
+        "id": "Section-demo42",
+        "tag": "section",
+        "advanced": {},
+        "styles": {
+          "base": {
+            "paddingTop": "64px",
+            "paddingBottom": "64px"
+          }
+        },
+        "content": [
+          {
+            "type": "Container",
+            "props": {
+              "id": "Container-demo41",
+              "tag": "div",
+              "advanced": {},
+              "styles": {
+                "base": {
+                  "width": "100%",
+                  "marginLeft": "auto",
+                  "marginRight": "auto",
+                  "paddingLeft": "16px",
+                  "paddingRight": "16px"
+                },
+                "md": {
+                  "maxWidth": "728px"
+                },
+                "lg": {
+                  "maxWidth": "960px"
+                },
+                "xl": {
+                  "maxWidth": "1200px"
+                }
+              },
+              "content": [
+                {
+                  "type": "Banner",
+                  "props": {
+                    "id": "Banner-demo40",
+                    "title": "Ship faster with design tokens",
+                    "text": "Every color, font and size here comes from the page's tokens \u2014 change them once in the Tokens panel.",
+                    "background": {
+                      "color": "var(--pk-color-primary)",
+                      "image": "linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 60%)",
+                      "size": "auto",
+                      "position": "0% 0%",
+                      "repeat": "repeat"
+                    },
+                    "textColor": "var(--pk-color-white)",
+                    "font": "var(--pk-font-serif)",
+                    "align": "center",
+                    "padding": 56,
+                    "radius": 16,
+                    "showButton": true,
+                    "buttonLabel": "Get started",
+                    "buttonColor": "var(--pk-color-text)"
+                  }
+                }
+              ]
+            }
+          }
+        ]
       }
     }
   ],

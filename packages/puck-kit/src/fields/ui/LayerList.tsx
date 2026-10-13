@@ -3,7 +3,7 @@
 import { Plus, Trash } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import type { StyleProp } from "../../styles/types";
-import { usePanel } from "../context";
+import { useOptionalPanel } from "../context";
 import { MenuPopover, Popover, usePopover } from "./Popover";
 import { PropLabel } from "./inputs";
 import ui from "./ui.module.css";
@@ -92,6 +92,7 @@ export function LayerList<T>({
   renderLabel,
   renderEditor,
   itemTitle,
+  readOnly: readOnlyProp,
 }: {
   label: string;
   props: StyleProp[];
@@ -103,8 +104,11 @@ export function LayerList<T>({
   renderLabel: (item: T) => ReactNode;
   renderEditor: (item: T, update: (item: T) => void) => ReactNode;
   itemTitle: (item: T) => string;
+  /** Defaults to the style panel's read-only state. */
+  readOnly?: boolean;
 }) {
-  const panel = usePanel();
+  const panel = useOptionalPanel();
+  const readOnly = readOnlyProp ?? panel?.readOnly ?? false;
   const menu = usePopover();
   const [added, setAdded] = useState<number | null>(null);
   const addItem = (item: T) => {
@@ -116,7 +120,7 @@ export function LayerList<T>({
     <div>
       <div className={ui.listHeader}>
         <PropLabel label={label} props={props} />
-        {!panel.readOnly && (
+        {!readOnly && (
           <button
             ref={(el) => {
               menu.anchorRef.current = el;
@@ -145,7 +149,7 @@ export function LayerList<T>({
               preview={renderPreview(item)}
               label={renderLabel(item)}
               title={itemTitle(item)}
-              readOnly={panel.readOnly}
+              readOnly={readOnly}
               autoOpen={added === i}
               onAutoOpened={() => setAdded(null)}
               editor={renderEditor(item, (next) => onChange(items.map((it, j) => (j === i ? next : it))))}

@@ -1,4 +1,5 @@
 import { defaultBreakpoints, sortBreakpoints, type Breakpoint } from "../breakpoints";
+import { defaultStates, PREVIEW_STATE_ATTR, styleKey, type StyleState } from "./states";
 import { STYLE_PROPS, UNITLESS_PROPS, type StyleDecl, type StyleProp, type Styles } from "./types";
 
 /** Class name an element gets for its styles. Puck ids are stable, so this is SSR-safe. */
@@ -32,39 +33,79 @@ export function declToCss(decl: StyleDecl | undefined): string {
   return parts.join(";");
 }
 
+export interface CompileOptions {
+  /** Pseudo-class states to emit (default: `defaultStates`). */
+  states?: StyleState[];
+  /**
+   * Editor preview: each state rule also matches `[data-pk-state="<key>"]`, so the canvas can
+   * show a state while it's being edited (CSS can't force `:hover`).
+   */
+  preview?: boolean;
+}
+
 /**
- * Compile per-breakpoint styles to CSS, mobile-first:
- * `.sel{...}@media (min-width:768px){.sel{...}}`
+ * Compile per-breakpoint (and per-state) styles to CSS, mobile-first:
+ * `.sel{...}.sel:hover{...}@media (min-width:768px){.sel{...}.sel:hover{...}}`.
+ * State rules are more specific than plain ones, so `base:hover` keeps applying at larger
+ * breakpoints unless overridden there. `selector` can be any selector (element or, later, class).
  */
 export function compileStyles(
   selector: string,
   styles: Styles | null | undefined,
   breakpoints: Breakpoint[] = defaultBreakpoints,
+  { states = defaultStates, preview = false }: CompileOptions = {},
 ): string {
   if (!styles) return "";
   let css = "";
   for (const bp of sortBreakpoints(breakpoints)) {
-    const body = declToCss(styles[bp.key]);
-    if (!body) continue;
-    css += bp.minWidth > 0
-      ? `@media (min-width:${bp.minWidth}px){${selector}{${body}}}`
-      : `${selector}{${body}}`;
+    let block = "";
+    const plain = declToCss(styles[bp.key]);
+    if (plain) block += `${selector}{${plain}}`;
+    for (const state of states) {
+      const body = declToCss(styles[styleKey(bp.key, state.key)]);
+      if (!body) continue;
+      const sel = `${selector}${state.selector}`;
+      block += preview ? `${sel},${selector}[${PREVIEW_STATE_ATTR}="${state.key}"]{${body}}` : `${sel}{${body}}`;
+    }
+    if (!block) continue;
+    css += bp.minWidth > 0 ? `@media (min-width:${bp.minWidth}px){${block}}` : block;
   }
   return css;
 }
 
-/** Value for a property at a breakpoint, following the mobile-first cascade. */
+export interface ResolvedValue {
+  value: string | undefined;
+  /** Breakpoint key the value comes from. */
+  from: string | undefined;
+  /** State the value comes from (undefined = the plain, stateless value). */
+  fromState?: string;
+}
+
+/**
+ * Value for a property at a breakpoint (and optional state), following the CSS cascade:
+ * the latest state value up to this breakpoint wins (state rules are more specific), otherwise
+ * the plain mobile-first value.
+ */
 export function resolveValue(
   styles: Styles | null | undefined,
   prop: StyleProp,
   bpKey: string,
   breakpoints: Breakpoint[] = defaultBreakpoints,
-): { value: string | undefined; from: string | undefined } {
-  let found: { value: string | undefined; from: string | undefined } = { value: undefined, from: undefined };
-  for (const bp of sortBreakpoints(breakpoints)) {
-    const v = styles?.[bp.key]?.[prop];
-    if (v != null && v !== "") found = { value: v, from: bp.key };
-    if (bp.key === bpKey) break;
+  state?: string,
+): ResolvedValue {
+  const sorted = sortBreakpoints(breakpoints);
+  const scan = (stateKey?: string): ResolvedValue => {
+    let found: ResolvedValue = { value: undefined, from: undefined };
+    for (const bp of sorted) {
+      const v = styles?.[styleKey(bp.key, stateKey)]?.[prop];
+      if (v != null && v !== "") found = { value: v, from: bp.key, fromState: stateKey };
+      if (bp.key === bpKey) break;
+    }
+    return found;
+  };
+  if (state) {
+    const own = scan(state);
+    if (own.value !== undefined) return own;
   }
-  return found;
+  return scan();
 }

@@ -17,6 +17,7 @@
 }
 
 .breakpoints {
+  position: relative;
   display: flex;
   gap: 1px;
   padding: 1px;
@@ -42,6 +43,19 @@
 .breakpoint:hover {
   color: var(--pk-ui-text);
   background: var(--pk-ui-hover);
+}
+
+/* Under the active breakpoint and the larger ones it also styles. */
+.coverage {
+  position: absolute;
+  bottom: 1px;
+  left: calc((100% - 2px) * var(--pk-bp-index) / var(--pk-bp-count) + 5px);
+  right: 5px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--pk-ui-accent), color-mix(in srgb, var(--pk-ui-accent) 45%, #a855f7));
+  transition: left 150ms ease-out;
+  pointer-events: none;
 }
 
 .breakpoint[aria-pressed="true"] {
@@ -96,4 +110,55 @@
 
 .sections > :last-child {
   border-bottom: 1px solid var(--pk-ui-border);
+}
+
+/* State bar */
+
+.stateBar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid var(--pk-ui-border);
+  border-radius: 6px;
+  background: var(--pk-ui-bg);
+}
+
+.stateBar[data-active="true"] {
+  border-color: var(--pk-ui-accent);
+  background: var(--pk-ui-accent-soft);
+  color: var(--pk-ui-accent);
+}
+
+.stateTrigger {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.stateTrigger strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stateLabel {
+  font-size: 11px;
+  color: var(--pk-ui-muted);
+}
+
+.hintState {
+  color: var(--pk-ui-accent);
 }

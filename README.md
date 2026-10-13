@@ -75,6 +75,41 @@ Persisting `data` (JSON) is up to you.
   offered as swatches/presets in the style panel. Each token shows how many places use it;
   renaming rewrites every reference, and deleting a used token can detach it (references are
   replaced by the raw value).
+- **Field types for your components** (registered by the Tokens plugin through
+  `overrides.fieldTypes`, like Shopify's input settings):
+
+  | `type` | Value | UI |
+  |---|---|---|
+  | `color` | CSS color or token (`var(--pk-color-…)`) | Swatch + color picker with token swatches |
+  | `background` | `BackgroundValue` → `backgroundStyle(value)` | Color + image/gradient layers |
+  | `font` | font-family stack or font token | Font picker (library + tokens, "Add fonts") |
+  | `range` | number | Slider + number (`min`, `max`, `step`, `unit`) |
+  | `checkbox` | boolean | Switch (`text` next to it) |
+  | `select` | any option value | Puck's select, restyled (options may have an `icon` via `iconOptions()`) |
+
+  ```tsx
+  import { backgroundStyle, type KitFields } from "puck-kit";
+  const Banner: ComponentConfig<{ props: BannerProps; fields: KitFields }> = {
+    fields: {
+      background: { type: "background", label: "Background" },
+      accent: { type: "color", label: "Accent" },
+      font: { type: "font", label: "Title font" },
+      padding: { type: "range", label: "Padding", min: 0, max: 128, unit: "px" },
+      showButton: { type: "checkbox", label: "Button", text: "Show a button" },
+    },
+    render: ({ background, accent, font, padding }) => <section style={{ ...backgroundStyle(background), color: accent, padding }}>…</section>,
+  };
+  ```
+  Font values in props are detected by `fontMetadata(fonts, data)`, so those fonts load on public
+  pages too. See `apps/playground/lib/Banner.tsx` (the "Promo Banner" block).
+- **States** (`:hover`, Pressed, focus, first/last child, odd/even…): pick a state in the panel's
+  "State" bar, then style as usual. Stored in the same `styles` object as `<breakpoint>:<state>`
+  keys (`base:hover`, `md:active`), compiled to `.pk-<id>:hover{…}` inside the breakpoint's media
+  query. A state set on Mobile keeps applying on larger screens unless overridden there. The
+  canvas previews the edited state while it's selected. Page styles have no states
+  (`styleField({ states: false })`); pass your own list with `styleField({ states })`.
+  States live inside `styles` on purpose: a future class/selector system can reuse the exact same
+  shape (`compileStyles(".card", classStyles)`).
 - **Fonts**: give the editor a font library and it loads the fonts and offers them in font
   pickers (font tokens and Typography). Users never type CSS stacks.
   ```tsx
@@ -98,8 +133,10 @@ Persisting `data` (JSON) is up to you.
 
 ### Style panel
 
-Webflow-like, with popovers for anything complex. The breakpoint bar is synced with Puck's
-viewport switcher. A blue label means "set on this breakpoint" (click it to reset), orange means
+Webflow-like, with popovers for anything complex. The breakpoint bar is synced with the
+breakpoint switcher that `BuilderEditor` puts in Puck's header (`ViewportBar`, rendered before
+your `overrides.headerActions`). Puck's own controls above the canvas are hidden and the canvas
+has no gutter (set `--pk-canvas-gutter` to add one); zoom follows Puck's auto-zoom. A blue label means "set on this breakpoint" (click it to reset), orange means
 "inherited from a smaller breakpoint". Drag a label (or a spacing value) left/right to scrub it;
 arrow keys nudge numbers (Shift ×10, Alt ×0.1).
 

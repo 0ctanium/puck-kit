@@ -1,0 +1,90 @@
+/* Layout-neutral wrapper around <Puck>, used to scope the overrides below. */
+.chrome {
+  display: contents;
+}
+
+/* The breakpoints live in the header (ViewportBar), so the canvas uses all its space.
+   Puck's class names are hashed, hence the attribute selectors; the doubled class beats
+   Puck's own (media-query) padding rules. */
+.chrome.chrome :global(div[class*="_PuckCanvas_"]) {
+  padding: var(--pk-canvas-gutter, 0);
+  /* Auto-zoom always fits the frame; without a gutter the frame's outline would overflow by
+     a couple of pixels and add a second scrollbar next to the iframe's. */
+  overflow: hidden;
+}
+
+.chrome :global(div[class*="_PuckCanvas-controls_"]) {
+  display: none;
+}
+
+/* Rendered in Puck's menu bar after undo/redo; `order` puts it before them. */
+.bar {
+  order: -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+}
+
+.buttons {
+  position: relative;
+  display: flex;
+  gap: 2px;
+}
+
+/* Under the active breakpoint and the larger ones it also styles (Webstudio-like). */
+.coverage {
+  position: absolute;
+  bottom: -5px;
+  left: calc(100% * var(--pk-bp-index) / var(--pk-bp-count));
+  right: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--pk-ui-accent), color-mix(in srgb, var(--pk-ui-accent) 45%, #a855f7));
+  transition: left 150ms ease-out;
+  pointer-events: none;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 26px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--pk-ui-muted);
+  cursor: pointer;
+}
+
+.button:hover {
+  color: var(--pk-ui-text);
+  background: var(--pk-ui-hover);
+}
+
+.button[data-covered] {
+  color: var(--pk-ui-text);
+}
+
+.button[aria-pressed="true"] {
+  color: var(--pk-ui-accent);
+}
+
+.label {
+  font-size: 12px;
+  color: var(--pk-ui-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.label strong {
+  color: var(--pk-ui-text);
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .label {
+    display: none;
+  }
+}

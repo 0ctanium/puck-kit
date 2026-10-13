@@ -25,7 +25,7 @@ export function createKitRoot(ctx: KitContext, defaults: { tokens: Tokens }): Ro
   return {
     fields: {
       title: { type: "text", label: "Page title" },
-      styles: styleField({ label: "Page style", breakpoints: ctx.breakpoints }),
+      styles: styleField({ label: "Page style", breakpoints: ctx.breakpoints, states: false }),
     } as Fields<KitRootProps>,
     // `tokens` has no field: it's edited in the Tokens plugin (left rail) and kept in root props.
     defaultProps: { title: "", tokens: defaults.tokens, styles: {} },

@@ -67,7 +67,13 @@ export function getFontAssets(fonts: FontDefinition[]): FontAssets {
   };
 }
 
-/** Collect every `fontFamily` value (any breakpoint, any element) and the font tokens of a page. */
+/** Looks like a font stack written by the kit: `"Inter", sans-serif`. */
+const STACK = /^\s*(["'][^"']+["']|[\w -]+)\s*,\s*[\w "'-]+/;
+
+/**
+ * Collect font stacks of a page: every `fontFamily` style value, plus any string prop shaped
+ * like a stack (values of `font` fields in components).
+ */
 function collectStacks(value: unknown, out: Set<string>) {
   if (Array.isArray(value)) {
     for (const v of value) collectStacks(v, out);
@@ -75,8 +81,9 @@ function collectStacks(value: unknown, out: Set<string>) {
   }
   if (!value || typeof value !== "object") return;
   for (const [k, v] of Object.entries(value)) {
-    if (k === "fontFamily" && typeof v === "string") out.add(v);
-    else collectStacks(v, out);
+    if (typeof v === "string") {
+      if (k === "fontFamily" || STACK.test(v)) out.add(v);
+    } else collectStacks(v, out);
   }
 }
 

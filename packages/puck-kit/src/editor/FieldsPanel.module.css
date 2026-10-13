@@ -1,6 +1,35 @@
+/*
+ * Compact Puck field theme, matching the kit's own controls (style panel, field types).
+ * Scoped to the fields panel: Puck's field variables have no defaults, and each field's
+ * padding uses --puck-space-4 / --puck-space-3, which we tighten here only.
+ * https://puckeditor.com/docs/api-reference/theming/fields
+ */
 .KitFields {
   display: flex;
   flex-direction: column;
+
+  /* Inputs: ~26px high, 12px text, like the kit's controls */
+  --puck-field-space-y: 4.5px;
+  --puck-field-space-x: 8px;
+  --puck-field-font-size: 12px;
+  --puck-field-radius: 4px;
+  --puck-field-color-border: var(--puck-color-grey-09, #e3e6ea);
+  --puck-field-color-border-hover: var(--puck-color-grey-08, #cfd4da);
+  --puck-field-color-bg-hover: var(--puck-color-grey-12, #f8f9fa);
+
+  /* Labels: small and muted, the value is what matters */
+  --puck-field-label-font-size: 11px;
+  --puck-field-label-font-weight: 500;
+  --puck-field-label-color-text: var(--puck-color-grey-05, #6c757d);
+  --puck-field-label-space-y: 4px;
+
+  /* Array / object bodies */
+  --puck-field-space-surface-x: 8px;
+  --puck-field-space-surface-y: 8px;
+
+  /* Space around each field (Puck uses these tokens for the field wrappers) */
+  --puck-space-4: 12px;
+  --puck-space-3: 8px;
 }
 
 .KitFieldsTab {
@@ -18,12 +47,17 @@
   background: none;
   border: 0;
 
-  padding: var(--puck-space-3);
+  justify-content: center;
+  padding: 8px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--puck-color-text-secondary);
 
   border-bottom: var(--puck-border-width-regular) solid var(--puck-color-border);
 }
 
 .KitFieldsTabButtonActive {
   font-weight: 600;
+  color: var(--puck-color-text);
   border-bottom: var(--puck-border-width-focus) solid var(--puck-color-azure-04);
 }

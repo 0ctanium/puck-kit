@@ -1,7 +1,10 @@
 /** A flat set of CSS declarations, camelCase keys, string values (`"16px"`, `"var(--pk-color-primary)"`). */
 export type StyleDecl = Partial<Record<StyleProp, string>>;
 
-/** Per-breakpoint declarations. Keys are breakpoint keys (`base`, `md`, ...). Mobile-first cascade. */
+/**
+ * Per-breakpoint (and per-state) declarations. Keys are breakpoint keys (`base`, `md`, ...) or
+ * `<breakpoint>:<state>` (`base:hover`, `md:active`). Mobile-first cascade.
+ */
 export type Styles = Record<string, StyleDecl | undefined>;
 
 export const STYLE_PROPS = [

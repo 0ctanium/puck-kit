@@ -21,7 +21,7 @@ export interface ElementStyleProps {
 export function ElementStyle({ id, styles, editing, breakpoints = defaultBreakpoints }: ElementStyleProps) {
   const cls = `.${styleClass(id)}`;
   // In the editor, out-rank Puck's drop-zone rules and the slot reset (see `editorCss`).
-  const css = compileStyles(editing ? cls + cls + cls : cls, styles, breakpoints);
+  const css = compileStyles(editing ? cls + cls + cls : cls, styles, breakpoints, { preview: editing });
   if (!css) return null;
   if (editing) return <style>{css}</style>;
   return (

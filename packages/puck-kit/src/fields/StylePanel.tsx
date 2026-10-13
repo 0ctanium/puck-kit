@@ -2,10 +2,11 @@
 
 import { createUsePuck } from "@puckeditor/core";
 import { Laptop, Monitor, Smartphone, Tablet } from "lucide-react";
-import { useCallback, useMemo, type ComponentType } from "react";
+import { useCallback, useEffect, useMemo, useState, type ComponentType, type CSSProperties } from "react";
 import { breakpointForWidth, defaultBreakpoints, sortBreakpoints, type Breakpoint } from "../breakpoints";
 import { cx } from "../components/shared";
-import { resolveValue } from "../styles/compile";
+import { resolveValue, styleClass } from "../styles/compile";
+import { defaultStates, PREVIEW_STATE_ATTR, styleKey, type StyleState } from "../styles/states";
 import type { Tokens } from "../styles/tokens";
 import type { StyleDecl, StyleProp, Styles } from "../styles/types";
 import { PanelProvider, type PanelApi, type PropRead } from "./context";
@@ -18,6 +19,7 @@ import { PositionSection } from "./sections/PositionSection";
 import { SizeSection } from "./sections/SizeSection";
 import { SpacingSection } from "./sections/SpacingSection";
 import { TypographySection } from "./sections/TypographySection";
+import { StateBar } from "./StateBar";
 import css from "./StylePanel.module.css";
 import ui from "./ui/ui.module.css";
 
@@ -51,6 +53,34 @@ export interface StylePanelProps {
   breakpoints?: Breakpoint[];
   /** Restrict which sections are shown (ids from STYLE_SECTIONS). */
   sections?: string[];
+  /** Pseudo-class states offered in the state bar; `false` hides it (e.g. page styles). */
+  states?: StyleState[] | false;
+}
+
+// The edited state is shared across elements while editing, like Webflow: you can hover-style
+// several buttons in a row.
+let lastStateKey: string | undefined;
+
+/**
+ * While a state is edited, force it on the selected element in Puck's canvas iframe
+ * (`[data-pk-state]` is matched by the editor-only CSS, see `compileStyles({ preview })`).
+ */
+function usePreviewState(state: string | undefined, deps: unknown) {
+  const id = usePuck((s) => s.selectedItem?.props?.id as string | undefined);
+  useEffect(() => {
+    if (!state || !id) return;
+    const cls = styleClass(id);
+    const targets: Element[] = [];
+    for (const frame of document.querySelectorAll("iframe")) {
+      try {
+        frame.contentDocument?.querySelectorAll(`.${cls}`).forEach((el) => targets.push(el));
+      } catch {
+        /* cross-origin frame */
+      }
+    }
+    targets.forEach((el) => el.setAttribute(PREVIEW_STATE_ATTR, state));
+    return () => targets.forEach((el) => el.removeAttribute(PREVIEW_STATE_ATTR));
+  }, [state, id, deps]);
 }
 
 function applyValues(styles: Styles, bp: string, values: Partial<Record<StyleProp, string | undefined>>): Styles {
@@ -96,10 +126,25 @@ export function useActiveBreakpoint(breakpoints: Breakpoint[] = defaultBreakpoin
   return [active, setActive] as const;
 }
 
-export function StylePanel({ value, onChange, readOnly = false, breakpoints = defaultBreakpoints, sections }: StylePanelProps) {
+export function StylePanel({
+  value,
+  onChange,
+  readOnly = false,
+  breakpoints = defaultBreakpoints,
+  sections,
+  states = defaultStates,
+}: StylePanelProps) {
   const styles: Styles = value ?? {};
   const bps = useMemo(() => sortBreakpoints(breakpoints), [breakpoints]);
   const [active, setActive] = useActiveBreakpoint(bps);
+  const [stateKey, setStateKey] = useState(lastStateKey);
+  const activeState = states ? states.find((s) => s.key === stateKey) : undefined;
+  const key = styleKey(active.key, activeState?.key);
+  const selectState = (next: string | undefined) => {
+    lastStateKey = next;
+    setStateKey(next);
+  };
+  usePreviewState(activeState?.key, value);
   const tokens = (usePuck((s) => s.appState.data.root?.props?.tokens) ?? {}) as Tokens;
   const parentStyles = useParentStyles();
   const parent = useMemo(
@@ -117,23 +162,27 @@ export function StylePanel({ value, onChange, readOnly = false, breakpoints = de
     styles,
     breakpoints: bps,
     active,
+    activeState,
+    key,
     tokens,
     readOnly,
     parent,
     read: (prop): PropRead => {
-      const own = styles[active.key]?.[prop];
-      const resolved = resolveValue(styles, prop, active.key, bps);
+      const own = styles[key]?.[prop];
+      const resolved = resolveValue(styles, prop, active.key, bps, activeState?.key);
       const inherited = own === undefined ? resolved.value : undefined;
+      const bpLabel = bps.find((b) => b.key === resolved.from)?.label;
+      const stateLabel = states ? states.find((s) => s.key === resolved.fromState)?.label : undefined;
       return {
         value: own,
         inherited,
-        from: bps.find((b) => b.key === resolved.from)?.label,
+        from: activeState && bpLabel ? `${bpLabel} · ${stateLabel ?? "None"}` : bpLabel,
         state: own !== undefined ? "set" : inherited !== undefined ? "inherited" : "empty",
       };
     },
-    get: (prop) => resolveValue(styles, prop, active.key, bps).value,
-    write: (prop, v) => onChange(applyValues(styles, active.key, { [prop]: v })),
-    writeMany: (values) => onChange(applyValues(styles, active.key, values)),
+    get: (prop) => resolveValue(styles, prop, active.key, bps, activeState?.key).value,
+    write: (prop, v) => onChange(applyValues(styles, key, { [prop]: v })),
+    writeMany: (values) => onChange(applyValues(styles, key, values)),
   };
 
   // "child" (older option name) means both child sections.
@@ -144,10 +193,15 @@ export function StylePanel({ value, onChange, readOnly = false, breakpoints = de
     <PanelProvider value={api}>
       <div className={cx(ui.theme, css.root)} data-pk-panel="">
         <div className={css.bar}>
-          <div className={css.breakpoints} role="group" aria-label="Breakpoint">
+          <div
+            className={css.breakpoints}
+            role="group"
+            aria-label="Breakpoint"
+            style={{ "--pk-bp-index": bps.findIndex((bp) => bp.key === active.key), "--pk-bp-count": bps.length } as CSSProperties}
+          >
             {bps.map((bp) => {
               const Icon = ICONS[bp.icon ?? "Monitor"] ?? Monitor;
-              const count = Object.keys(styles[bp.key] ?? {}).length;
+              const count = Object.keys(styles[styleKey(bp.key, activeState?.key)] ?? {}).length;
               return (
                 <button
                   key={bp.key}
@@ -163,10 +217,21 @@ export function StylePanel({ value, onChange, readOnly = false, breakpoints = de
                 </button>
               );
             })}
+            {/* Mobile-first: what's set here also applies to the larger breakpoints. */}
+            <span className={css.coverage} aria-hidden />
           </div>
+          {states && states.length > 0 && (
+            <StateBar states={states} styles={styles} breakpoint={active} value={activeState?.key} onChange={selectState} />
+          )}
           <div className={css.hint}>
             <span>
               <strong>{active.label}</strong> {active.minWidth ? `≥ ${active.minWidth}px` : "· base"}
+              {activeState && (
+                <>
+                  {" · "}
+                  <strong className={css.hintState}>{activeState.label}</strong>
+                </>
+              )}
             </span>
             <span className={css.legend}>
               <span>
@@ -192,7 +257,7 @@ export function StylePanel({ value, onChange, readOnly = false, breakpoints = de
 
 /** Render function for Puck custom fields. Breakpoints come from `field.metadata.breakpoints`. */
 export function StyleFieldRender(props: {
-  field: { metadata?: { breakpoints?: Breakpoint[]; sections?: string[] } };
+  field: { metadata?: { breakpoints?: Breakpoint[]; sections?: string[]; states?: StyleState[] | false } };
   value: Styles;
   onChange: (value: Styles) => void;
   readOnly?: boolean;
@@ -204,6 +269,7 @@ export function StyleFieldRender(props: {
       readOnly={props.readOnly}
       breakpoints={props.field.metadata?.breakpoints}
       sections={props.field.metadata?.sections}
+      states={props.field.metadata?.states}
     />
   );
 }

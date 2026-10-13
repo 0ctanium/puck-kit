@@ -2,6 +2,7 @@
 
 import { createContext, useContext } from "react";
 import type { Breakpoint } from "../breakpoints";
+import type { StyleState } from "../styles/states";
 import type { Tokens } from "../styles/tokens";
 import type { StyleProp, Styles } from "../styles/types";
 
@@ -12,7 +13,7 @@ export interface PropRead {
   value: string | undefined;
   /** Value inherited from a smaller breakpoint, when nothing is set here. */
   inherited: string | undefined;
-  /** Breakpoint label the effective value comes from. */
+  /** Where the effective value comes from, e.g. "Mobile" or "Mobile · Hover". */
   from: string | undefined;
   state: PropState;
 }
@@ -21,6 +22,10 @@ export interface PanelApi {
   styles: Styles;
   breakpoints: Breakpoint[];
   active: Breakpoint;
+  /** Pseudo-class state being edited (undefined = the plain style). */
+  activeState: StyleState | undefined;
+  /** Key of the edited declarations in `styles`: `md` or `md:hover`. */
+  key: string;
   tokens: Tokens;
   readOnly: boolean;
   /**
@@ -39,6 +44,11 @@ export interface PanelApi {
 const PanelContext = createContext<PanelApi | null>(null);
 
 export const PanelProvider = PanelContext.Provider;
+
+/** The panel API when rendered inside <StylePanel>, otherwise null (standalone field types). */
+export function useOptionalPanel(): PanelApi | null {
+  return useContext(PanelContext);
+}
 
 export function usePanel(): PanelApi {
   const ctx = useContext(PanelContext);

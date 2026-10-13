@@ -5,7 +5,7 @@ import { useEffect, useState, type KeyboardEvent, type ReactNode } from "react";
 import { cx } from "../../components/shared";
 import { tokenRef, type Tokens } from "../../styles/tokens";
 import type { StyleProp } from "../../styles/types";
-import { stateOf, usePanel, type PropState } from "../context";
+import { stateOf, useOptionalPanel, usePanel, type PropState } from "../context";
 import { formatNumber, parseLength } from "../css/split";
 import { Dropdown, DropdownMenu, type DropdownOption } from "./Dropdown";
 import { usePopover } from "./Popover";
@@ -304,17 +304,19 @@ export function PropLabel({
   props: StyleProp[];
   scrub?: { step?: number; min?: number; max?: number; defaultUnit?: string };
 }) {
-  const panel = usePanel();
-  const reads = props.map(panel.read);
+  // Outside the style panel (standalone fields, editors in popovers) it's a plain label.
+  const panel = useOptionalPanel();
+  const reads = panel ? props.map(panel.read) : [];
   const state = stateOf(reads);
   const first = reads[0];
   const scrubber = useScrub({
     value: first?.value,
     fallback: first?.inherited,
-    onChange: (v) => panel.write(props[0], v),
-    disabled: !scrub || panel.readOnly,
+    onChange: (v) => panel?.write(props[0], v),
+    disabled: !scrub || !panel || panel.readOnly,
     ...scrub,
   });
+  if (!panel || props.length === 0) return <span className={ui.label}>{label}</span>;
   const fromLabel = reads.find((r) => r.from)?.from;
   const title =
     state === "set"

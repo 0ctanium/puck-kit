@@ -1,0 +1,110 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rangeInput {
+  width: 72px;
+  flex: none;
+}
+
+.unit {
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--pk-ui-muted);
+}
+
+.switchRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.switchRow:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.switchRow:focus-visible .switch {
+  outline: 2px solid var(--pk-ui-accent);
+  outline-offset: 2px;
+}
+
+.switch {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  flex: none;
+  border-radius: 9px;
+  background: var(--pk-ui-border-strong);
+  transition: background-color 150ms ease;
+}
+
+.switch > i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform 150ms ease;
+}
+
+.switch[data-on="true"] {
+  background: var(--pk-ui-accent);
+}
+
+.switch[data-on="true"] > i {
+  transform: translateX(14px);
+}
+
+/* Object field as a section. Puck renders: <label wrapper> > [label row, card > fieldset].
+   Styled by structure (not Puck's hashed class names). */
+
+.objectGroup > div > div:first-child {
+  padding-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--puck-color-text, #1d2125);
+}
+
+/* The "⋮" icon Puck puts before object labels */
+.objectGroup > div > div:first-child > div:first-child:has(svg) {
+  display: none;
+}
+
+.objectGroup > div > div:nth-child(2) {
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.objectGroup > div > div:nth-child(2) > fieldset {
+  padding: 0;
+}

@@ -12,3 +12,15 @@ export { fontStack, fontLabel, fontWeights, findFont, firstFamily, systemFonts }
 export { fontMetadata, getFontAssets, googleFontsUrl, fontFaceCss, usedFonts, FONT_METADATA_KEY, type FontAssets } from "./fonts/load";
 export { FontLinks } from "./fonts/FontLinks";
 export type { FontDefinition, FontSource, FontFile, FontCategory } from "./fonts/types";
+export {
+  backgroundStyle,
+  iconOptions,
+  type BackgroundValue,
+  type KitFields,
+  type KitField,
+  type ColorField,
+  type BackgroundField,
+  type FontField,
+  type RangeField,
+  type CheckboxField,
+} from "./fieldTypes/definitions";

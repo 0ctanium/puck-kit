@@ -68,6 +68,21 @@ export function createButton(ctx: KitContext): ComponentConfig<ButtonProps> {
           textDecoration: "none",
           textAlign: "center",
           cursor: "pointer",
+          transition: "transform 150ms ease, box-shadow 200ms ease, filter 200ms ease",
+        },
+        // Interaction states: lift on hover, press down, visible keyboard focus ring.
+        "base:hover": {
+          transform: "translate(0px, -1px)",
+          boxShadow: "0px 4px 12px 0px rgba(17, 24, 39, 0.15)",
+          filter: "brightness(110%)",
+        },
+        "base:focus-visible": {
+          boxShadow: "0px 0px 0px 3px rgba(79, 70, 229, 0.35)",
+        },
+        "base:active": {
+          transform: "scale(0.98, 0.98)",
+          boxShadow: "none",
+          filter: "brightness(95%)",
         },
       },
       advanced: {},

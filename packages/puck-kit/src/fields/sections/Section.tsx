@@ -27,7 +27,7 @@ export function Section({
 }) {
   const panel = usePanel();
   const [open, setOpen] = useState(() => openState.get(id) ?? defaultOpen);
-  const decl = panel.styles[panel.active.key] ?? {};
+  const decl = panel.styles[panel.key] ?? {};
   const count = props.filter((p) => decl[p] !== undefined).length;
 
   return (

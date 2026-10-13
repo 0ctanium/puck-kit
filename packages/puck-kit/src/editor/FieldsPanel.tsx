@@ -29,7 +29,7 @@ export function FieldsPanel({
     return s.config.components[selectedType]?.fields;
   });
 
-  if (!fieldsConfig) return children as React.JSX.Element;
+  if (!fieldsConfig) return <div className={styles.KitFields}>{children}</div>;
 
   const categories: Record<string, React.ReactNode[]> = {};
 

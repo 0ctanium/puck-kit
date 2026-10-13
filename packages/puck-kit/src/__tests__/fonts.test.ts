@@ -70,15 +70,19 @@ describe("usedFonts", () => {
         props: {
           id: "a",
           styles: { base: { fontFamily: "var(--pk-font-heading)" }, lg: { fontFamily: "'Brand Sans', sans-serif" } },
-          content: [{ type: "Text", props: { id: "b", styles: { base: { fontFamily: "Comic Sans MS" } } } }],
+          content: [
+            { type: "Text", props: { id: "b", styles: { base: { fontFamily: "Comic Sans MS" } } } },
+            // A `font` field value in a component prop, and a text that merely mentions a font name.
+            { type: "Banner", props: { id: "c", headingFont: '"Proxima Nova", sans-serif', title: "Inter" } },
+          ],
         },
       },
     ],
   };
 
   it("keeps fonts used by tokens and element styles only", () => {
-    expect(usedFonts(data, library)).toEqual([playfair, brand]);
-    expect(fontMetadata(library, data)).toEqual({ pkFonts: [playfair, brand] });
+    expect(usedFonts(data, library)).toEqual([playfair, brand, adobe]);
+    expect(fontMetadata(library, data)).toEqual({ pkFonts: [playfair, brand, adobe] });
     expect(fontMetadata(library)).toEqual({ pkFonts: library });
   });
 });
