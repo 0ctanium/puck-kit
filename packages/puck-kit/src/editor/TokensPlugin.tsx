@@ -1,10 +1,9 @@
 "use client";
 
-import { createUsePuck, type Data, type Plugin } from "@puckeditor/core";
+import { createUsePuck, type Data } from "@puckeditor/core";
 import { Palette, Plus, Ruler, Trash, Type } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { cx } from "../components/shared";
-import { kitFieldTypes } from "../fieldTypes/renderers";
 import { Swatch, ColorPicker } from "../fields/ui/ColorPicker";
 import { Popover, usePopover } from "../fields/ui/Popover";
 import { FontPicker } from "../fields/ui/FontPicker";
@@ -394,29 +393,4 @@ export function TokensPanel() {
       <FontLinks fonts={library} />
     </div>
   );
-}
-
-/** Left-rail plugin editing the page's design tokens (stored in `root.props.tokens`). */
-/**
- * Left-rail plugin editing the page's design tokens (stored in `root.props.tokens`). It also
- * registers the kit's field types (color, background, font, range, checkbox) and a nicer
- * `select` through `overrides.fieldTypes`, so any component can use token-aware inputs.
- */
-export function tokensPlugin({
-  label = "Tokens",
-  icon = <Palette />,
-  fieldTypes = true,
-}: {
-  label?: string;
-  icon?: ReactNode;
-  /** Register the kit's field types (default true). */
-  fieldTypes?: boolean;
-} = {}): Plugin {
-  return {
-    name: "pk-tokens",
-    label,
-    icon,
-    render: TokensPanel,
-    ...(fieldTypes ? { overrides: { fieldTypes: kitFieldTypes as unknown as NonNullable<Plugin["overrides"]>["fieldTypes"] } } : {}),
-  };
 }

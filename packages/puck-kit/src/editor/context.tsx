@@ -19,7 +19,7 @@ interface KitEditorValue {
 
 const KitEditorContext = createContext<KitEditorValue>({ fonts: [], addFontsLabel: "Add fonts" });
 
-/** Provides the font library to the kit's fields and plugins (done by `BuilderEditor`). */
+/** Provides the font library to the kit's fields (done by the `puckKit` plugin). */
 export function KitEditorProvider({ fonts, onAddFonts, addFontsLabel = "Add fonts", children }: KitEditorOptions & { children: ReactNode }) {
   const value = useMemo(() => ({ fonts: fonts ?? [], onAddFonts, addFontsLabel }), [fonts, onAddFonts, addFontsLabel]);
   return <KitEditorContext.Provider value={value}>{children}</KitEditorContext.Provider>;

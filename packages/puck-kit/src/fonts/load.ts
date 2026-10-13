@@ -104,7 +104,7 @@ export function usedFonts(
 export const FONT_METADATA_KEY = "pkFonts";
 
 /**
- * Puck `metadata` carrying the fonts to load. Editor: all fonts (`BuilderEditor` does this).
+ * Puck `metadata` carrying the fonts to load. Editor: the `puckKit` plugin loads the library in the canvas itself.
  * Public pages: pass the page `data` to load only the fonts it uses:
  * `<Render config={config} data={data} metadata={fontMetadata(fonts, data)} />`
  */

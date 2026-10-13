@@ -50,5 +50,8 @@ export function createBuilderConfig(options: BuilderConfigOptions = {}): Builder
 }
 
 export function getBreakpoints(config: Config): Breakpoint[] {
-  return (config as BuilderConfig)[KIT]?.breakpoints ?? defaultBreakpoints;
+  const fromKit = (config as BuilderConfig)[KIT]?.breakpoints;
+  // Fallback if the config object was copied (the symbol isn't enumerable): the page style field.
+  const root = config.root?.fields as Record<string, { metadata?: { breakpoints?: Breakpoint[] } }> | undefined;
+  return fromKit ?? root?.styles?.metadata?.breakpoints ?? defaultBreakpoints;
 }

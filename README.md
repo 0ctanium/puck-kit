@@ -47,16 +47,42 @@ export const config = createBuilderConfig({
 ```
 
 ```tsx
-// Editor page (client component)
+// Editor page (client component): Puck's own editor + the kit's plugin
 "use client";
-import { BuilderEditor } from "puck-kit/editor";
-<BuilderEditor config={config} data={data} onPublish={save} />
+import { Puck } from "@puckeditor/core";
+import "@puckeditor/core/puck.css";
+import { usePuckKit } from "puck-kit/editor";
+
+export function Editor({ data }) {
+  const kit = usePuckKit(config, { fonts, onAddFonts }); // { plugins, viewports, ui }
+  return <Puck config={config} data={data} {...kit} onPublish={save} />;
+}
 ```
 
+Everything the kit adds to the editor is **one Puck plugin**, `puckKit()`:
+- the **Tokens** panel (left rail);
+- the kit's **field types**;
+- the **breakpoint switcher** in the header;
+- the **Settings / Style tabs** of the fields panel;
+- the **compact component drawer**;
+- **fonts** (loaded in the canvas, offered in font pickers).
+
+`usePuckKit(config, options)` returns that plugin plus the two `<Puck>` props a plugin can't set:
+`viewports` (matching your breakpoints) and `ui` (open on the base breakpoint). Your own props
+compose as usual:
+- `plugins={[...kit.plugins, myPlugin]}`;
+- `overrides` (your `headerActions` render after the breakpoint switcher, and your
+  `fieldTypes.url` / `fieldTypes.image` replace the kit's default inputs).
+
+Prefer the plugin alone?
+`const plugin = puckKit({ fonts })`, created once at module level or in `useMemo`, then
+`<Puck plugins={[plugin]} />`. Puck then uses its default viewports.
+
 ```tsx
-// Public page (server component OK)
-import { BuilderRender } from "puck-kit/render";
-<BuilderRender config={config} data={data} />
+// Public page (server component OK): Puck's own <Render>
+import { Render } from "@puckeditor/core";
+import { fontMetadata } from "puck-kit";
+<Render config={config} data={data} metadata={fontMetadata(fonts, data)} />
 ```
 
 Persisting `data` (JSON) is up to you.
@@ -79,8 +105,8 @@ Persisting `data` (JSON) is up to you.
   drives the media queries.
 - `getPageCss(data)` (from `puck-kit/styles`) returns one stylesheet for a whole page, if you
   prefer serving a cached `.css` file.
-- **Design tokens** (colors, fonts, sizes) are edited in the **Tokens** plugin of the left rail
-  (added by `BuilderEditor`; or add `tokensPlugin()` from `puck-kit/editor` to your own `<Puck>`).
+- **Design tokens** (colors, fonts, sizes) are edited in the **Tokens** panel of the left rail
+  (part of the `puckKit` plugin).
   They're stored in `root.props.tokens`, emitted as CSS variables (`--pk-color-brand`…), and
   offered as swatches/presets in the style panel. Each token shows how many places use it;
   renaming rewrites every reference, and deleting a used token can detach it (references are
@@ -124,7 +150,7 @@ Persisting `data` (JSON) is up to you.
       <MyMediaLibrary selected={value} onSelect={(asset) => onChange(asset.url)} />
     </Label>
   ));
-  <BuilderEditor config={config} overrides={{ fieldTypes: { image: MediaPicker, url: MyPagePicker } }} />
+  <Puck config={config} {...kit} overrides={{ fieldTypes: { image: MediaPicker, url: MyPagePicker } }} />
   ```
   (or from a plugin's `overrides.fieldTypes`). The playground swaps `image` for a small stock
   image library: `apps/playground/lib/MediaLibraryField.tsx`.
@@ -146,7 +172,7 @@ Persisting `data` (JSON) is up to you.
     { family: "Proxima Nova", source: { type: "css", url: "https://use.typekit.net/xxxx.css" } },
   ];
   // Editor: all fonts are loaded; "Add fonts" buttons call your callback (e.g. open your font settings page).
-  <BuilderEditor config={config} data={data} fonts={fonts} onAddFonts={() => window.open("/settings/fonts")} />
+  const kit = usePuckKit(config, { fonts, onAddFonts: () => window.open("/settings/fonts") });
   // Public pages: only the fonts the page uses (via tokens or element styles) are loaded.
   <Render config={config} data={data} metadata={fontMetadata(fonts, data)} />
   ```
@@ -160,7 +186,7 @@ Persisting `data` (JSON) is up to you.
 ### Style panel
 
 Webflow-like, with popovers for anything complex. The breakpoint bar is synced with the
-breakpoint switcher that `BuilderEditor` puts in Puck's header (`ViewportBar`, rendered before
+breakpoint switcher that the plugin puts in Puck's header (`ViewportBar`, rendered before
 your `overrides.headerActions`). Puck's own controls above the canvas are hidden and the canvas
 has no gutter (set `--pk-canvas-gutter` to add one); zoom follows Puck's auto-zoom. A blue label means "set on this breakpoint" (click it to reset), orange means
 "inherited" (from Desktop, or from Tablet on Mobile). The bar under the breakpoints shows which
@@ -205,6 +231,8 @@ Requires Node ≥ 20.9 (Next.js 16).
   produces real `<p>` elements (a `<p>` can't contain them).
 - In the editor, links don't navigate and Link Block attributes (href, id, aria) are only
   rendered on the public page.
-- Kit components use the kit's field types (`url`, `image`, `checkbox`), registered by the
-  Tokens plugin: with your own `<Puck>`, add `tokensPlugin()` (or `kitFieldTypes` to `overrides.fieldTypes`).
+- Kit components use the kit's field types (`url`, `image`, `checkbox`), so the editor needs the
+  `puckKit` plugin (or `kitFieldTypes` in `overrides.fieldTypes`).
+- The plugin overrides `fields`, `drawer` and `drawerItem`. A `drawerItem` override of yours
+  is replaced by the compact item.
 - Out of scope for now: forms, reusable named classes, interactions/animations, CMS bindings.

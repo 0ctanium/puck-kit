@@ -1,9 +1,9 @@
 "use client";
 
-import { type Data } from "@puckeditor/core";
+import { Puck, type Data } from "@puckeditor/core";
 import { useEffect, useState } from "react";
 import type { FontDefinition } from "puck-kit";
-import { BuilderEditor } from "puck-kit/editor";
+import { usePuckKit } from "puck-kit/editor";
 import { config } from "@/lib/config";
 import { MediaLibraryField } from "@/lib/MediaLibraryField";
 
@@ -23,14 +23,18 @@ export function Editor({ slug, data, fonts: initialFonts }: { slug: string; data
     window.addEventListener("focus", refresh);
     return () => window.removeEventListener("focus", refresh);
   }, []);
+  // The kit's plugin (tokens, field types, breakpoints, fonts) + matching viewports.
+  const kit = usePuckKit(config, {
+    fonts,
+    onAddFonts: () => window.open(`/settings/fonts?return=/edit/${slug}`, "_blank"),
+  });
   return (
-    <BuilderEditor
+    <Puck
       config={config}
-      fonts={fonts}
-      onAddFonts={() => window.open(`/settings/fonts?return=/edit/${slug}`, "_blank")}
-      data={data ?? undefined}
-      headerPath={`/${slug}`}
+      data={data ?? { content: [], root: { props: {} } }}
+      {...kit}
       overrides={overrides}
+      headerPath={`/${slug}`}
       onPublish={async (next) => {
         const res = await fetch(`/api/pages/${slug}`, {
           method: "POST",
