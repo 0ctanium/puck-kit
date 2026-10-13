@@ -49,12 +49,12 @@
 .coverage {
   position: absolute;
   bottom: 1px;
-  left: calc((100% - 2px) * var(--pk-bp-index) / var(--pk-bp-count) + 5px);
-  right: 5px;
+  left: calc((100% - 2px) * var(--pk-bp-start) / var(--pk-bp-count) + 5px);
+  right: calc((100% - 2px) * (var(--pk-bp-count) - var(--pk-bp-end)) / var(--pk-bp-count) + 5px);
   height: 2px;
   border-radius: 2px;
   background: linear-gradient(90deg, var(--pk-ui-accent), color-mix(in srgb, var(--pk-ui-accent) 45%, #a855f7));
-  transition: left 150ms ease-out;
+  transition: left 150ms ease-out, right 150ms ease-out;
   pointer-events: none;
 }
 

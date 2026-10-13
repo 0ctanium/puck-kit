@@ -3,7 +3,7 @@ import { createButton, createTextLink } from "./button";
 import { createColumns } from "./columns";
 import { createContainer } from "./container";
 import { createImage, createVimeo, createYouTube } from "./media";
-import type { KitContext } from "./shared";
+import { responsiveStyles, type KitContext } from "./shared";
 import { createTextElement } from "./text";
 
 const BOX_TAGS = [
@@ -55,14 +55,10 @@ export const kitCategories = {
 export function createKitComponents(
   ctx: KitContext,
 ): Record<string, ComponentConfig<any>> {
-  const bps = [...ctx.breakpoints]
-    .sort((a, b) => a.minWidth - b.minWidth)
-    .map((b) => b.key);
-  const [, md, lg, xl] = bps;
-  const containerWidths: Record<string, { maxWidth: string }> = {};
-  if (md) containerWidths[md] = { maxWidth: "728px" };
-  if (lg) containerWidths[lg] = { maxWidth: "960px" };
-  if (xl) containerWidths[xl] = { maxWidth: "1200px" };
+  // Container width per screen size (full width on phones).
+  const containerWidths = responsiveStyles(ctx.breakpoints, (bp) => ({
+    maxWidth: bp.viewport >= 1440 ? "1200px" : bp.viewport >= 1024 ? "960px" : bp.viewport >= 768 ? "728px" : "none",
+  }));
 
   return {
     // Structure
@@ -82,14 +78,15 @@ export function createKitComponents(
         label: "Container",
         tags: BOX_TAGS,
         defaultStyles: {
+          ...containerWidths,
           base: {
             width: "100%",
             marginLeft: "auto",
             marginRight: "auto",
             paddingLeft: "16px",
             paddingRight: "16px",
+            ...containerWidths.base,
           },
-          ...containerWidths,
         },
         metadata: {
           icon: "panel-left-right-dashed",

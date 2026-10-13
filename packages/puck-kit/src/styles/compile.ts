@@ -1,4 +1,4 @@
-import { defaultBreakpoints, sortBreakpoints, type Breakpoint } from "../breakpoints";
+import { cascadeOf, defaultBreakpoints, emissionOrder, mediaQuery, type Breakpoint } from "../breakpoints";
 import { defaultStates, PREVIEW_STATE_ATTR, styleKey, type StyleState } from "./states";
 import { STYLE_PROPS, UNITLESS_PROPS, type StyleDecl, type StyleProp, type Styles } from "./types";
 
@@ -44,9 +44,11 @@ export interface CompileOptions {
 }
 
 /**
- * Compile per-breakpoint (and per-state) styles to CSS, mobile-first:
- * `.sel{...}.sel:hover{...}@media (min-width:768px){.sel{...}.sel:hover{...}}`.
- * State rules are more specific than plain ones, so `base:hover` keeps applying at larger
+ * Compile per-breakpoint (and per-state) styles to CSS: base first, then larger screens
+ * (min-width, ascending), then smaller screens (max-width, descending), so each breakpoint
+ * overrides the ones it inherits from:
+ * `.sel{...}.sel:hover{...}@media (max-width:1023px){.sel{...}}@media (max-width:767px){...}`.
+ * State rules are more specific than plain ones, so `base:hover` keeps applying on other
  * breakpoints unless overridden there. `selector` can be any selector (element or, later, class).
  */
 export function compileStyles(
@@ -57,7 +59,7 @@ export function compileStyles(
 ): string {
   if (!styles) return "";
   let css = "";
-  for (const bp of sortBreakpoints(breakpoints)) {
+  for (const bp of emissionOrder(breakpoints)) {
     let block = "";
     const plain = declToCss(styles[bp.key]);
     if (plain) block += `${selector}{${plain}}`;
@@ -68,7 +70,8 @@ export function compileStyles(
       block += preview ? `${sel},${selector}[${PREVIEW_STATE_ATTR}="${state.key}"]{${body}}` : `${sel}{${body}}`;
     }
     if (!block) continue;
-    css += bp.minWidth > 0 ? `@media (min-width:${bp.minWidth}px){${block}}` : block;
+    const query = mediaQuery(bp);
+    css += query ? `@media ${query}{${block}}` : block;
   }
   return css;
 }
@@ -83,8 +86,8 @@ export interface ResolvedValue {
 
 /**
  * Value for a property at a breakpoint (and optional state), following the CSS cascade:
- * the latest state value up to this breakpoint wins (state rules are more specific), otherwise
- * the plain mobile-first value.
+ * the latest state value along the breakpoint's cascade wins (state rules are more specific),
+ * otherwise the plain cascaded value.
  */
 export function resolveValue(
   styles: Styles | null | undefined,
@@ -93,13 +96,12 @@ export function resolveValue(
   breakpoints: Breakpoint[] = defaultBreakpoints,
   state?: string,
 ): ResolvedValue {
-  const sorted = sortBreakpoints(breakpoints);
+  const chain = cascadeOf(breakpoints, bpKey);
   const scan = (stateKey?: string): ResolvedValue => {
     let found: ResolvedValue = { value: undefined, from: undefined };
-    for (const bp of sorted) {
+    for (const bp of chain) {
       const v = styles?.[styleKey(bp.key, stateKey)]?.[prop];
       if (v != null && v !== "") found = { value: v, from: bp.key, fromState: stateKey };
-      if (bp.key === bpKey) break;
     }
     return found;
   };

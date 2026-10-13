@@ -2,7 +2,7 @@
 
 import { Laptop, Monitor, Smartphone, Tablet } from "lucide-react";
 import type { ComponentType, CSSProperties, ReactNode } from "react";
-import { defaultBreakpoints, sortBreakpoints, type Breakpoint } from "../breakpoints";
+import { coverageVars, coveredBy, defaultBreakpoints, rangeLabel, sortBreakpoints, type Breakpoint } from "../breakpoints";
 import { useActiveBreakpoint } from "../fields/StylePanel";
 import ui from "../fields/ui/ui.module.css";
 import css from "./ViewportBar.module.css";
@@ -16,15 +16,15 @@ const ICONS: Record<string, ComponentType<{ size?: number }>> = { Smartphone, Ta
 export function ViewportBar({ breakpoints = defaultBreakpoints }: { breakpoints?: Breakpoint[] }) {
   const bps = sortBreakpoints(breakpoints);
   const [active, setActive] = useActiveBreakpoint(bps);
-  const index = bps.findIndex((bp) => bp.key === active.key);
+  const covered = new Set(coveredBy(bps, active.key).map((bp) => bp.key));
   return (
     <div className={`${ui.theme} ${css.bar}`} role="group" aria-label="Breakpoint">
       {/* Left of the buttons: the header is right-aligned, so a longer label moves nothing else. */}
       <span className={css.label}>
         <strong>{active.label}</strong> {active.viewport}px
       </span>
-      <div className={css.buttons} style={{ "--pk-bp-index": index, "--pk-bp-count": bps.length } as CSSProperties}>
-        {bps.map((bp, i) => {
+      <div className={css.buttons} style={coverageVars(bps, active.key) as CSSProperties}>
+        {bps.map((bp) => {
           const Icon = ICONS[bp.icon ?? "Monitor"] ?? Monitor;
           return (
             <button
@@ -32,16 +32,16 @@ export function ViewportBar({ breakpoints = defaultBreakpoints }: { breakpoints?
               type="button"
               className={css.button}
               aria-pressed={bp.key === active.key}
-              data-covered={i > index || undefined}
+              data-covered={(bp.key !== active.key && covered.has(bp.key)) || undefined}
               aria-label={bp.label}
-              title={`${bp.label} — ${bp.viewport}px${bp.minWidth ? ` (styles from ${bp.minWidth}px)` : " (base styles)"}`}
+              title={`${bp.label} — ${bp.viewport}px (${rangeLabel(bp) === "base" ? "base styles, inherited by all" : `styles at ${rangeLabel(bp)}`})`}
               onClick={() => setActive(bp)}
             >
               <Icon size={15} />
             </button>
           );
         })}
-        {/* Mobile-first: styles set on the active breakpoint also apply to every larger one. */}
+        {/* Styles set on the active breakpoint also apply to the ones that inherit from it. */}
         <span className={css.coverage} aria-hidden />
       </div>
     </div>

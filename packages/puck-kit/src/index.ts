@@ -1,7 +1,11 @@
 export { createBuilderConfig, getBreakpoints, type BuilderConfig, type BuilderConfigOptions } from "./config";
 export {
   defaultBreakpoints,
+  mobileFirstBreakpoints,
   breakpointForWidth,
+  baseBreakpoint,
+  cascadeOf,
+  mediaQuery,
   toViewports,
   type Breakpoint,
 } from "./breakpoints";

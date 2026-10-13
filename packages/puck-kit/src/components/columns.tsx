@@ -1,10 +1,13 @@
 import type { ComponentConfig, Fields, SlotComponent } from "@puckeditor/core";
+import { baseBreakpoint } from "../breakpoints";
 import { styleField } from "../fields/styleField";
 import type { Styles } from "../styles/types";
 import {
   advancedField,
   elementClass,
   htmlAttrs,
+  isPhone,
+  responsiveStyles,
   Style,
   type Advanced,
   type KitContext,
@@ -18,12 +21,17 @@ export interface ColumnsProps {
 
 const EQUAL = /^repeat\((\d+),minmax\(0,1fr\)\)$/;
 
-/** A grid with one drop zone per column. Stacked on mobile, side by side from the first larger breakpoint. */
+const STACKED = "minmax(0,1fr)";
+
+/** A grid with one drop zone per column. Side by side, stacked on phone-sized breakpoints. */
 export function createColumns(ctx: KitContext): ComponentConfig<ColumnsProps> {
-  const [, second] = [...ctx.breakpoints].sort(
-    (a, b) => a.minWidth - b.minWidth,
-  );
-  const wideKey = second?.key ?? "base";
+  const template = responsiveStyles(ctx.breakpoints, (bp) => ({
+    gridTemplateColumns: isPhone(bp) ? STACKED : "repeat(2,minmax(0,1fr))",
+  }));
+  // Where the side-by-side template is set (kept in sync with the number of columns).
+  const wideKey =
+    Object.keys(template).find((k) => template[k]?.gridTemplateColumns !== STACKED) ??
+    baseBreakpoint(ctx.breakpoints).key;
 
   return {
     label: "Columns",
@@ -48,12 +56,8 @@ export function createColumns(ctx: KitContext): ComponentConfig<ColumnsProps> {
     defaultProps: {
       columns: [{ content: [] }, { content: [] }],
       styles: {
-        base: {
-          display: "grid",
-          gridTemplateColumns: "minmax(0,1fr)",
-          gap: "24px",
-        },
-        [wideKey]: { gridTemplateColumns: "repeat(2,minmax(0,1fr))" },
+        ...template,
+        base: { display: "grid", gap: "24px", ...template.base },
       },
       advanced: {},
     },

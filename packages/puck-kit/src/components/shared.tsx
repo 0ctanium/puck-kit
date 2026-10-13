@@ -1,9 +1,9 @@
 import { createElement, type ElementType, type Ref } from "react";
 import type { Field } from "@puckeditor/core";
-import { defaultBreakpoints, type Breakpoint } from "../breakpoints";
+import { cascadeOf, defaultBreakpoints, emissionOrder, type Breakpoint } from "../breakpoints";
 import { ElementStyle } from "../styles/ElementStyle";
 import { styleClass } from "../styles/compile";
-import type { Styles } from "../styles/types";
+import type { StyleDecl, StyleProp, Styles } from "../styles/types";
 
 export interface Advanced {
   htmlId?: string;
@@ -18,6 +18,30 @@ export interface KitContext {
 export const defaultKitContext: KitContext = {
   breakpoints: defaultBreakpoints,
 };
+
+/** Phone-sized breakpoint (used for defaults such as stacking columns). */
+export function isPhone(bp: Breakpoint): boolean {
+  return bp.viewport < 768;
+}
+
+/**
+ * Default styles that depend on the screen size, for any breakpoint setup: `valueFor` gives the
+ * wanted declarations per breakpoint, and only what differs from the inherited value is kept.
+ */
+export function responsiveStyles(breakpoints: Breakpoint[], valueFor: (bp: Breakpoint) => StyleDecl): Styles {
+  const out: Styles = {};
+  for (const bp of emissionOrder(breakpoints)) {
+    const parents = cascadeOf(breakpoints, bp.key).slice(0, -1);
+    const decl: StyleDecl = {};
+    for (const [prop, value] of Object.entries(valueFor(bp)) as [StyleProp, string][]) {
+      let inherited: string | undefined;
+      for (const p of parents) inherited = out[p.key]?.[prop] ?? inherited;
+      if (value !== inherited) decl[prop] = value;
+    }
+    if (Object.keys(decl).length) out[bp.key] = decl;
+  }
+  return out;
+}
 
 export const advancedField: Field<Advanced> = {
   type: "object",

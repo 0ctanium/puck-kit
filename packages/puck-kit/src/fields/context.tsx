@@ -11,9 +11,9 @@ export type PropState = "set" | "inherited" | "empty";
 export interface PropRead {
   /** Value set at the active breakpoint. */
   value: string | undefined;
-  /** Value inherited from a smaller breakpoint, when nothing is set here. */
+  /** Value inherited from another breakpoint (e.g. Desktop for Tablet), when nothing is set here. */
   inherited: string | undefined;
-  /** Where the effective value comes from, e.g. "Mobile" or "Mobile · Hover". */
+  /** Where the effective value comes from, e.g. "Desktop" or "Desktop · Hover". */
   from: string | undefined;
   state: PropState;
 }

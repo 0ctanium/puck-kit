@@ -63,11 +63,16 @@ Persisting `data` (JSON) is up to you.
 
 ## How styling works
 
-- Every element has a `styles` prop: `{ base?: {...}, md?: {...}, lg?: {...}, xl?: {...} }`
+- Every element has a `styles` prop: `{ base?: {...}, tablet?: {...}, mobile?: {...}, wide?: {...} }`
   holding plain CSS properties (camelCase). Values may reference tokens:
   `var(--pk-color-primary)`.
-- **Mobile-first**: `base` applies everywhere, `md` from 768px, `lg` from 1024px, `xl` from 1280px
-  (configurable via `createBuilderConfig({ breakpoints })`).
+- **Desktop-first** (like Webflow): `base` is Desktop and applies everywhere; `tablet` (≤1023px)
+  and then `mobile` (≤767px) override it going down, `wide` (≥1280px) going up. The editor opens
+  on Desktop. Breakpoints are configurable with `createBuilderConfig({ breakpoints })`: a base
+  (no width), `maxWidth` ones for smaller screens, `minWidth` ones for larger screens. For a
+  mobile-first setup, pass `mobileFirstBreakpoints` (`base` = Mobile, `md`/`lg`/`xl` going up).
+  Kit defaults that depend on the screen (Container widths, Columns stacking on phones) adapt
+  to any setup.
 - Each element gets a deterministic class from its Puck id (`.pk-<id>`), so server and client
   output match. CSS is emitted with React 19 `<style href precedence>`: hoisted to `<head>`
   and deduplicated. In the editor it's inline in Puck's iframe, so the viewport switcher
@@ -125,8 +130,8 @@ Persisting `data` (JSON) is up to you.
   image library: `apps/playground/lib/MediaLibraryField.tsx`.
 - **States** (`:hover`, Pressed, focus, first/last child, odd/even…): pick a state in the panel's
   "State" bar, then style as usual. Stored in the same `styles` object as `<breakpoint>:<state>`
-  keys (`base:hover`, `md:active`), compiled to `.pk-<id>:hover{…}` inside the breakpoint's media
-  query. A state set on Mobile keeps applying on larger screens unless overridden there. The
+  keys (`base:hover`, `tablet:active`), compiled to `.pk-<id>:hover{…}` inside the breakpoint's media
+  query. A state set on Desktop keeps applying on Tablet and Mobile unless overridden there. The
   canvas previews the edited state while it's selected. Page styles have no states
   (`styleField({ states: false })`); pass your own list with `styleField({ states })`.
   States live inside `styles` on purpose: a future class/selector system can reuse the exact same
@@ -158,7 +163,8 @@ Webflow-like, with popovers for anything complex. The breakpoint bar is synced w
 breakpoint switcher that `BuilderEditor` puts in Puck's header (`ViewportBar`, rendered before
 your `overrides.headerActions`). Puck's own controls above the canvas are hidden and the canvas
 has no gutter (set `--pk-canvas-gutter` to add one); zoom follows Puck's auto-zoom. A blue label means "set on this breakpoint" (click it to reset), orange means
-"inherited from a smaller breakpoint". Drag a label (or a spacing value) left/right to scrub it;
+"inherited" (from Desktop, or from Tablet on Mobile). The bar under the breakpoints shows which
+ones the active breakpoint also styles. Drag a label (or a spacing value) left/right to scrub it;
 arrow keys nudge numbers (Shift ×10, Alt ×0.1).
 
 | Section (`id`) | Editing |

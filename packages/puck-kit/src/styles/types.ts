@@ -3,7 +3,7 @@ export type StyleDecl = Partial<Record<StyleProp, string>>;
 
 /**
  * Per-breakpoint (and per-state) declarations. Keys are breakpoint keys (`base`, `md`, ...) or
- * `<breakpoint>:<state>` (`base:hover`, `md:active`). Mobile-first cascade.
+ * `<breakpoint>:<state>` (`base:hover`, `tablet:active`). Cascade: see `Breakpoint`.
  */
 export type Styles = Record<string, StyleDecl | undefined>;
 

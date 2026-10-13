@@ -90,12 +90,12 @@
                           "text": "Build pages like in Webflow",
                           "styles": {
                             "base": {
-                              "fontSize": "36px",
+                              "fontSize": "56px",
                               "fontWeight": "800",
                               "lineHeight": "1.1"
                             },
-                            "lg": {
-                              "fontSize": "56px"
+                            "tablet": {
+                              "fontSize": "36px"
                             }
                           },
                           "advanced": {}
@@ -106,7 +106,7 @@
                         "props": {
                           "id": "Paragraph-demo2",
                           "tag": "p",
-                          "text": "<p>Every element has its own <strong>responsive</strong> style panel. Styles compile to plain CSS \u2014 no Tailwind, no build step.</p>",
+                          "text": "<p>Every element has its own <strong>responsive</strong> style panel. Styles compile to plain CSS — no Tailwind, no build step.</p>",
                           "styles": {
                             "base": {
                               "fontSize": "18px",
@@ -223,11 +223,15 @@
                         "display": "flex",
                         "flexDirection": "column",
                         "gap": "16px",
-                        "alignItems": "flex-start"
-                      },
-                      "lg": {
                         "alignItems": "center",
                         "textAlign": "center"
+                      },
+                      "tablet": {
+                        "alignItems": "flex-start",
+                        "textAlign": "revert"
+                      },
+                      "mobile": {
+                        "textAlign": "revert"
                       }
                     },
                     "advanced": {}
@@ -242,16 +246,17 @@
                   "marginLeft": "auto",
                   "marginRight": "auto",
                   "paddingLeft": "16px",
-                  "paddingRight": "16px"
-                },
-                "md": {
-                  "maxWidth": "728px"
-                },
-                "lg": {
+                  "paddingRight": "16px",
                   "maxWidth": "960px"
                 },
-                "xl": {
+                "wide": {
                   "maxWidth": "1200px"
+                },
+                "tablet": {
+                  "maxWidth": "728px"
+                },
+                "mobile": {
+                  "maxWidth": "revert"
                 }
               },
               "advanced": {}
@@ -262,13 +267,13 @@
         "tag": "section",
         "styles": {
           "base": {
-            "paddingTop": "48px",
-            "paddingBottom": "48px",
+            "paddingTop": "96px",
+            "paddingBottom": "96px",
             "backgroundColor": "var(--pk-color-surface)"
           },
-          "lg": {
-            "paddingTop": "96px",
-            "paddingBottom": "96px"
+          "tablet": {
+            "paddingTop": "48px",
+            "paddingBottom": "48px"
           }
         },
         "advanced": {}
@@ -292,10 +297,10 @@
                       "base": {
                         "fontSize": "28px",
                         "fontWeight": "700",
-                        "marginBottom": "24px"
-                      },
-                      "md": {
                         "marginBottom": "60"
+                      },
+                      "mobile": {
+                        "marginBottom": "24px"
                       }
                     },
                     "advanced": {}
@@ -380,7 +385,7 @@
                               "props": {
                                 "id": "Heading-demo13",
                                 "tag": "h3",
-                                "text": "Mobile-first",
+                                "text": "Desktop-first",
                                 "styles": {
                                   "base": {
                                     "fontSize": "20px",
@@ -396,7 +401,7 @@
                               "props": {
                                 "id": "Text-demo14",
                                 "tag": "div",
-                                "text": "<p>Base styles apply everywhere; override from tablet up.</p>",
+                                "text": "<p>Desktop styles apply everywhere; override them on tablet and mobile.</p>",
                                 "styles": {
                                   "base": {
                                     "color": "var(--pk-color-muted)"
@@ -451,10 +456,14 @@
                                   "base": {
                                     "fontSize": "20px",
                                     "fontWeight": "700",
-                                    "marginBottom": "8px"
-                                  },
-                                  "lg": {
+                                    "marginBottom": "8px",
                                     "color": "var(--pk-color-primary)"
+                                  },
+                                  "tablet": {
+                                    "color": "revert"
+                                  },
+                                  "mobile": {
+                                    "color": "revert"
                                   }
                                 },
                                 "advanced": {}
@@ -512,14 +521,14 @@
                     "styles": {
                       "base": {
                         "display": "grid",
-                        "gridTemplateColumns": "minmax(0,1fr)",
+                        "gridTemplateColumns": "repeat(3,minmax(0,1fr))",
                         "gap": "16px"
                       },
-                      "md": {
+                      "tablet": {
                         "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
                       },
-                      "lg": {
-                        "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+                      "mobile": {
+                        "gridTemplateColumns": "minmax(0,1fr)"
                       }
                     },
                     "advanced": {}
@@ -534,16 +543,17 @@
                   "marginLeft": "auto",
                   "marginRight": "auto",
                   "paddingLeft": "16px",
-                  "paddingRight": "16px"
-                },
-                "md": {
-                  "maxWidth": "728px"
-                },
-                "lg": {
+                  "paddingRight": "16px",
                   "maxWidth": "960px"
                 },
-                "xl": {
+                "wide": {
                   "maxWidth": "1200px"
+                },
+                "tablet": {
+                  "maxWidth": "728px"
+                },
+                "mobile": {
+                  "maxWidth": "revert"
                 }
               },
               "advanced": {}
@@ -732,12 +742,12 @@
                     "styles": {
                       "base": {
                         "display": "grid",
-                        "gridTemplateColumns": "minmax(0,1fr)",
+                        "gridTemplateColumns": "repeat(2,minmax(0,1fr))",
                         "gap": "32px",
                         "alignItems": "center"
                       },
-                      "md": {
-                        "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+                      "mobile": {
+                        "gridTemplateColumns": "minmax(0,1fr)"
                       }
                     },
                     "advanced": {}
@@ -752,16 +762,17 @@
                   "marginLeft": "auto",
                   "marginRight": "auto",
                   "paddingLeft": "16px",
-                  "paddingRight": "16px"
-                },
-                "md": {
-                  "maxWidth": "728px"
-                },
-                "lg": {
+                  "paddingRight": "16px",
                   "maxWidth": "960px"
                 },
-                "xl": {
+                "wide": {
                   "maxWidth": "1200px"
+                },
+                "tablet": {
+                  "maxWidth": "728px"
+                },
+                "mobile": {
+                  "maxWidth": "revert"
                 }
               },
               "advanced": {}
@@ -805,16 +816,17 @@
                   "marginLeft": "auto",
                   "marginRight": "auto",
                   "paddingLeft": "16px",
-                  "paddingRight": "16px"
-                },
-                "md": {
-                  "maxWidth": "728px"
-                },
-                "lg": {
+                  "paddingRight": "16px",
                   "maxWidth": "960px"
                 },
-                "xl": {
+                "wide": {
                   "maxWidth": "1200px"
+                },
+                "tablet": {
+                  "maxWidth": "728px"
+                },
+                "mobile": {
+                  "maxWidth": "revert"
                 }
               },
               "content": [
@@ -823,7 +835,7 @@
                   "props": {
                     "id": "Banner-demo40",
                     "title": "Ship faster with design tokens",
-                    "text": "Every color, font and size here comes from the page's tokens \u2014 change them once in the Tokens panel.",
+                    "text": "Every color, font and size here comes from the page's tokens — change them once in the Tokens panel.",
                     "background": {
                       "color": "var(--pk-color-primary)",
                       "image": "linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 60%)",

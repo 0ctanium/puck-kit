@@ -2,7 +2,7 @@
 
 import { Puck, type Config, type Data } from "@puckeditor/core";
 import { useMemo, type ComponentProps, type ReactNode } from "react";
-import { toViewports } from "./breakpoints";
+import { baseBreakpoint, toViewports } from "./breakpoints";
 import { getBreakpoints } from "./config";
 import { FieldsPanel } from "./editor/FieldsPanel";
 import { tokensPlugin } from "./editor/TokensPlugin";
@@ -32,6 +32,7 @@ export function BuilderEditor({
   config,
   data,
   viewports,
+  ui,
   overrides,
   plugins,
   metadata,
@@ -41,6 +42,23 @@ export function BuilderEditor({
   ...rest
 }: BuilderEditorProps) {
   const breakpoints = getBreakpoints(config);
+  // Open on the base breakpoint (Puck would pick the viewport closest to the window width).
+  const baseWidth = baseBreakpoint(breakpoints).viewport;
+  const initialUi = useMemo(
+    () =>
+      ui?.viewports?.current
+        ? ui
+        : {
+            ...ui,
+            viewports: {
+              options: [],
+              controlsVisible: true,
+              ...ui?.viewports,
+              current: { width: baseWidth, height: "auto" as const },
+            },
+          },
+    [ui, baseWidth],
+  );
   const mergedMetadata = useMemo(() => ({ ...metadata, ...fontMetadata(fonts) }), [metadata, fonts]);
   // Breakpoint switcher in the header, before the user's actions (Publish by default).
   const UserHeaderActions = overrides?.headerActions;
@@ -64,6 +82,7 @@ export function BuilderEditor({
       metadata={mergedMetadata}
       data={data ?? { content: [], root: { props: {} } }}
       viewports={viewports ?? toViewports(breakpoints)}
+      ui={initialUi}
       plugins={[defaultTokensPlugin, ...(plugins ?? [])]}
       overrides={{
         ...overrides,

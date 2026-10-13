@@ -3,7 +3,7 @@
 import { createUsePuck } from "@puckeditor/core";
 import { Laptop, Monitor, Smartphone, Tablet } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type ComponentType, type CSSProperties } from "react";
-import { breakpointForWidth, defaultBreakpoints, sortBreakpoints, type Breakpoint } from "../breakpoints";
+import { breakpointForWidth, coverageVars, defaultBreakpoints, rangeLabel, sortBreakpoints, type Breakpoint } from "../breakpoints";
 import { cx } from "../components/shared";
 import { resolveValue, styleClass } from "../styles/compile";
 import { defaultStates, PREVIEW_STATE_ATTR, styleKey, type StyleState } from "../styles/states";
@@ -197,7 +197,7 @@ export function StylePanel({
             className={css.breakpoints}
             role="group"
             aria-label="Breakpoint"
-            style={{ "--pk-bp-index": bps.findIndex((bp) => bp.key === active.key), "--pk-bp-count": bps.length } as CSSProperties}
+            style={coverageVars(bps, active.key) as CSSProperties}
           >
             {bps.map((bp) => {
               const Icon = ICONS[bp.icon ?? "Monitor"] ?? Monitor;
@@ -209,7 +209,7 @@ export function StylePanel({
                   className={css.breakpoint}
                   aria-pressed={bp.key === active.key}
                   aria-label={bp.label}
-                  title={`${bp.label} — ${bp.minWidth ? `${bp.minWidth}px and up` : "all sizes (base)"}${count ? ` · ${count} styles` : ""}`}
+                  title={`${bp.label} — ${rangeLabel(bp) === "base" ? "base, inherited by all sizes" : rangeLabel(bp)}${count ? ` · ${count} styles` : ""}`}
                   onClick={() => setActive(bp)}
                 >
                   <Icon size={15} />
@@ -217,7 +217,7 @@ export function StylePanel({
                 </button>
               );
             })}
-            {/* Mobile-first: what's set here also applies to the larger breakpoints. */}
+            {/* What's set here also applies to the breakpoints that inherit from this one. */}
             <span className={css.coverage} aria-hidden />
           </div>
           {states && states.length > 0 && (
@@ -225,7 +225,7 @@ export function StylePanel({
           )}
           <div className={css.hint}>
             <span>
-              <strong>{active.label}</strong> {active.minWidth ? `≥ ${active.minWidth}px` : "· base"}
+              <strong>{active.label}</strong> {rangeLabel(active) === "base" ? "· base" : rangeLabel(active)}
               {activeState && (
                 <>
                   {" · "}

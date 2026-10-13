@@ -1,5 +1,5 @@
 import type { ComponentConfig, Config } from "@puckeditor/core";
-import { defaultBreakpoints, type Breakpoint } from "./breakpoints";
+import { defaultBreakpoints, validateBreakpoints, type Breakpoint } from "./breakpoints";
 import { createKitComponents, kitCategories } from "./components/index";
 import { createKitRoot } from "./root";
 import { defaultTokens, type Tokens } from "./styles/tokens";
@@ -7,7 +7,10 @@ import { defaultTokens, type Tokens } from "./styles/tokens";
 export const KIT = Symbol.for("puck-kit");
 
 export interface BuilderConfigOptions {
-  /** Mobile-first breakpoints. Default: base / md 768 / lg 1024 / xl 1280. */
+  /**
+   * Breakpoints. Default (desktop-first): Desktop `base`, Tablet `tablet` ≤1023, Mobile `mobile`
+   * ≤767, Wide `wide` ≥1280. Use `mobileFirstBreakpoints` for the opposite.
+   */
   breakpoints?: Breakpoint[];
   /** Tokens a new page starts with. */
   tokens?: Tokens;
@@ -23,9 +26,7 @@ export type BuilderConfig = Config & { [KIT]?: { breakpoints: Breakpoint[] } };
 
 export function createBuilderConfig(options: BuilderConfigOptions = {}): BuilderConfig {
   const breakpoints = options.breakpoints ?? defaultBreakpoints;
-  if (!breakpoints.some((b) => b.minWidth === 0)) {
-    throw new Error("puck-kit: one breakpoint must have minWidth: 0 (the base styles).");
-  }
+  validateBreakpoints(breakpoints);
   const ctx = { breakpoints };
   const exclude = new Set(options.exclude ?? []);
 
