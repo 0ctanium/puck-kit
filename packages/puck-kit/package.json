@@ -9,6 +9,33 @@
   "files": [
     "dist"
   ],
+  "bugs": {
+    "url": "https://github.com/0ctanium/puck-kit/issues"
+  },
+  "homepage": "https://puck-kit.vercel.app",
+  "license": "MIT",
+  "private": false,
+  "author": {
+    "name": "Benjamin Lepas",
+    "email": "mail@benjaminlepas.fr",
+    "url": "https://benjaminlepas.fr"
+  },
+  "keywords": [
+    "puck",
+    "puckeditor",
+    "puck-plugin",
+    "react",
+    "page-builder",
+    "visual-editor",
+    "website-builder",
+    "drag-and-drop",
+    "no-code",
+    "cms",
+    "components",
+    "webflow",
+    "style-engine",
+    "responsive"
+  ],
   "exports": {
     ".": "./src/index.ts",
     "./editor": "./src/editor.tsx",
